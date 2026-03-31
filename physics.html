@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Физика: Итоговый контроль</title>
+    <style>
+        :root { --main: #2c3e50; --bg: #f4f7f6; --card: #ffffff; --text: #333; --accent: #2980b9; --success: #27ae60; --error: #c0392b; }
+        [data-theme="dark"] { --bg: #1a1a1a; --card: #2d2d2d; --text: #e0e0e0; --main: #3498db; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; min-height: 100vh; transition: 0.3s; }
+        #app { width: 100%; max-width: 550px; padding: 20px; }
+        .card { background: var(--card); padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
+        .theme-toggle { position: absolute; top: 15px; right: 15px; background: none; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; color: var(--text); padding: 5px 10px; font-size: 12px; }
+        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+        #progress { height: 100%; background: var(--accent); width: 0%; transition: 0.4s; }
+        .timer { font-size: 18px; font-weight: bold; color: var(--error); text-align: center; margin-bottom: 20px; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 20px; box-sizing: border-box; background: var(--bg); color: var(--text); font-size: 16px; }
+        .q-text { font-size: 18px; font-weight: 500; line-height: 1.5; margin-bottom: 25px; }
+        .options { display: grid; gap: 10px; }
+        .opt-btn { background: var(--bg); border: 1px solid #ddd; padding: 14px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 15px; color: var(--text); transition: 0.2s; }
+        .opt-btn:hover { border-color: var(--accent); background: rgba(41, 128, 185, 0.05); }
+        .opt-btn.selected { border: 2px solid var(--accent); background: rgba(41, 128, 185, 0.1); }
+        .opt-btn.correct-anim { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .opt-btn.error-anim { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
+        .btn-check { background: var(--main); color: white; border: none; width: 100%; padding: 16px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; text-transform: uppercase; }
+        #result-screen { text-align: center; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 6px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 20px auto; color: var(--accent); }
+        .mistakes-box { text-align: left; margin-top: 20px; font-size: 14px; border-top: 1px solid #ddd; padding-top: 15px; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <button class="theme-toggle" onclick="toggleTheme()">Темы</button>
+    <div class="card" id="start-screen">
+        <h2 style="color: var(--accent)">ФИЗИКА: ПОЛНЫЙ ТРЕНАЖЕР</h2>
+        <p>Для начала введите данные студента:</p>
+        <input type="text" id="user-name" placeholder="ФИО">
+        <button class="btn-check" onclick="startQuiz()">Начать</button>
+    </div>
+    <div class="card" id="quiz-screen" style="display: none;">
+        <div class="progress-bar"><div id="progress"></div></div>
+        <div class="timer" id="timer">20:00</div>
+        <div id="quiz-content"></div>
+        <button class="btn-check" id="main-btn" onclick="handleNext()">Ответить</button>
+    </div>
+    <div class="card" id="result-screen" style="display: none;">
+        <h2 id="greeting">Итог</h2>
+        <div class="score-circle" id="final-score">0/20</div>
+        <p>Оценка: <b id="final-grade">-</b></p>
+        <div id="mistakes-log" class="mistakes-box"></div>
+        <button class="btn-check" onclick="location.reload()">Новая попытка</button>
+    </div>
+</div>
+
+<script>
+const database = [
+    { q: "Автомобиль, трогаясь с места, движется с ускорением 3 м/с². Через 4 с скорость будет равна:", options: ["12 м/с", "7 м/с", "0.75 м/с", "48 м/с"], correct: "12 м/с" },
+    { q: "Тепловой двигатель совершил работу 30 кДж и отдал холодильнику 70 кДж. КПД равен:", options: ["30%", "43%", "70%", "23%"], correct: "30%" },
+    { q: "Т нагревателя 700 К, Т холодильника 420 К. Каков КПД машины Карно?", options: ["40%", "60%", "28%", "100%"], correct: "40%" },
+    { q: "Давление газа на стенку сосуда обусловлено:", options: ["Ударами молекул о стенки", "Весом молекул", "Притяжением молекул", "Трение молекул"], correct: "Ударами молекул о стенки" },
+    { q: "С ростом температуры газа давление растет, так как:", options: ["Растет скорость движения молекул", "Растет масса молекул", "Увеличивается объем", "Молекулы расширяются"], correct: "Растет скорость движения молекул" },
+    { q: "Концентрация молекул при уменьшении объема в 2 раза:", options: ["Увеличится в 2 раза", "Уменьшится в 2 раза", "Не изменится", "Увеличится в 4 раза"], correct: "Увеличится в 2 раза" },
+    { q: "При уменьшении температуры средняя кинетическая энергия молекул:", options: ["Уменьшается", "Увеличивается", "Не меняется", "Равна константе"], correct: "Уменьшается" },
+    { q: "В каких единицах измеряют импульс в системе СИ?", options: ["кг·м/с", "Ньютон", "Джоуль", "Ватт"], correct: "кг·м/с" },
+    { q: "Физическая величина, являющаяся векторной:", options: ["Импульс", "Масса", "Путь", "Время"], correct: "Импульс" },
+    { q: "Определение кинетической энергии:", options: ["mv²/2", "mgh", "p=mv", "kx²/2"], correct: "mv²/2" },
+    { q: "Определение потенциальной энергии поднятого тела:", options: ["mgh", "mv²/2", "kx²/2", "p=mv"], correct: "mgh" },
+    { q: "Закон сохранения импульса:", options: ["m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'", "F = ma", "E = mc²", "P = UI"], correct: "m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'" },
+    { q: "Энергия пружины при увеличении деформации в 2 раза:", options: ["Увеличится в 4 раза", "Увеличится в 2 раза", "Уменьшится в 2 раза", "Не изменится"], correct: "Увеличится в 4 раза" },
+    { q: "Энергия парашютиста во время прыжка:", options: ["Кинетическая и потенциальная", "Только кинетическая", "Только потенциальная", "Внутренняя"], correct: "Кинетическая и потенциальная" },
+    { q: "Энергия мяча, неподвижно лежащего на земле:", options: ["Нулевая", "Кинетическая", "Потенциальная", "Упругая"], correct: "Нулевая" },
+    { q: "Единица измерения энергии в СИ:", options: ["Джоуль (Дж)", "Ватт (Вт)", "Ньютон (Н)", "Паскаль (Па)"], correct: "Джоуль (Дж)" },
+    { q: "Скалярная физическая величина:", options: ["Масса", "Сила", "Ускорение", "Вес"], correct: "Масса" },
+    { q: "Определение импульса тела:", options: ["p = mv", "p = m/v", "F = ma", "E = p²/2m"], correct: "p = mv" },
+    { q: "Закон сохранения механической энергии:", options: ["Ek + Ep = const", "F1 = F2", "Q = cmΔT", "P = UI"], correct: "Ek + Ep = const" },
+    { q: "Гравитационная постоянная G:", options: ["6,67 · 10⁻¹¹ Н·м²/кг²", "9,8 м/с²", "8,31 Дж/(моль·К)", "1,6 · 10⁻¹⁹ Кл"], correct: "6,67 · 10⁻¹¹ Н·м²/кг²" },
+    { q: "Сила тяготения пропорциональна произведению ... и обратно квадрату ...", options: ["масс; расстояния", "скоростей; времени", "масс; радиуса", "зарядов; расстояния"], correct: "масс; расстояния" },
+    { q: "Основная единица времени в СИ:", options: ["Секунда (с)", "Минута", "Час", "Сутки"], correct: "Секунда (с)" },
+    { q: "Векторные величины:", options: ["Перемещение и скорость", "Путь и время", "Масса и объем", "Плотность и путь"], correct: "Перемещение и скорость" },
+    { q: "Авто проехал 2 круга по 109км. Путь l и перемещение S:", options: ["l=218км, S=0", "l=218км, S=218км", "l=109км, S=0", "l=0, S=109км"], correct: "l=218км, S=0" },
+    { q: "Камень упал с высоты 4м на расстоянии 3м от стены. Модуль перемещения:", options: ["5 м", "7 м", "1 м", "25 м"], correct: "5 м" },
+    { q: "Поезд(200м) в тоннеле(300м), скорость 10м/с. Время выхода:", options: ["50 с", "30 с", "20 с", "10 с"], correct: "50 с" },
+    { q: "Равнодействующая сил равна нулю. Тело:", options: ["Покоится или движется равномерно", "Только покоится", "Движется ускоренно", "Останавливается"], correct: "Покоится или движется равномерно" },
+    { q: "Мальчик 1 толкает мальчика 2 силой 120Н. Сила воздействия второго:", options: ["120 Н", "0 Н", "240 Н", "60 Н"], correct: "120 Н" },
+    { q: "Скорость свободно падающего тела через 10с (g=10):", options: ["100 м/с", "10 м/с", "50 м/с", "1000 м/с"], correct: "100 м/с" },
+    { q: "Путь свободного падения за 5с (g=10):", options: ["125 м", "50 м", "25 м", "250 м"], correct: "125 м" },
+    { q: "Направление частиц в поперечных волнах:", options: ["Перпендикулярно волне", "Вдоль волны", "Хаотично", "По кругу"], correct: "Перпендикулярно волне" },
+    { q: "Гром услышан через 10с (v=340м/с). Расстояние:", options: ["3400 м", "34 м", "340 м", "1700 м"], correct: "3400 м" },
+    { q: "Электрический ток — это:", options: ["Упорядоченное движение зарядов", "Хаотичное движение атомов", "Любое движение электронов", "Наличие напряжения"], correct: "Упорядоченное движение зарядов" },
+    { q: "Условия работы электрической цепи:", options: ["Замкнутость и источник тока", "Лампочка и провода", "Выключатель", "Амперметр"], correct: "Замкнутость и источник тока" },
+    { q: "Удаление заряда с наэлектризованного тела:", options: ["Заземление", "Нагрев", "Трение", "Охлаждение"], correct: "Заземление" },
+    { q: "Назначение источника тока:", options: ["Создавать электрическое поле", "Нагревать цепь", "Мерить ток", "Соединять провода"], correct: "Создавать электрическое поле" },
+    { q: "Электрическая цепь — это:", options: ["Совокупность устройств для тока", "Один провод", "Батарейка", "Розетка"], correct: "Совокупность устройств для тока" },
+    { q: "Для возникновения тока в проводнике нужно:", options: ["Создать электрическое поле", "Нагреть его", "Растянуть", "Изолировать"], correct: "Создать электрическое поле" },
+    { q: "Аккумулятор дает ток после того, как:", options: ["Его зарядили", "Его нагрели", "Прошел час", "Его потрясли"], correct: "Его зарядили" },
+    { q: "Единица массы в атомной физике:", options: ["1/12 массы атома углерода", "Масса водорода", "1 грамм", "Масса электрона"], correct: "1/12 массы атома углерода" },
+    { q: "Перемещением называют:", options: ["Вектор из начала в конец", "Длину траектории", "Любое движение", "Скорость"], correct: "Вектор из начала в конец" },
+    { q: "Первый закон Ньютона:", options: ["Закон инерции (F=0 => v=const)", "F = ma", "F1 = -F2", "Закон тяготения"], correct: "Закон инерции (F=0 => v=const)" },
+    { q: "Второй закон Ньютона:", options: ["F = ma", "v = s/t", "E = mgh", "P = mg"], correct: "F = ma" },
+    { q: "Третий закон Ньютона:", options: ["Силы взаимодействия равны и противоположны", "F = Gmm/r2", "Закон Архимеда", "Закон Ома"], correct: "Силы взаимодействия равны и противоположны" },
+    { q: "Стальной шарик — это:", options: ["Физическое тело", "Вещество", "Явление", "Материя"], correct: "Физическое тело" },
+    { q: "Наибольшая скорость из указанных:", options: ["100 дм/с", "1 м/с", "100 см/с", "100 см/мин"], correct: "100 дм/с" },
+    { q: "Диффузия — это:", options: ["Взаимное проникновение молекул", "Испарение", "Движение под действием силы", "Охлаждение"], correct: "Взаимное проникновение молекул" },
+    { q: "Электрон и протон имеют заряды:", options: ["Электрон (-), Протон (+)", "Оба (+)", "Оба (-)", "Электрон (+), Протон (-)"], correct: "Электрон (-), Протон (+)" },
+    { q: "Молекула — это:", options: ["Наименьшая частица вещества", "Атом", "Ядро", "Заряд"], correct: "Наименьшая частица вещества" },
+    { q: "Число Авогадро равно:", options: ["6,02 · 10^23 моль⁻¹", "1,6 · 10⁻¹⁹ Кл", "3 · 10^8 м/с", "9,8 м/с²"], correct: "6,02 · 10^23 моль⁻¹" },
+    { q: "Переведите 30°C в Кельвины:", options: ["303 К", "273 К", "30 К", "330 К"], correct: "303 К" },
+    { q: "Броуновское движение — это:", options: ["Хаотичное движение взвешенных частиц", "Движение планет", "Течение воды", "Падение тела"], correct: "Хаотичное движение взвешенных частиц" },
+    { q: "Идеальный газ — это модель, где:", options: ["Пренебрегают размерами и силами взаимодействия", "Нет движения", "Высокое давление", "Низкая температура"], correct: "Пренебрегают размерами и силами взаимодействия" },
+    { q: "Температура тела определяется:", options: ["Средней кин. энергией молекул", "Массой тела", "Объемом", "Скоростью света"], correct: "Средней кин. энергией молекул" },
+    { q: "За 0°C принята температура:", options: ["Таяния льда", "Кипения воды", "Абсолютного нуля", "Земли"], correct: "Таяния льда" },
+    { q: "Влажность воздуха — это:", options: ["Содержание водяного пара в воздухе", "Давление газа", "Температура пара", "Объем воды"], correct: "Содержание водяного пара в воздухе" },
+    { q: "Напряжение (U) — это:", options: ["Работа поля по перемещению заряда", "Скорость тока", "Сила взаимодействия", "Заряд"], correct: "Работа поля по перемещению заряда" },
+    { q: "Сопротивление проводника зависит от:", options: ["Материала, длины и сечения", "Только от тока", "От формы сосуда", "От погоды"], correct: "Материала, длины и сечения" },
+    { q: "Мощность тока измеряется в:", options: ["Ваттах (Вт)", "Вольтах (В)", "Амперах (А)", "Омах"], correct: "Ваттах (Вт)" },
+    { q: "Материал спиралей электролампочек:", options: ["Вольфрам", "Медь", "Алюминий", "Золото"], correct: "Вольфрам" },
+    { q: "Носители зарядов в металлах:", options: ["Свободные электроны", "Протоны", "Ионы", "Нейтроны"], correct: "Свободные электроны" },
+    { q: "Потенциал электрического поля характеризует:", options: ["Энергию поля", "Силу поля", "Заряд", "Магнитные свойства"], correct: "Энергию поля" },
+    { q: "Электроёмкость характеризует:", options: ["Способность накапливать заряд", "Скорость тока", "Нагрев", "Прочность"], correct: "Способность накапливать заряд" },
+    { q: "Закон всемирного тяготения:", options: ["F = G·m1·m2 / r2", "F = ma", "F = kx", "E = mc2"], correct: "F = G·m1·m2 / r2" },
+    { q: "Если тела отталкиваются, они заряжены:", options: ["Одноименно (оба + или оба -)", "Разноименно", "Нейтрально", "Магнитно"], correct: "Одноименно (оба + или оба -)" },
+    { q: "Материальная точка — это:", options: ["Тело, размерами которого можно пренебречь", "Атом", "Круг", "Масса"], correct: "Тело, размерами которого можно пренебречь" },
+    { q: "Температура, при которой пар насыщен:", options: ["Точка росы", "Температура кипения", "Абсолютный ноль", "100°C"], correct: "Точка росы" },
+    { q: "Сила, приложенная к опоре или подвесу:", options: ["Вес тела", "Сила тяжести", "Сила трения", "Сила упругости"], correct: "Вес тела" },
+    { q: "Наименьшая длина волны (наибольшая частота):", options: ["Гамма-излучение", "Радиоволны", "Свет", "ИК-лучи"], correct: "Гамма-излучение" },
+    { q: "Частота 4 Гц. Период равен:", options: ["0.25 с", "4 с", "0.5 с", "2 с"], correct: "0.25 с" },
+    { q: "Колебания по синусу или косинусу:", options: ["Гармонические", "Затухающие", "Механические", "Случайные"], correct: "Гармонические" },
+    { q: "Время одного полного колебания:", options: ["Период", "Частота", "Фаза", "Амплитуда"], correct: "Период" },
+    { q: "Период 2 с. Частота равна:", options: ["0.5 Гц", "2 Гц", "1 Гц", "4 Гц"], correct: "0.5 Гц" },
+    { q: "Колебания под внешней периодической силой:", options: ["Вынужденные", "Свободные", "Автоколебания", "Резонанс"], correct: "Вынужденные" },
+    { q: "Движение зарядов в проводнике в поле:", options: ["Направленно (упорядоченно)", "Хаотично", "По кругу", "Останавливается"], correct: "Направленно (упорядоченно)" },
+    { q: "Сопротивление при U=8В и I=4мкА:", options: ["2 МОм", "2 Ом", "32 Ом", "0.5 Ом"], correct: "2 МОм" },
+    { q: "Заряды в проводнике БЕЗ поля движутся:", options: ["Хаотично (беспорядочно)", "Направленно", "Не движутся", "По спирали"], correct: "Хаотично (беспорядочно)" },
+    { q: "Формула FА = BIΔĿSinα определяет:", options: ["Силу Ампера", "Силу Лоренца", "Силу тяжести", "Магнитный поток"], correct: "Силу Ампера" },
+    { q: "Формула Fл = FА/n определяет:", options: ["Силу Лоренца", "Силу Ампера", "Силу трения", "Давление"], correct: "Силу Лоренца" },
+    { q: "Оптическая сила 5 дптр. Фокусное расстояние:", options: ["0.2 м", "5 м", "0.5 м", "2 м"], correct: "0.2 м" },
+    { q: "Дифракция волн — это:", options: ["Огибание волнами препятствий", "Наложение волн", "Преломление", "Отражение"], correct: "Огибание волнами препятствий" },
+    { q: "Число оборотов за единицу времени:", options: ["Частота обращения", "Период", "Ускорение", "Скорость"], correct: "Частота обращения" },
+    { q: "Полная механическая энергия — это:", options: ["Сумма кинетической и потенциальной энергий", "Только работа", "Внутренняя энергия", "Разность энергий"], correct: "Сумма кинетической и потенциальной энергий" },
+    { q: "Деформация, исчезающая после снятия нагрузки:", options: ["Упругая", "Пластическая", "Хрупкая", "Остаточная"], correct: "Упругая" },
+    { q: "Общая количественная мера движения и взаимодействия:", options: ["Энергия", "Импульс", "Сила", "Масса"], correct: "Энергия" },
+    { q: "Перемещением называют:", options: ["Вектор из начала пути в конец", "Путь в метрах", "Траекторию", "Кривую линию"], correct: "Вектор из начала пути в конец" },
+    { q: "Силы упругости проявляются при:", options: ["Деформации тел", "Движении без трения", "Свободном падении", "Нагревании"], correct: "Деформации тел" },
+    { q: "Скорость в данный момент времени:", options: ["Мгновенная скорость", "Средняя скорость", "Ускорение", "Путевая скорость"], correct: "Мгновенная скорость" },
+    { q: "Быстрота и направление движения тела (вектор):", options: ["Скорость", "Путь", "Ускорение", "Время"], correct: "Скорость" },
+    { q: "Сила вдоль поверхности соприкосновения тел:", options: ["Сила трения", "Сила тяжести", "Вес", "Сила упругости"], correct: "Сила трения" },
+    { q: "Диффузия — это:", options: ["Взаимное проникновение молекул веществ", "Охлаждение", "Движение под силой", "Распад атома"], correct: "Взаимное проникновение молекул веществ" },
+    { q: "Закон всемирного тяготения:", options: ["F = G·m1m2/r2", "F = ma", "E = mc2", "F = kx"], correct: "F = G·m1m2/r2" },
+    { q: "Система тел, на которые не действуют внешние силы:", options: ["Замкнутая система", "Инерциальная система", "Хаос", "Материальная точка"], correct: "Замкнутая система" },
+    { q: "Время одного полного оборота:", options: ["Период обращения", "Частота", "Цикл", "Мгновение"], correct: "Период обращения" },
+    { q: "Произведение массы тела на его скорость:", options: ["Импульс тела", "Кинетическая энергия", "Сила", "Мощность"], correct: "Импульс тела" },
+    { q: "Отношение работы ко времени:", options: ["Мощность", "Энергия", "КПД", "Сила"], correct: "Мощность" },
+    { q: "Быстрота изменения скорости:", options: ["Ускорение", "Мгновенная скорость", "Путь", "Рывок"], correct: "Ускорение" },
+    { q: "Вектор из начала в конец движения:", options: ["Перемещение", "Путь", "Координата", "Радиус"], correct: "Перемещение" }
+];
+
+let sessionQ = []; let current = 0; let score = 0; let timeLeft = 1200; let timerInt; let selected = null; let mistakes = [];
+function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
+function toggleTheme() { document.body.dataset.theme = document.body.dataset.theme === "dark" ? "" : "dark"; }
+function startQuiz() {
+    const name = document.getElementById('user-name').value;
+    if(!name) { alert("Введите ФИО!"); return; }
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    sessionQ = shuffle([...database]).slice(0, 20);
+    startTimer(); render();
+}
+function startTimer() {
+    timerInt = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60); let s = timeLeft % 60;
+        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' + s : s}`;
+        if(timeLeft <= 0) finish();
+    }, 1000);
+}
+function render() {
+    const q = sessionQ[current]; const opts = shuffle([...q.options]);
+    selected = null;
+    document.getElementById('progress').style.width = (current / 20) * 100 + '%';
+    document.getElementById('main-btn').innerText = "ОТВЕТИТЬ";
+    const cont = document.getElementById('quiz-content');
+    cont.innerHTML = `<div class="q-text">${current + 1}. ${q.q}</div><div class="options">${opts.map(o => `<button class="opt-btn" onclick="select(this)">${o}</button>`).join('')}</div>`;
+}
+function select(btn) {
+    if(document.querySelector('.correct-anim')) return;
+    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected'); selected = btn.innerText;
+}
+function handleNext() {
+    if(!selected && document.getElementById('main-btn').innerText === "ОТВЕТИТЬ") return;
+    const btn = document.getElementById('main-btn');
+    if(btn.innerText === "ДАЛЕЕ") {
+        current++; if(current < 20) render(); else finish();
+        return;
+    }
+    const q = sessionQ[current];
+    let isCorrect = selected === q.correct; 
+    if(isCorrect) score++; else mistakes.push({q: q.q, c: q.correct});
+    document.querySelectorAll('.opt-btn').forEach(b => {
+        if(b.innerText === q.correct) b.classList.add('correct-anim');
+        if(b.classList.contains('selected') && !isCorrect) b.classList.add('error-anim');
+    });
+    btn.innerText = "ДАЛЕЕ";
+}
+function finish() {
+    clearInterval(timerInt);
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').innerText = `${score}/20`;
+    let p = (score / 20) * 100;
+    let g = p >= 85 ? 5 : (p >= 75 ? 4 : (p >= 50 ? 3 : 2));
+    document.getElementById('final-grade').innerText = g;
+    
+    if(mistakes.length > 0) {
+        let log = "<b>Работа над ошибками:</b><br>";
+        mistakes.forEach(m => { log += `⚠️ ${m.q} -> <b>${m.c}</b><br>`; });
+        document.getElementById('mistakes-log').innerHTML = log;
+    }
+}
+</script>
+</body>
+</html>
