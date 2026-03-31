@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер по Литературе</title>
+    <style>
+        :root { --main: #6c5ce7; --bg: #f0f3f7; --card: #ffffff; --text: #2d3436; --success: #00b894; --error: #d63031; }
+        [data-theme="dark"] { --bg: #1e272e; --card: #2f3640; --text: #f5f6fa; --main: #a29bfe; }
+        
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; min-height: 100vh; transition: 0.3s; }
+        #app { width: 100%; max-width: 500px; padding: 20px; position: relative; }
+        
+        .card { background: var(--card); padding: 30px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); animation: slideIn 0.5s ease; position: relative; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .theme-toggle { position: absolute; top: 10px; right: 10px; background: none; border: none; cursor: pointer; font-size: 20px; z-index: 10; }
+        
+        .progress-bar { height: 6px; background: #dfe6e9; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #progress { height: 100%; background: var(--main); width: 0%; transition: 0.4s; }
+        
+        .timer { font-weight: bold; color: var(--error); text-align: center; margin-bottom: 15px; font-size: 18px; }
+        
+        input[type="text"] { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #edeff2; margin-bottom: 20px; box-sizing: border-box; font-size: 16px; outline: none; background: var(--card); color: var(--text); }
+        
+        .q-text { font-size: 19px; font-weight: 600; line-height: 1.4; margin-bottom: 25px; }
+        .options { display: grid; gap: 12px; }
+        
+        /* СТИЛИ КНОПОК */
+        .opt-btn { background: rgba(0,0,0,0.03); border: 2px solid #edeff2; padding: 16px; border-radius: 16px; cursor: pointer; text-align: left; font-size: 16px; color: var(--text); transition: 0.2s; }
+        
+        /* Подсветка при нажатии */
+        .opt-btn.selected { 
+            border-color: var(--main) !important; 
+            background: rgba(108, 92, 231, 0.15) !important; 
+            box-shadow: 0 0 10px rgba(108, 92, 231, 0.2);
+        }
+        
+        .opt-btn.correct-anim { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .opt-btn.error-anim { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
+        
+        .btn-check { background: var(--main); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3); transition: 0.3s; margin-top: 25px;}
+        .btn-check:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        
+        #start-screen, #result-screen { text-align: center; }
+        .score-circle { width: 130px; height: 130px; border-radius: 50%; border: 6px solid var(--main); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; margin: 25px auto; color: var(--main); }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+
+    <div class="card" id="start-screen">
+        <h1>Привет! ❤️</h1>
+        <p>Введи своё имя перед началом:</p>
+        <input type="text" id="user-name" placeholder="Твоё ФИО или Имя">
+        <button class="btn-check" onclick="startQuiz()">НАЧАТЬ ТЕСТ</button>
+    </div>
+
+    <div class="card" id="quiz-screen" style="display: none;">
+        <div class="progress-bar"><div id="progress"></div></div>
+        <div class="timer" id="timer">Осталось: 20:00</div>
+        <div id="quiz-content"></div>
+        <button class="btn-check" id="main-btn" onclick="handleNext()">ОТВЕТИТЬ</button>
+    </div>
+
+    <div class="card" id="result-screen" style="display: none;">
+        <h1 id="greeting">Результат:</h1>
+        <div class="score-circle" id="final-score">0/20</div>
+        <p style="font-size: 20px;">Твоя оценка: <b id="final-grade">-</b></p>
+        <button class="btn-check" onclick="location.reload()">ЕЩЁ РАЗ</button>
+    </div>
+</div>
+
+<script>
+const database = [
+    { q: "У Обломова в романе есть антипод, это:", options: ["Андрей Штольц", "Петр Адуев", "Аркадий Кирсанов", "Илья Ильич"], correct: "Андрей Штольц" },
+    { q: "Действие «Грозы» происходит:", options: ["В Калинове на Волге", "В Нижнем Новгороде", "В Скотопригоньевске", "В Глупове"], correct: "В Калинове на Волге" },
+    { q: "Основной конфликт «Грозы»:", options: ["Старый уклад vs свобода личности", "Любовный треугольник", "Борьба за наследство Дикого", "Ссора Кабанихи с сыном"], correct: "Старый уклад vs свобода личности" },
+    { q: "Представители «тёмного царства» в «Грозе»:", options: ["Дикой и Кабаниха", "Кулигин и Борис", "Тихон и Варвара", "Феклуша и Глаша"], correct: "Дикой и Кабаниха" },
+    { q: "Кто позавидовал умершей Катерине?", options: ["Тихон Кабанов", "Борис", "Варвара", "Кулигин"], correct: "Тихон Кабанов" },
+    { q: "Жертвы «Темного царства» в пьесе Островского:", options: ["Тихон, Борис, Кулигин, Катерина", "Дикой и Кабаниха", "Феклуша и странники", "Только Катерина"], correct: "Тихон, Борис, Кулигин, Катерина" },
+    { q: "Кого Добролюбов назвал «Лучом света»?", options: ["Катерину", "Варвару", "Кулигина", "Бориса"], correct: "Катерину" },
+    { q: "Кому был посвящён роман «Отцы и дети»?", options: ["В. Г. Белинскому", "Н. А. Некрасову", "А. И. Герцену", "Своей дочери"], correct: "В. Г. Белинскому" },
+    { q: "Родовое имение И. С. Тургенева:", options: ["Спасское-Лутовиново", "Ясная Поляна", "Тарханы", "Шахматово"], correct: "Спасское-Лутовиново" },
+    { q: "Раскольников совершает убийство ради:", options: ["Проверки своей теории", "Обогащения", "Спасения семьи", "Мести"], correct: "Проверки своей теории" },
+    { q: "«Порядочный химик полезнее всякого поэта»:", options: ["Базаров", "Павел Кирсанов", "Аркадий Кирсанов", "Николай Кирсанов"], correct: "Базаров" },
+    { q: "Натура независимая, нигилист:", options: ["Базаров", "Аркадий Кирсанов", "Ситников", "Кукшина"], correct: "Базаров" },
+    { q: "Профессия Евгения Базарова:", options: ["Врач (лекарь)", "Инженер", "Учитель", "Юрист"], correct: "Врач (лекарь)" },
+    { q: "Возлюбленная Евгения Базарова:", options: ["Анна Одинцова", "Фенечка", "Катерина Локтева", "Авдотья Кукшина"], correct: "Анна Одинцова" },
+    { q: "Персонаж, лечивший Митю в доме Кирсановых:", options: ["Базаров", "Аркадий", "Павел Петрович", "Николай Петрович"], correct: "Базаров" },
+    { q: "Отношение родителей Базарова к сыну:", options: ["Любят, обожают и боятся", "Презирают за нигилизм", "Равнодушны", "Считают неудачником"], correct: "Любят, обожают и боятся" },
+    { q: "Секрет Левши для царя по приезду:", options: ["Ружья кирпичом не чистят", "Как кормить мастеров", "Секрет стальной блохи", "План войны"], correct: "Ружья кирпичом не чистят" },
+    { q: "Что умела стальная блоха в сказе Лескова?", options: ["Танцевать («дансе» делать)", "Петь гимн", "Стрелять", "Прыгать"], correct: "Танцевать («дансе» делать)" },
+    { q: "Причина прозвища «Левша»:", options: ["Работал левой рукой", "Фамилия такая", "Родом из Левшино", "Так прозвали англичане"], correct: "Работал левой рукой" },
+    { q: "Финал жизни Левши:", options: ["Умирает в больнице для бедных", "Становится богатым", "Остается в Англии", "Получает орден"], correct: "Умирает в больнице для бедных" },
+    { q: "Распад буржуазной семьи у Салтыкова-Щедрина:", options: ["«Господа Головлевы»", "«Дикий помещик»", "«История одного города»", "«Медведь на воеводстве»"], correct: "«Господа Головлевы»" },
+    { q: "Город в «Истории одного города»:", options: ["Глупов", "Калинов", "Скотопригоньевск", "Энск"], correct: "Глупов" },
+    { q: "Раскольников убил старуху ради проверки идеи о:", options: ["«Сверхчеловеке»", "Помощи бедным", "Мести", "Власти над миром"], correct: "«Сверхчеловеке»" },
+    { q: "Образ Петербурга в романе Достоевского:", options: ["Мрачный, удушливый, грязный", "Величественный", "Парадный", "Тихий"], correct: "Мрачный, удушливый, грязный" },
+    { q: "Имя и отчество Раскольникова:", options: ["Родион Романович", "Роман Родионович", "Родион Николаевич", "Аркадий Иванович"], correct: "Родион Романович" },
+    { q: "Раскольников спрятал деньги Алёны Ивановны:", options: ["Под камнем во дворе", "Раздал бедным", "Отдал Соне", "Потерял"], correct: "Под камнем во дворе" },
+    { q: "Кто требовал от Родиона: «Поклонись земле!»?", options: ["Соня Мармеладова", "Порфирий Петрович", "Дуня", "Свидригайлов"], correct: "Соня Мармеладова" },
+    { q: "Кому Раскольников признается первому?", options: ["Соне Мармеладовой", "Разумихину", "Матери", "Порфирию Петровичу"], correct: "Соне Мармеладовой" },
+    { q: "Раскольников убил Лизавету потому что:", options: ["Она стала случайным свидетелем", "Она его оскорбила", "Она была злой", "Он её ненавидел"], correct: "Она стала случайным свидетелем" },
+    { q: "Первый эпизод «Войны и мира»:", options: ["Салон Анны Шерер", "Именины у Ростовых", "Смотр в Браунау", "Дуэль Пьера"], correct: "Салон Анны Шерер" },
+    { q: "Идеал женщины в романе «Война и мир»:", options: ["Наташа Ростова", "Элен Курагина", "Марья Болконская", "Соня"], correct: "Наташа Ростова" },
+    { q: "Брак Андрея и Наташи расстроился из-за:", options: ["Измены с Анатолем Курагиным", "Ранения Андрея", "Смерти отца", "Войны"], correct: "Измены с Анатолем Курагиным" },
+    { q: "«Нет величия там, где нет...»:", options: ["Простоты, добра и правды", "Силы и славы", "Ума и чести", "Веры и любви"], correct: "Простоты, добра и правды" },
+    { q: "Тяжесть князя Андрея после Шенграбена связана с:", options: ["Подвигом Тушина (неоцененным)", "Ранением в ногу", "Проигрышем битвы", "Встречей с Наполеоном"], correct: "Подвигом Тушина (неоцененным)" },
+    { q: "Портрет: «Черноглазая, с большим ртом... живая»:", options: ["Наташа Ростова", "Марья Болконская", "Лиза Болконская", "Соня"], correct: "Наташа Ростова" },
+    { q: "Портрет: «Красивый молодой человек с сухими чертами...»:", options: ["Андрей Болконский", "Николай Ростов", "Анатоль Курагин", "Борис Друбецкой"], correct: "Андрей Болконский" },
+    { q: "Жанр «Войны и мира»:", options: ["Роман-эпопея", "Исторический роман", "Повесть", "Семейная хроника"], correct: "Роман-эпопея" },
+    { q: "Кто противопоставлен Наполеону в романе?", options: ["Кутузов", "Александр I", "Андрей Болконский", "Пьер Безухов"], correct: "Кутузов" },
+    { q: "Достоинство Кутузова по мнению князя Андрея:", options: ["Не мешать естественному ходу событий", "Гениальный план", "Личная отвага", "Дипломатия"], correct: "Не мешать естественному ходу событий" },
+    { q: "Встреча князя Андрея с Наполеоном произошла при:", options: ["Аустерлице", "Бородино", "Шенграбене", "Красному"], correct: "Аустерлице" },
+    { q: "Эпоха действия «Войны и мира»:", options: ["Начало XIX века", "Времена Петра I", "Крымская война", "Правление Екатерины II"], correct: "Начало XIX века" },
+    { q: "Пьер Безухов стрелялся на дуэли с:", options: ["Долоховым", "Курагиным", "Болконским", "Ростовым"], correct: "Долоховым" },
+    { q: "Титул Андрея Болконского:", options: ["Князь", "Граф", "Барон", "Дворянин"], correct: "Князь" },
+    { q: "Действие романа «Война и мир» длится:", options: ["Около 15 лет", "1 год", "5 лет", "50 лет"], correct: "Около 15 лет" },
+    { q: "«Массивный молодой человек в очках и коричневом фраке»:", options: ["Пьер Безухов", "Долохов", "Друбецкой", "Ипполит"], correct: "Пьер Безухов" },
+    { q: "Эпизод с истинным «русским духом» Наташи:", options: ["Пляска у дядюшки", "Первый бал", "Уход за ранеными", "Встреча с Болконским"], correct: "Пляска у дядюшки" },
+    { q: "Чьи слова: «Надо жить, надо любить, надо верить»?", options: ["Пьер Безухов", "Андрей Болконский", "Платон Каратаев", "Наташа Ростова"], correct: "Пьер Безухов" },
+    { q: "Сколько лет создавалась «Война и мир»?", options: ["6 лет", "2 года", "10 лет", "20 лет"], correct: "6 лет" },
+    { q: "Приём в названии «Война и мир»:", options: ["Антитеза", "Метафора", "Гипербола", "Олицетворение"], correct: "Антитеза" },
+    { q: "Что всех поражало в Наташе Ростовой?", options: ["Жизненность и эмоциональность", "Холодная красота", "Строгий ум", "Гордость"], correct: "Жизненность и эмоциональность" },
+    { q: "Кто в «Вишневом саде» живет настоящим?", options: ["Лопахин", "Раневская", "Гаев", "Трофимов"], correct: "Лопахин" },
+    { q: "Вишневый сад символизирует:", options: ["Уходящую дворянскую Россию", "Прибыль купца", "Красоту весны", "Детство Ани"], correct: "Уходящую дворянскую Россию" },
+    { q: "Место действия пьесы «Вишневый сад»:", options: ["Имение Раневской", "Москва", "Квартира Лопахина", "Дача Пищика"], correct: "Имение Раневской" },
+    { q: "Кого искали мужики у Некрасова?", options: ["Кому живется весело, вольготно", "Царя", "Старосту Глеба", "Святого человека"], correct: "Кому живется весело, вольготно" },
+    { q: "Счастливый человек по мнению Некрасова:", options: ["Гриша Добросклонов", "Яким Нагой", "Ермил Гирин", "Поп"], correct: "Гриша Добросклонов" },
+    { q: "«Семья была большущая... попала я в ад»:", options: ["Матрена Корчагина", "Катерина Кабанова", "Старуха Изергиль", "Аксинья"], correct: "Матрена Корчагина" },
+    { q: "Безрассудство Олеси ради любви:", options: ["Пошла в церковь", "Сбежала из дома", "Убила человека", "Вышла замуж"], correct: "Пошла в церковь" },
+    { q: "Память об Олесе (Куприн):", options: ["Нитка красных бус", "Засушенный цветок", "Золотое кольцо", "Письмо"], correct: "Нитка красных бус" },
+    { q: "Проблема «Господина из Сан-Франциско»:", options: ["Бессмысленность богатства перед смертью", "Конфликт в семье", "Бедность эмигрантов", "Трагедия на море"], correct: "Бессмысленность богатства перед смертью" },
+    { q: "Действие «Олеси» происходит в:", options: ["Полесье", "Сибири", "Крыму", "Подмосковье"], correct: "Полесье" },
+    { q: "Судьба гранатового браслета (Желтков):", options: ["Повешен на икону", "Продан ювелиру", "Возвращен мужу", "Выброшен"], correct: "Повешен на икону" },
+    { q: "Белый цвет в поэме «12»:", options: ["Чистота/Святость (Христос)", "Холод смерти", "Белая гвардия", "Цвет снега"], correct: "Чистота/Святость (Христос)" },
+    { q: "Кто возглавляет красноармейцев в «12»?", options: ["Исус Христос", "Матрос Петруха", "Лев Троцкий", "Неизвестный"], correct: "Исус Христос" },
+    { q: "За что убита Катька в «12»?", options: ["Предательство (ушла к Ваньке)", "Кража хлеба", "Шпионаж", "Случайная пуля врага"], correct: "Предательство (ушла к Ваньке)" },
+    { q: "«Опять фонарь, аптека...» — посвящено:", options: ["Александру Блоку", "Сергею Есенину", "Николаю Гумилеву", "Владимиру Маяковскому"], correct: "Александру Блоку" },
+    { q: "Литературная эпоха начала ХХ века:", options: ["Серебряный век", "Золотой век", "Бронзовый век", "Реализм"], correct: "Серебряный век" },
+    { q: "«Я поэт золотой бревенчатой избы»:", options: ["Есенин", "Блок", "Маяковский", "Твардовский"], correct: "Есенин" },
+    { q: "«Человек - это звучит гордо!»:", options: ["Сатин", "Лука", "Актер", "Клещ"], correct: "Сатин" },
+    { q: "«В карете прошлого далеко не уедешь»:", options: ["Сатин", "Костылев", "Настя", "Бубнов"], correct: "Сатин" },
+    { q: "Направление М. Горького:", options: ["Соцреализм", "Романтизм", "Футуризм", "Акмеизм"], correct: "Соцреализм" },
+    { q: "Описание: «Маленький, рыжая борода, в ичигах»:", options: ["Левинсон", "Морозко", "Мечик", "Бакланов"], correct: "Левинсон" },
+    { q: "Смерть как символ безнадеги в «Котловане»:", options: ["Девочка Настя", "Вощев", "Жачев", "Чиклин"], correct: "Девочка Настя" },
+    { q: "Награда Мастера и Маргариты:", options: ["Покой", "Свет", "Слава", "Богатство"], correct: "Покой" },
+    { q: "Свойство рукописей (Булгаков):", options: ["Не горят", "Исчезают", "Говорят правду", "Вечны"], correct: "Не горят" },
+    { q: "Роль Воланда в романе:", options: ["Справедливый судья", "Чистое зло", "Искуситель", "Шут"], correct: "Справедливый судья" },
+    { q: "Семья «Турки» (Тихий Дон):", options: ["Мелеховы", "Коршуновы", "Астаховы", "Листницкие"], correct: "Мелеховы" },
+    { q: "Судьба Аксиньи в финале романа:", options: ["Погибает от пули", "Уезжает с Григорием", "Остается одна", "Выходит за Степана"], correct: "Погибает от пули" },
+    { q: "Когда был убит сын Андрея Соколова?", options: ["9 мая 1945 года", "В 1941 году", "В 1942 под Сталинградом", "В 1944"], correct: "9 мая 1945 года" },
+    { q: "Почему Соколов не притронулся к хлебу?", options: ["Гордость и достоинство", "Боялся яда", "Был сыт", "Хотел отдать своим"], correct: "Гордость и достоинство" },
+    { q: "Когда Соколов пытался совершить первый побег?", options: ["В мае", "Декабре", "Июле", "Сентябре"], correct: "В мае" },
+    { q: "Комендант, говорящий на «о» (Мюллер):", options: ["Мюллер", "Ванников", "Штейнер", "Полицай"], correct: "Мюллер" },
+    { q: "Где Соколов встретил Ваньку?", options: ["Около чайной", "В лагере", "На фронте", "В Москве"], correct: "Около чайной" },
+    { q: "Как Андрей лишился книжки шофера?", options: ["Сбил корову (авария)", "Продал", "Потерял", "Отобрали фашисты"], correct: "Сбил корову (авария)" },
+    { q: "Соколов с хлебом от фашистов поступил так:", options: ["Поделил на всех поровну", "Съел сам", "Спрятал на побег", "Выбросил"], correct: "Поделил на всех поровну" },
+    { q: "Актер, режиссер и сценарист в литературе:", options: ["Шукшин", "Астафьев", "Распутин", "Солженицын"], correct: "Шукшин" },
+    { q: "Автор в «Царь-рыбе»:", options: ["Рассказчик и философ", "Наблюдатель", "Геолог", "Рыбак"], correct: "Рассказчик и философ" },
+    { q: "Жанр «Царь-рыбы»:", options: ["Повествование в рассказах", "Роман", "Драма", "Сказ"], correct: "Повествование в рассказах" },
+    { q: "Автор «Привычного дела»:", options: ["Василий Белов", "Валентин Распутин", "Виктор Астафьев", "Михаил Шолохов"], correct: "Василий Белов" },
+    { q: "Причина отъезда Ганина в «Машеньке»:", options: ["Прошлое не вернуть", "Узнал об измене", "Испугался Алферова", "Забыл любовь"], correct: "Прошлое не вернуть" },
+    { q: "Рассказ «Матренин двор» — это:", options: ["Солженицын о праведнице", "Рассказ о колхозе", "Очерк о деревне", "Повесть о войне"], correct: "Солженицын о праведнице" }
+];
+
+let sessionQ = [];
+let current = 0;
+let score = 0;
+let timeLeft = 1200; 
+let timerInt;
+let selectedText = null;
+
+function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
+
+function toggleTheme() {
+    const b = document.body;
+    b.dataset.theme = b.dataset.theme === "dark" ? "" : "dark";
+}
+
+function startQuiz() {
+    const name = document.getElementById('user-name').value;
+    if(!name) { alert("Введи имя!"); return; }
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    sessionQ = shuffle([...database]).slice(0, 20);
+    startTimer();
+    render();
+}
+
+function startTimer() {
+    timerInt = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        document.getElementById('timer').innerText = `Осталось: ${m}:${s < 10 ? '0' + s : s}`;
+        if(timeLeft <= 0) { clearInterval(timerInt); finish(); }
+    }, 1000);
+}
+
+function render() {
+    const q = sessionQ[current];
+    const opts = shuffle([...q.options]);
+    selectedText = null;
+    document.getElementById('progress').style.width = (current / 20) * 100 + '%';
+    document.getElementById('main-btn').innerText = "ОТВЕТИТЬ";
+    const cont = document.getElementById('quiz-content');
+    cont.innerHTML = `
+        <div class="q-text">${current + 1}. ${q.q}</div>
+        <div class="options">
+            ${opts.map(o => `<button class="opt-btn" onclick="select(this)">${o}</button>`).join('')}
+        </div>
+    `;
+}
+
+function select(btn) {
+    if(document.querySelector('.correct-anim')) return;
+    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedText = btn.innerText;
+}
+
+function handleNext() {
+    if(!selectedText && document.getElementById('main-btn').innerText === "ОТВЕТИТЬ") return;
+    const q = sessionQ[current];
+    const btn = document.getElementById('main-btn');
+    if(btn.innerText === "ДАЛЕЕ") {
+        current++;
+        if(current < 20) render(); else finish();
+        return;
+    }
+    const btns = document.querySelectorAll('.opt-btn');
+    let isCorrect = selectedText === q.correct;
+    if(isCorrect) score++;
+    btns.forEach(b => {
+        if(b.innerText === q.correct) b.classList.add('correct-anim');
+        if(b.classList.contains('selected') && !isCorrect) b.classList.add('error-anim');
+    });
+    btn.innerText = "ДАЛЕЕ";
+}
+
+function finish() {
+    clearInterval(timerInt);
+    const name = document.getElementById('user-name').value;
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('greeting').innerText = `${name}, твой результат:`;
+    document.getElementById('final-score').innerText = `${score}/20`;
+    let p = (score / 20) * 100;
+    let g = p >= 85 ? 5 : (p >= 75 ? 4 : (p >= 50 ? 3 : 2));
+    document.getElementById('final-grade').innerText = g;
+}
+</script>
+</body>
+</html>
