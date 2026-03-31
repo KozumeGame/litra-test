@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Биология | Зачетный тренажер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #2c7a4d;
+            --primary-dark: #1e5a3a;
+            --primary-light: #e6f4ea;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --progress-bg: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --card-radius: 24px;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --primary-light: #1f3b2c;
+            --progress-bg: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 16px 12px 40px;
+            transition: background 0.2s, color 0.2s;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px 18px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .theme-toggle, .sound-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        
+        .theme-toggle:hover, .sound-toggle:hover {
+            background: var(--primary-light);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-screen h1 {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary), #4caf7a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        
+        .name-input-group {
+            margin: 24px 0 20px;
+            text-align: left;
+        }
+        
+        .name-input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 122, 77, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            margin-top: 12px;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-area {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .progress-bar-bg {
+            background: var(--progress-bg);
+            border-radius: 40px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: var(--primary);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 40px;
+        }
+        
+        .timer-box {
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        
+        .timer-box.warning {
+            background: #fee2e2;
+            color: #b91c1c;
+            animation: pulse 1s infinite;
+        }
+        
+        body.dark .timer-box.warning {
+            background: #7f1a1a;
+            color: #ffcdcd;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.8; transform: scale(1.02);}
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 16px 0 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .option {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .option:active {
+            transform: scale(0.98);
+        }
+        
+        .option.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(44, 122, 77, 0.2);
+        }
+        
+        .option-letter {
+            font-weight: 800;
+            background: var(--progress-bg);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            flex-shrink: 0;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+        
+        .next-btn {
+            margin-top: 8px;
+        }
+        
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .result-stats {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .grade {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+        
+        .mistake-item {
+            background: var(--surface);
+            border-left: 5px solid var(--wrong);
+            padding: 14px;
+            margin-bottom: 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+        
+        .mistake-question {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .mistake-detail {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 550px) {
+            body {
+                padding: 12px 10px 30px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+            .option {
+                padding: 12px 14px;
+            }
+            .option-text {
+                font-size: 13px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="header-bar">
+        <div style="font-weight: 600; font-size: 14px;">🧬 БИОЛОГИЯ | ЗАЧЕТ</div>
+        <div style="display: flex; gap: 8px;">
+            <button class="sound-toggle" id="soundToggleBtn">🔊 Звук вкл</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 Тёмная</button>
+        </div>
+    </div>
+
+    <!-- СТАРТОВЫЙ ЭКРАН -->
+    <div id="startScreen" class="card start-screen">
+        <h1>🧬 Тренажёр зачёта</h1>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 99 вопросов в базе</p>
+        <div class="name-input-group">
+            <label>👤 Ваше имя</label>
+            <input type="text" id="userNameInput" placeholder="Например: Анастасия" autocomplete="off">
+        </div>
+        <button id="startQuizBtn">▶️ Начать тест</button>
+        <button class="btn-outline" id="resetLocalStorageBtn" style="margin-top: 10px;">🔄 Сбросить имя</button>
+        <footer>Можно менять ответ до нажатия «Далее» • Работа над ошибками</footer>
+    </div>
+
+    <!-- ЭКРАН ТЕСТА -->
+    <div id="quizScreen" class="hidden">
+        <div class="card">
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <div class="flex-between">
+                        <span id="questionCounter">Вопрос 1 / 20</span>
+                        <span id="answeredCount">✅ 0 отвечено</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+                </div>
+                <div class="timer-box" id="timerDisplay">20:00</div>
+            </div>
+            <div id="quizInner">
+                <div class="question-text" id="questionText">Загрузка...</div>
+                <div class="options-list" id="optionsContainer"></div>
+                <button id="nextQuestionBtn" class="next-btn">Далее →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultScreen" class="hidden">
+        <div class="card">
+            <div class="result-stats">
+                <h2 style="font-size: 1.5rem;">📋 Результат</h2>
+                <div id="greetingName" style="font-size: 1.1rem; margin: 8px 0;"></div>
+                <div style="font-size: 2rem; font-weight: 700; margin: 8px 0;"><span id="scorePoints">0</span> / <span id="totalPoints">100</span></div>
+                <div id="gradeDisplay" class="grade"></div>
+                <button id="showMistakesBtn" class="btn-outline" style="width: auto; padding: 10px 20px; margin-top: 8px;">📖 Показать ошибки</button>
+            </div>
+            <div id="mistakesList" class="hidden" style="margin-top: 20px;"></div>
+            <div class="action-buttons">
+                <button id="shareResultBtn">📤 Поделиться</button>
+                <button id="restartQuizBtn">🔄 Пройти заново</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== БАЗА ДАННЫХ: 99 вопросов по биологии ====================
+    const FULL_QUESTIONS = [
+        { text: "Клеточное строение организмов свидетельствует о:", correct: "единстве органического мира", options: ["принципиальном отличии растений от животных", "единстве органического мира", "сходстве живой и неживой материи"] },
+        { text: "К макроэлементам относятся:", correct: "кислород, азот, углерод", options: ["железо, медь, хлор", "цинк, никель, фосфор", "кислород, азот, углерод"] },
+        { text: "Функция воды в живых клетках:", correct: "растворитель и транспортная", options: ["растворитель", "транспортная", "растворитель и транспортная"] },
+        { text: "Каковы функции белков в клетках?", correct: "каталитическая и регуляторная", options: ["каталитическая", "регуляторная", "каталитическая и регуляторная"] },
+        { text: "Двумембранное строение имеют:", correct: "ядро, митохондрии, пластиды", options: ["ядро, митохондрии, пластиды", "комплекс Гольджи, ЭПС", "митохондрии, лизосомы, рибосомы"] },
+        { text: "В темновой фазе фотосинтеза идет образование:", correct: "органического вещества", options: ["ферментов", "АТФ", "органического вещества"] },
+        { text: "Самыми длинными молекулами в клетке являются молекулы:", correct: "целлюлозы", options: ["целлюлозы", "белка", "крахмала"] },
+        { text: "Транскрипцией называется:", correct: "синтез РНК с использованием ДНК в качестве матрицы", options: ["синтез РНК с использованием ДНК в качестве матрицы", "синтез полипептида", "удвоение ДНК"] },
+        { text: "Чистой линией называется:", correct: "потомство, не дающее разнообразия по изучаемому признаку", options: ["особи одного вида", "потомство, не дающее разнообразия по изучаемому признаку", "потомство, полученное от двух линий"] },
+        { text: "Какой органоид не имеет мембранного строения?", correct: "рибосома", options: ["лизосома", "рибосома", "митохондрии"] },
+        { text: "К одномембранным органоидам относится:", correct: "ЭПС", options: ["митохондрии", "ЭПС", "рибосомы"] },
+        { text: "Каковы функции белков в клетке?", correct: "защитная и регуляторная", options: ["защитная", "регуляторная", "защитная и регуляторная"] },
+        { text: "Что входит в состав белков?", correct: "аминокислоты", options: ["вода, эфир", "бензин", "аминокислоты"] },
+        { text: "Свободный кислород при фотосинтезе выделяется при расщеплении:", correct: "воды", options: ["углекислого газа", "глюкозы", "воды"] },
+        { text: "Если одна цепь ДНК имеет последовательность ААГТТЦЦТТА, вторая цепь будет:", correct: "ТТЦААГГААТ", options: ["ТТЦААГГААТ", "ГТТААЦЦТАЦ", "ТТААЦЦТТТЦ"] },
+        { text: "Однослойный зародыш, образующийся после завершения дробления яйцеклетки, называется:", correct: "бластула", options: ["бластула", "гаструла", "нейрула"] },
+        { text: "При моногибридном скрещивании у Менделя по фенотипу соотношение доминантных и рецессивных признаков:", correct: "3:1", options: ["1:1", "3:1", "1:2"] },
+        { text: "Молекулы белков образуются из:", correct: "аминокислот", options: ["глицерина и карбоновых кислот", "этилового спирта и глюкозы", "аминокислот"] },
+        { text: "Функция воды в живых клетках:", correct: "терморегуляторная и транспортная", options: ["терморегуляторная", "транспортная", "терморегуляторная и транспортная"] },
+        { text: "Какое вещество не содержит аминокислот?", correct: "сахароза", options: ["сахароза", "гемоглобин", "инсулин"] },
+        { text: "Доказательствами единства живой природы являются:", correct: "все организмы состоят из клеток, новые клетки образуются путем деления", options: ["все организмы состоят из клеток", "новые клетки образуются путем деления", "все организмы состоят из клеток, новые клетки образуются путем деления"] },
+        { text: "Для рибосом не характерно:", correct: "мембранное строение", options: ["расположение внутри митохондрии", "мембранное строение", "расположение на мембранах ЭПС"] },
+        { text: "Для фиксации углерода необходимы:", correct: "АТФ", options: ["кислород", "АТФ", "вода"] },
+        { text: "Гемоглобин орла отличается от гемоглобина зайца:", correct: "последовательностью мономеров", options: ["видом мономеров", "последовательностью мономеров", "функциями"] },
+        { text: "Гаструляция - это:", correct: "образование двухслойного зародыша", options: ["образование первичной полости зародыша", "образование двухслойного зародыша", "завершение дробления"] },
+        { text: "Количество фенотипов при скрещивании Аа х Аа в случае полного доминирования:", correct: "2", options: ["1", "2", "3"] },
+        { text: "Центр происхождения пшеницы:", correct: "Переднеазиатский", options: ["Африканский", "Переднеазиатский", "Средиземноморский"] },
+        { text: "Учение об исходном материале в селекции разработал:", correct: "Н.И. Вавилов", options: ["Ч. Дарвин", "Н.И. Вавилов", "В.И. Вернадский"] },
+        { text: "В митозе конъюгация хромосом происходит:", correct: "не происходит", options: ["метафазе", "телофазе", "не происходит"] },
+        { text: "Центр происхождения кукурузы:", correct: "Среднеамериканский", options: ["Африканский", "Среднеамериканский", "Средиземноморский"] },
+        { text: "Генеалогический метод основан на:", correct: "изучении родословной", options: ["изучении количества хромосом", "изучении родословной", "изучении обмена веществ"] },
+        { text: "Однородную группу животных, созданную человеком, называют:", correct: "породой", options: ["видом", "родом", "породой"] },
+        { text: "Цвет шерсти зайчонка, рожденного летом:", correct: "серый", options: ["серый", "белый", "красный"] },
+        { text: "Центр происхождения риса:", correct: "Китайско-Японский", options: ["Африканский", "Китайско-Японский", "Средиземноморский"] },
+        { text: "Загар - это пример:", correct: "модификации", options: ["мутации", "комбинации", "модификации"] },
+        { text: "Родиной картофеля является:", correct: "Южноамериканский", options: ["Южноамериканский", "Средиземноморский", "Переднеазиатский"] },
+        { text: "Какие органоиды клетки имеют собственную ДНК?", correct: "митохондрии", options: ["вакуоли", "митохондрии", "лизосомы"] },
+        { text: "Мембраны клеток состоят:", correct: "из липидов, белков и углеводов", options: ["из липидов, белков и углеводов", "из липидов, белков и нуклеиновых кислот", "из целлюлозы и пектиновых веществ"] },
+        { text: "Двумембранное строение имеют:", correct: "митохондрии и пластиды", options: ["митохондрии и пластиды", "рибосомы и лизосомы", "ЭПС и клеточный центр"] },
+        { text: "Конечными продуктами световой фазы фотосинтеза являются:", correct: "АТФ и кислород", options: ["АТФ и кислород", "углевод и кислород", "АТФ, углевод, кислород"] },
+        { text: "Правило комплементарности соблюдается в молекуле:", correct: "ДНК", options: ["белка", "и-РНК", "ДНК"] },
+        { text: "Количество генотипов при скрещивании Аа х Аа составляет:", correct: "3", options: ["1", "2", "3"] },
+        { text: "Какие органоиды состоят только из белка и РНК?", correct: "рибосомы", options: ["хлоропласты", "митохондрии", "рибосомы"] },
+        { text: "Растительная клетка отличается от животной:", correct: "наличием клеточной стенки, пластид и вакуолей", options: ["наличием митохондрий и рибосом", "наличием пластид и ядра", "наличием клеточной стенки, пластид и вакуолей"] },
+        { text: "Молекулы белков образуются из:", correct: "аминокислот", options: ["глицерина и карбоновых кислот", "аминокислот", "глюкозы"] },
+        { text: "Органы и ткани развиваются из двух зародышевых листков у:", correct: "губок, кишечнополостных", options: ["губок, кишечнополостных", "моллюсков, круглых червей", "насекомых и земноводных"] },
+        { text: "Многократные деления зиготы приводят к образованию:", correct: "бластулы", options: ["бластулы", "нейрулы", "яйцеклеток"] },
+        { text: "Сходство клеток растений и животных в наличии:", correct: "плазмолеммы, цитоплазмы и ядра", options: ["плазмолеммы, цитоплазмы и ядра", "вакуолей с клеточным соком", "клеточной стенки"] },
+        { text: "Белок состоит из:", correct: "аминокислот", options: ["мочевины", "аминокислот", "лактозы"] },
+        { text: "В митохондриях находятся:", correct: "молекулы ДНК и рибосомы", options: ["молекулы ДНК", "лизосомы", "молекулы ДНК и рибосомы"] },
+        { text: "Клеточное строение организмов свидетельствует о:", correct: "единстве органического мира", options: ["сходстве живой и неживой материи", "единстве органического мира", "принципиальном отличии растений и животных"] },
+        { text: "В клетке меньше всего:", correct: "азот", options: ["углерод", "кислород", "азот"] },
+        { text: "Хлорофилл представляет собой:", correct: "сложный эфир", options: ["белок", "углевод", "сложный эфир"] },
+        { text: "ДНК пчелы отличается от ДНК другой пчелы:", correct: "последовательностью нуклеотидов", options: ["составом нуклеотидов", "функциями", "последовательностью нуклеотидов"] },
+        { text: "Органы и ткани развиваются из трех зародышевых листков у:", correct: "моллюсков, хордовых", options: ["моллюсков, губок", "моллюсков, хордовых", "кишечнополостных, моллюсков"] },
+        { text: "Гены, контролирующие развитие противоположных признаков, называются:", correct: "аллельными", options: ["аллельными", "гетерозиготными", "гомозиготными"] },
+        { text: "Впервые увидел клетку:", correct: "Роберт Гук", options: ["Роберт Гук", "Роберт Броун", "Теодор Шванн"] },
+        { text: "Обмен каких веществ регулирует инсулин?", correct: "углеводов", options: ["жиров", "белков", "углеводов"] },
+        { text: "Впервые создал клеточную теорию:", correct: "Матиас Шлейден", options: ["Матиас Шлейден", "Рудольф Вихров", "Карл Бэр"] },
+        { text: "Связи, удерживающие спираль вторичной структуры белка:", correct: "водородными", options: ["пептидными", "водородными", "дисульфидными"] },
+        { text: "Ядрышко - это место образования:", correct: "рибосом", options: ["лизосом", "рибосом", "ДНК"] },
+        { text: "В процессе фотосинтеза не участвует:", correct: "антоциан", options: ["антоциан", "хлорофилл", "каротин"] },
+        { text: "Материальным носителем наследственной информации является:", correct: "ДНК", options: ["и-РНК", "ДНК", "хромосомы"] },
+        { text: "Моногибридным называется скрещивание, в котором родители отличаются:", correct: "одной парой аллельных признаков", options: ["одной парой аллельных признаков", "двумя парами признаков", "двумя и более парами признаков"] },
+        { text: "Предмет «Общая биология» изучает:", correct: "закономерности развития и функционирования живых систем", options: ["строение и функции организма", "природные явления", "закономерности развития и функционирования живых систем"] },
+        { text: "Впервые описал клетку:", correct: "Р. Гук", options: ["Р. Вихров", "Аристотель", "Р. Гук"] },
+        { text: "При сахарном диабете клетки перестают получать:", correct: "углеводы", options: ["углеводы", "белки", "жиры"] },
+        { text: "К двухмембранным органоидам относится:", correct: "пластиды", options: ["вакуоли", "пластиды", "лизосомы"] },
+        { text: "В отличие от растительной клетки, животные имеют:", correct: "вакуоли (пищеварительные)", options: ["митохондрии", "хлоропласты", "вакуоли"] },
+        { text: "Растениям для фотосинтеза эффективны:", correct: "волны красной области спектра", options: ["весь спектр солнечного света", "волны красной области спектра", "волны зеленой области спектра"] },
+        { text: "Фенотип - это совокупность признаков:", correct: "организма", options: ["всех особей", "организма", "генофонда"] },
+        { text: "Организм, имеющий одинаковые аллели гена, называется:", correct: "гомозиготным", options: ["моногибридным", "гетерозиготным", "гомозиготным"] },
+        { text: "Положение клеточной теории:", correct: "новые клетки образуются при делении исходных", options: ["при делении клетки хромосомы способны к самоудвоению", "новые клетки образуются при делении исходных", "клетки способны к росту и обмену веществ"] },
+        { text: "Ферментативную роль в клетке выполняют:", correct: "белки", options: ["белки", "липиды", "углеводы"] },
+        { text: "Главным компонентом ядра является:", correct: "хромосомы", options: ["хромосомы", "митохондрии", "хлоропласты"] },
+        { text: "Фосфор входит в состав:", correct: "нуклеиновых кислот", options: ["жиров", "моносахаридов", "нуклеиновых кислот"] },
+        { text: "Синтез жиров в клетке осуществляется:", correct: "гладким ЭПС", options: ["гладким ЭПС", "лизосомами", "хлоропластами"] },
+        { text: "Фотосинтез происходит в:", correct: "хлоропластах", options: ["хлоропластах", "вакуолях", "митохондриях"] },
+        { text: "Развитие признака определяется:", correct: "действием нескольких генов", options: ["всегда одним геном", "действием нескольких генов", "всей ДНК организма"] },
+        { text: "Генотип - это совокупность генов:", correct: "организма", options: ["популяций", "генофонда", "организма"] },
+        { text: "Проявление у гетерозиготы одного из признаков называется:", correct: "доминированием", options: ["гомологией", "доминированием", "дрейфом генов"] },
+        { text: "Элементарная единица строения и жизнедеятельности:", correct: "клетка", options: ["орган", "ткань", "клетка"] },
+        { text: "Скорость образования органических соединений регулируют:", correct: "ферменты", options: ["витамины", "ферменты", "антитела"] },
+        { text: "Функция хромосом:", correct: "носитель наследственной информации", options: ["отвечает за синтез липидов", "осуществляет синтез белка", "носитель наследственной информации"] },
+        { text: "В синтезе белка участвуют:", correct: "рибосомы", options: ["лизосомы", "рибосомы", "комплекс Гольджи"] },
+        { text: "Фотосинтез - это:", correct: "образование органических веществ из углекислого газа и воды на свету", options: ["образование органических веществ из углекислого газа и воды на свету", "расходование органических веществ с освобождением энергии", "расщепление органических веществ"] },
+        { text: "Фотолиз воды - это:", correct: "диссоциация воды", options: ["накопление воды в листе", "диссоциация воды", "выделение водяных паров"] },
+        { text: "Третий зародышевый слой называется:", correct: "мезодерма", options: ["энтодерма", "эктодерма", "мезодерма"] },
+        { text: "Участок хромосомы, где расположен ген, называется:", correct: "локус", options: ["аллель", "локус", "кодон"] },
+        { text: "Век динозавров:", correct: "мезозой", options: ["мезозой", "кайнозой", "палеозой"] },
+        { text: "Совокупность особей, искусственно созданную человеком, называют:", correct: "сортом, породой", options: ["видом", "сортом, породой", "типом"] },
+        { text: "В кайнозое господствуют:", correct: "покрытосемянные", options: ["водоросли", "грибы", "покрытосемянные"] },
+        { text: "В кайнозойской эре господствуют:", correct: "млекопитающие", options: ["пресмыкающиеся", "млекопитающие", "земноводные"] },
+        { text: "В результате мейоза образуются:", correct: "4 клетки", options: ["2 клетки", "4 клетки", "1 клетка"] },
+        { text: "В результате митоза образуются:", correct: "2 клетки", options: ["2 клетки", "4 клетки", "1 клетка"] },
+        { text: "Первое определение понятию «вид» дал:", correct: "К. Линней", options: ["Д. Рей", "К. Линней", "Ж.Б. Ламарк"] },
+        { text: "Автотрофы - это:", correct: "зеленые растения", options: ["зеленые растения", "животные, питающиеся падалью", "грибы"] },
+        { text: "Процесс индивидуального развития особи от зиготы до конца жизни:", correct: "онтогенез", options: ["филогенез", "онтогенез", "эмбриогенез"] },
+        { text: "Гетеротрофы - это:", correct: "животные, использующие энергию пищи, и грибы", options: ["растения", "животные, использующие энергию пищи", "животные, использующие энергию пищи, и грибы"] }
+    ];
+
+    // Глобальные переменные
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let quizActive = false;
+    let timerInterval = null;
+    let timeSeconds = 20 * 60;
+    let soundEnabled = true;
+    let userName = "";
+
+    // DOM элементы
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const userNameInput = document.getElementById('userNameInput');
+    const startBtn = document.getElementById('startQuizBtn');
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const resetLocalBtn = document.getElementById('resetLocalStorageBtn');
+    const restartQuizBtn = document.getElementById('restartQuizBtn');
+    const shareResultBtn = document.getElementById('shareResultBtn');
+    const showMistakesBtn = document.getElementById('showMistakesBtn');
+
+    function playClick() {
+        if (soundEnabled) {
+            try {
+                const audio = new Audio();
+                audio.volume = 0.15;
+                audio.src = 'data:audio/wav;base64,U3RlYWQ=';
+                audio.play().catch(() => {});
+            } catch(e) {}
+        }
+    }
+
+    function playAlert() {
+        if (soundEnabled) {
+            try {
+                const audio = new Audio();
+                audio.volume = 0.25;
+                audio.src = 'data:audio/wav;base64,U3RlYWQ=';
+                audio.play().catch(() => {});
+            } catch(e) {}
+        }
+    }
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function selectRandomQuestions() {
+        const shuffledFull = shuffleArray([...FULL_QUESTIONS]);
+        const selected = shuffledFull.slice(0, 20);
+        return selected.map(q => {
+            let opts = [q.correct, ...q.options.filter(opt => opt !== q.correct)];
+            opts = shuffleArray([...new Set(opts)]);
+            return {
+                text: q.text,
+                correct: q.correct,
+                allOptions: opts,
+                userAnswer: null
+            };
+        });
+    }
+
+    function renderCurrentQuestion() {
+        const q = currentQuestions[currentIndex];
+        if (!q) return;
+        document.getElementById('questionText').innerHTML = q.text;
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+        
+        q.allOptions.forEach((opt, idx) => {
+            const letter = String.fromCharCode(65 + idx);
+            const div = document.createElement('div');
+            div.className = `option ${q.userAnswer === opt ? 'selected' : ''}`;
+            div.innerHTML = `
+                <div class="option-letter">${letter}</div>
+                <div class="option-text">${opt}</div>
+            `;
+            div.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!quizActive) return;
+                q.userAnswer = opt;
+                renderCurrentQuestion();
+                updateAnsweredCounter();
+                checkIfAllAnswered();
+                playClick();
+            });
+            container.appendChild(div);
+        });
+        document.getElementById('questionCounter').innerHTML = `Вопрос ${currentIndex + 1} / 20`;
+    }
+
+    function updateAnsweredCounter() {
+        const answered = currentQuestions.filter(q => q.userAnswer !== null).length;
+        document.getElementById('answeredCount').innerHTML = `✅ ${answered} отвечено`;
+        const percent = (answered / 20) * 100;
+        document.getElementById('progressFill').style.width = `${percent}%`;
+    }
+
+    function checkIfAllAnswered() {
+        const allAnswered = currentQuestions.every(q => q.userAnswer !== null);
+        if (allAnswered && quizActive) {
+            finishQuiz();
+        }
+    }
+
+    function nextQuestion() {
+        if (!quizActive) return;
+        const currentQ = currentQuestions[currentIndex];
+        if (currentQ.userAnswer === null) {
+            alert("Пожалуйста, выберите вариант ответа");
+            return;
+        }
+        if (currentIndex + 1 < 20) {
+            currentIndex++;
+            renderCurrentQuestion();
+        } else {
+            if (currentQuestions.every(q => q.userAnswer !== null)) finishQuiz();
+        }
+    }
+
+    function finishQuiz() {
+        if (timerInterval) clearInterval(timerInterval);
+        quizActive = false;
+        let correctCount = 0;
+        currentQuestions.forEach(q => {
+            if (q.userAnswer === q.correct) correctCount++;
+        });
+        const points = correctCount * 5;
+        let grade = "";
+        if (points >= 85) grade = "5 (отлично)";
+        else if (points >= 75) grade = "4 (хорошо)";
+        else if (points >= 50) grade = "3 (удовлетворительно)";
+        else grade = "2 (неудовлетворительно)";
+
+        document.getElementById('scorePoints').innerText = points;
+        document.getElementById('totalPoints').innerText = "100";
+        document.getElementById('gradeDisplay').innerHTML = `<span style="background:${points >= 50 ? '#10b98120' : '#ef444420'}; padding:8px 24px; border-radius:40px; display:inline-block;">${grade}</span>`;
+        document.getElementById('greetingName').innerHTML = `${userName ? userName + ', ' : ''}ваш результат:`;
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+        document.getElementById('mistakesList').classList.add('hidden');
+        window.mistakesData = currentQuestions.filter(q => q.userAnswer !== q.correct);
+    }
+
+    function showMistakes() {
+        const mistakes = window.mistakesData || [];
+        const container = document.getElementById('mistakesList');
+        if (mistakes.length === 0) {
+            container.innerHTML = '<div style="padding: 16px; text-align:center;">✨ Нет ошибок! Отличные знания ✨</div>';
+            container.classList.remove('hidden');
+            return;
+        }
+        let html = '<h3 style="margin-bottom: 16px; font-size: 1.2rem;">📌 Работа над ошибками</h3>';
+        mistakes.forEach((m, idx) => {
+            html += `<div class="mistake-item">
+                        <div class="mistake-question">${idx + 1}. ${m.text}</div>
+                        <div class="mistake-detail">❌ Ваш ответ: ${m.userAnswer}</div>
+                        <div class="mistake-detail" style="color: var(--correct);">✅ Правильный: ${m.correct}</div>
+                      </div>`;
+        });
+        container.innerHTML = html;
+        container.classList.remove('hidden');
+    }
+
+    function shareResult() {
+        const points = parseInt(document.getElementById('scorePoints').innerText);
+        const gradeText = document.getElementById('gradeDisplay').innerText;
+        const text = `${userName ? userName : 'Я'} прошла зачёт по биологии на ${points} баллов — ${gradeText}! Попробуй и ты!`;
+        if (navigator.share) {
+            navigator.share({ title: 'Мой результат', text: text }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(text).then(() => alert('Результат скопирован!'));
+        }
+    }
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!quizActive) return;
+            if (timeSeconds <= 0) {
+                clearInterval(timerInterval);
+                quizActive = false;
+                playAlert();
+                alert("Время вышло! Тест завершается.");
+                finishQuiz();
+            } else {
+                timeSeconds--;
+                const mins = Math.floor(timeSeconds / 60);
+                const secs = timeSeconds % 60;
+                const timerDiv = document.getElementById('timerDisplay');
+                timerDiv.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (timeSeconds <= 120) timerDiv.classList.add('warning');
+                else timerDiv.classList.remove('warning');
+            }
+        }, 1000);
+    }
+
+    function initQuiz() {
+        currentQuestions = selectRandomQuestions();
+        currentIndex = 0;
+        timeSeconds = 20 * 60;
+        quizActive = true;
+        renderCurrentQuestion();
+        updateAnsweredCounter();
+        startTimer();
+        document.getElementById('timerDisplay').classList.remove('warning');
+        document.getElementById('timerDisplay').innerText = "20:00";
+        quizScreen.classList.remove('hidden');
+        startScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+    }
+
+    function initTheme() {
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+    }
+    
+    themeBtn.onclick = () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    };
+    
+    soundToggleBtn.onclick = () => {
+        soundEnabled = !soundEnabled;
+        soundToggleBtn.innerText = soundEnabled ? "🔊 Звук вкл" : "🔇 Звук выкл";
+    };
+    
+    startBtn.onclick = () => {
+        const name = userNameInput.value.trim();
+        if (name) {
+            userName = name;
+            localStorage.setItem('quizUserName', name);
+        } else {
+            userName = "Участник";
+        }
+        initQuiz();
+    };
+    
+    restartQuizBtn.onclick = () => {
+        if (timerInterval) clearInterval(timerInterval);
+        quizActive = false;
+        startScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        quizScreen.classList.add('hidden');
+    };
+    
+    shareResultBtn.onclick = shareResult;
+    showMistakesBtn.onclick = showMistakes;
+    document.getElementById('nextQuestionBtn').onclick = nextQuestion;
+    
+    resetLocalBtn.onclick = () => {
+        localStorage.removeItem('quizUserName');
+        userNameInput.value = '';
+        alert('Имя сброшено');
+    };
+    
+    const savedName = localStorage.getItem('quizUserName');
+    if (savedName) userNameInput.value = savedName;
+    initTheme();
+    soundToggleBtn.innerText = "🔊 Звук вкл";
+</script>
+</body>
+</html>
