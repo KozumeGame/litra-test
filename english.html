@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Английский язык | Зачетный тренажер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #eff6ff;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --progress-bg: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --card-radius: 24px;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --primary-light: #1e2a5e;
+            --progress-bg: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 16px 12px 40px;
+            transition: background 0.2s, color 0.2s;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Еле видная надпись в углу */
+        .hidden-message {
+            position: fixed;
+            bottom: 8px;
+            right: 12px;
+            font-size: 11px;
+            color: var(--text-light);
+            opacity: 0.25;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+            z-index: 999;
+            transition: opacity 0.2s;
+        }
+        body.dark .hidden-message {
+            opacity: 0.2;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px 18px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .theme-toggle, .sound-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        
+        .theme-toggle:hover, .sound-toggle:hover {
+            background: var(--primary-light);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-screen h1 {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary), #4f7df3);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        
+        .name-input-group {
+            margin: 24px 0 20px;
+            text-align: left;
+        }
+        
+        .name-input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            margin-top: 12px;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-area {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .progress-bar-bg {
+            background: var(--progress-bg);
+            border-radius: 40px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: var(--primary);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 40px;
+        }
+        
+        .timer-box {
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        
+        .timer-box.warning {
+            background: #fee2e2;
+            color: #b91c1c;
+            animation: pulse 1s infinite;
+        }
+        
+        body.dark .timer-box.warning {
+            background: #7f1a1a;
+            color: #ffcdcd;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.8; transform: scale(1.02);}
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 16px 0 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .option {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .option:active {
+            transform: scale(0.98);
+        }
+        
+        .option.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+        }
+        
+        .option-letter {
+            font-weight: 800;
+            background: var(--progress-bg);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            flex-shrink: 0;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+        
+        .next-btn {
+            margin-top: 8px;
+        }
+        
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .result-stats {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .grade {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+        
+        /* Круговой индикатор */
+        .circle-chart {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+        .donut {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            position: relative;
+            background: var(--progress-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .donut-inner {
+            width: 100px;
+            height: 100px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 28px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .donut-inner span {
+            font-size: 12px;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+        .stats-text {
+            margin-top: 12px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .stats-correct { color: var(--correct); font-weight: 700; }
+        .stats-wrong { color: var(--wrong); font-weight: 700; }
+        
+        .mistake-item {
+            background: var(--surface);
+            border-left: 5px solid var(--wrong);
+            padding: 14px;
+            margin-bottom: 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+        
+        .mistake-question {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .mistake-detail {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .motivation-message {
+            margin: 16px 0 8px;
+            padding: 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 550px) {
+            body {
+                padding: 12px 10px 30px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+            .option {
+                padding: 12px 14px;
+            }
+            .option-text {
+                font-size: 13px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+            .donut {
+                width: 120px;
+                height: 120px;
+            }
+            .donut-inner {
+                width: 85px;
+                height: 85px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="hidden-message">F. You've got this.</div>
+
+<div class="container" id="app">
+    <div class="header-bar">
+        <div style="font-weight: 600; font-size: 14px;">🇬🇧 АНГЛИЙСКИЙ ЯЗЫК | ЗАЧЕТ</div>
+        <div style="display: flex; gap: 8px;">
+            <button class="sound-toggle" id="soundToggleBtn">🔊 Звук вкл</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 Тёмная</button>
+        </div>
+    </div>
+
+    <!-- СТАРТОВЫЙ ЭКРАН -->
+    <div id="startScreen" class="card start-screen">
+        <h1>🇬🇧 Тренажёр зачёта</h1>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 71 вопрос в базе</p>
+        <div class="name-input-group">
+            <label>👤 Ваше имя</label>
+            <input type="text" id="userNameInput" placeholder="Например: Анастасия" autocomplete="off">
+        </div>
+        <button id="startQuizBtn">▶️ Начать тест</button>
+        <button class="btn-outline" id="resetLocalStorageBtn" style="margin-top: 10px;">🔄 Сбросить имя</button>
+        <footer>Можно менять ответ до нажатия «Далее» • Работа над ошибками</footer>
+    </div>
+
+    <!-- ЭКРАН ТЕСТА -->
+    <div id="quizScreen" class="hidden">
+        <div class="card">
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <div class="flex-between">
+                        <span id="questionCounter">Вопрос 1 / 20</span>
+                        <span id="answeredCount">✅ 0 отвечено</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+                </div>
+                <div class="timer-box" id="timerDisplay">20:00</div>
+            </div>
+            <div id="quizInner">
+                <div class="question-text" id="questionText">Загрузка...</div>
+                <div class="options-list" id="optionsContainer"></div>
+                <button id="nextQuestionBtn" class="next-btn">Далее →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultScreen" class="hidden">
+        <div class="card">
+            <div class="result-stats">
+                <h2 style="font-size: 1.5rem;">📋 Результат</h2>
+                <div id="greetingName" style="font-size: 1.1rem; margin: 8px 0;"></div>
+                
+                <!-- Круговой индикатор -->
+                <div class="circle-chart">
+                    <div class="donut" id="donutChart">
+                        <div class="donut-inner">
+                            <span id="centerScore">0</span>
+                            <span>баллов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-text">
+                    <span>✅ <span id="correctCount">0</span> правильных</span>
+                    <span>❌ <span id="wrongCount">0</span> ошибок</span>
+                </div>
+                
+                <div id="gradeDisplay" class="grade"></div>
+                <div id="motivationMessage" class="motivation-message"></div>
+                <button id="showMistakesBtn" class="btn-outline" style="width: auto; padding: 10px 20px; margin-top: 8px;">📖 Показать ошибки</button>
+            </div>
+            <div id="mistakesList" class="hidden" style="margin-top: 20px;"></div>
+            <div class="action-buttons">
+                <button id="shareResultBtn">📤 Поделиться</button>
+                <button id="restartQuizBtn">🔄 Пройти заново</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== БАЗА ДАННЫХ: 71 вопрос по английскому языку ====================
+    const FULL_QUESTIONS = [
+        { text: "A woman ___ walking his dog.", correct: "was", options: ["was", "were"] },
+        { text: "A lot of people ___ walking.", correct: "were", options: ["was", "were"] },
+        { text: "Nick and Mary ___ watching television.", correct: "were", options: ["was", "were"] },
+        { text: "Two teenage boys ___ fighting.", correct: "were", options: ["was", "were"] },
+        { text: "Sally ___ jogging with her friend this morning.", correct: "was", options: ["was", "were"] },
+        { text: "Another man ___ watching her.", correct: "was", options: ["was", "were"] },
+        { text: "The students ___ using the computer lab.", correct: "were", options: ["was", "were"] },
+        { text: "The young man ___ sleeping.", correct: "was", options: ["was", "were"] },
+        { text: "A baby ___ crying.", correct: "was", options: ["was", "were"] },
+        { text: "A lot of people ___ working.", correct: "were", options: ["was", "were"] },
+        { text: "She is twenty-five now, so last year she ___ twenty-four.", correct: "was", options: ["was", "were"] },
+        { text: "___ it a good film?", correct: "Was", options: ["Was", "Were"] },
+        { text: "I got married when I ___ twenty-three.", correct: "was", options: ["was", "were"] },
+        { text: "It was a great day, but we ___ so tired.", correct: "were", options: ["was", "were"] },
+        { text: "I didn't buy those glasses because they ___ too expensive.", correct: "were", options: ["was", "were"] },
+        { text: "When I ___ a child we lived in Rome.", correct: "was", options: ["was", "were"] },
+        { text: "Where ___ you yesterday afternoon?", correct: "were", options: ["was", "were"] },
+        { text: "___ the weather good while we were away?", correct: "Was", options: ["Was", "Were"] },
+        { text: "They ___ so naughty as kids.", correct: "were", options: ["was", "were"] },
+        { text: "There isn't a cloud in the sky, but it ___ cloudy in the morning.", correct: "was", options: ["is", "was"] },
+        { text: "Betty .... at home.", correct: "is", options: ["am", "is", "are"] },
+        { text: "Mark and Ann .... students.", correct: "are", options: ["am", "is", "are"] },
+        { text: "I .... 20 years old.", correct: "am", options: ["am", "is", "are"] },
+        { text: "It .... a notebook.", correct: "is", options: ["am", "is", "are"] },
+        { text: "We .... interested in music.", correct: "are", options: ["am", "is", "are"] },
+        { text: "The weather .... wonderful today.", correct: "is", options: ["am", "is", "are"] },
+        { text: "The books .... on the desk.", correct: "are", options: ["am", "is", "are"] },
+        { text: "Where .... you from?", correct: "are", options: ["am", "is", "are"] },
+        { text: "What .... your phone number?", correct: "is", options: ["am", "is", "are"] },
+        { text: "Nick .... busy now.", correct: "is", options: ["am", "is", "are"] },
+        { text: "Скучная ли эта история?", correct: "Is this story boring?", options: ["Is boring this story?", "Is this story boring?", "This story is boring?"] },
+        { text: "Номер его телефона - 555 555", correct: "His phone number is 555 555.", options: ["What is his phone number 555 555?", "His phone number is 555 555."] },
+        { text: "Он не устал.", correct: "He wasn't tired.", options: ["He nоt was tired.", "Was he tired?", "He wasn't tired."] },
+        { text: "Дети были в спортзале.", correct: "The children were in the gym.", options: ["The children weren't in the gym.", "The children were in the gym.", "The were children in the gym."] },
+        { text: "How many bottles did you buy? - I bought ... .", correct: "four", options: ["fortieth", "four", "fourth", "fourteenth"] },
+        { text: "There were only ... pupils in the classroom.", correct: "seventeen", options: ["seventeen", "seventeenth", "seventh"] },
+        { text: "Show me ... page!", correct: "the third", options: ["three", "threeth", "the third", "the threeth"] },
+        { text: "Open your workbooks on page ... .", correct: "eleven", options: ["eleven", "ileven", "eleventh", "eleventies"] },
+        { text: "The 11th of April 2001", correct: "The eleventh of April two thousand and one", options: ["The eleven of April two thousand eleven", "The eleventh of April two thousand and one", "The eleventh April thousands one"] },
+        { text: "March is ... month of the year.", correct: "the third", options: ["third", "three", "the third", "the threeth"] },
+        { text: "Five times five is ... .", correct: "twenty-five", options: ["twenty-five", "twent-five", "twenty-fife", "twenty-fifth"] },
+        { text: "There are ... people in my family.", correct: "six", options: ["sixteenth", "six", "sixtien", "sixth"] },
+        { text: "The 21st of October 1983", correct: "The twenty-first of October nineteen eighty-three", options: ["The twenty-one of October one thousand nine hundred eighty-three", "The twenty-onest of October nineteen eighty-three", "The twenty-first of October nineteen eighty-three"] },
+        { text: "One leaf - two ...", correct: "leaves", options: ["leavs", "leafs", "leaves"] },
+        { text: "One child - three ...", correct: "children", options: ["childes", "childs", "children"] },
+        { text: "One box - twenty ...", correct: "boxes", options: ["boxes", "boxs", "boxies"] },
+        { text: "One tooth - thirty-three ...", correct: "teeth", options: ["tooths", "teeth", "toothes"] },
+        { text: "One man - five ...", correct: "men", options: ["mans", "men", "man"] },
+        { text: "One fly - fifty ...", correct: "flies", options: ["flies", "flys", "flyes"] },
+        { text: "One mouse - eleven ...", correct: "mice", options: ["mices", "mouses", "mice"] },
+        { text: "One fish - twenty-seven ...", correct: "fish", options: ["fish", "fishes", "fishs"] },
+        { text: "One boy - six ...", correct: "boys", options: ["boys", "boies", "boyes"] },
+        { text: "One foot - eight ...", correct: "feet", options: ["feets", "feet", "foots"] },
+        { text: "One roof - two ...", correct: "roofs", options: ["roofs", "rooves", "roovs"] },
+        { text: "One woman - nine ...", correct: "women", options: ["womans", "women", "womens"] },
+        { text: "Дом моей тети", correct: "my aunt's house", options: ["my aunt' house", "my aunts' house", "my aunt's house", "my aunts house"] },
+        { text: "Детские книги.", correct: "children's books", options: ["children's books", "children' books", "childrens books", "childrens' books"] },
+        { text: "Название этой улицы", correct: "the name of this street", options: ["the names' street", "the names street", "the name's street", "the name of this street"] },
+        { text: "День рождения моих дочек.", correct: "my daughters' birthday", options: ["my daughter's birthday", "my daughter' birthday", "my daughters' birthday"] },
+        { text: "THANK YOU FOR_____ ME.", correct: "helping", options: ["helping", "help", "to help", "helped"] },
+        { text: "I'M AFRAID OF _____ MISTAKES.", correct: "making", options: ["to make", "made", "make", "making"] },
+        { text: "IT IS IMPORTANT _____.", correct: "to win", options: ["to win", "winning", "win", "won"] },
+        { text: "___ is a flower.", correct: "It", options: ["He", "She", "It"] },
+        { text: "My parents are doctors. ____ work in a hospital.", correct: "They", options: ["He", "They", "Them"] },
+        { text: "____ love my mom.", correct: "I", options: ["She", "I", "He"] },
+        { text: "I have a brother. Sometimes I ask ___ to help me.", correct: "him", options: ["Her", "He", "Him"] },
+        { text: "____ are going to school at the moment.", correct: "They", options: ["Them", "They", "It"] },
+        { text: "____ study very well.", correct: "You", options: ["He", "She", "You"] },
+        { text: "My dad has a car. ___ car is red.", correct: "His", options: ["Her", "He", "His"] },
+        { text: "_____ house is quite big.", correct: "Their", options: ["Their", "Them", "They"] },
+        { text: "I like ____ answer more than ___.", correct: "your / theirs", options: ["your / theirs", "him / me", "it / its"] }
+    ];
+
+    // ==================== МОТИВАЦИОННЫЕ СООБЩЕНИЯ ====================
+    const MOTIVATION = {
+        5: [
+            "🔥 Well done! Теперь покажи класс на настоящем зачёте.",
+            "⭐ Perfect! Полная готовность на 100%.",
+            "🎯 Отличный результат! Так держать.",
+            "💪 Вы справитесь с любым вопросом.",
+            "🏆 Высший пилотаж! Это успех."
+        ],
+        4: [
+            "📚 Good job! Ещё немного — и будет отлично.",
+            "👍 Хороший результат! Пару тем подтянуть — и всё супер.",
+            "🎓 Почти отлично! Ещё один вечер занятий — и будет 5.",
+            "💡 Вы на правильном пути. Продолжайте в том же духе.",
+            "🌟 Не останавливайтесь! Вы близки к идеалу."
+        ],
+        3: [
+            "💪 Неплохо! Давайте ещё разок пройдём ошибки.",
+            "📖 Есть над чем поработать, но вы уже много знаете.",
+            "🔄 Попрактикуйтесь ещё — и зачёт будет ваш.",
+            "🌱 База есть. Осталось подтянуть детали.",
+            "🎯 Вы на полпути к отлично. Ещё немного усилий."
+        ],
+        2: [
+            "🌱 Ничего страшного. Попрактикуемся ещё.",
+            "📚 В следующий раз будет лучше. Разберём ошибки вместе.",
+            "💡 Не сдавайтесь! С первой попытки не у всех получается.",
+            "🔄 Это только начало. Продолжайте тренироваться.",
+            "🎓 Ошибки — это опыт. Вы станете сильнее."
+        ]
+    };
+
+    function getRandomMessage(grade) {
+        const messages = MOTIVATION[grade];
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+
+    // Глобальные переменные
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let quizActive = false;
+    let timerInterval = null;
+    let timeSeconds = 20 * 60;
+    let soundEnabled = true;
+    let userName = "";
+
+    // DOM элементы
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const userNameInput = document.getElementById('userNameInput');
+    const startBtn = document.getElementById('startQuizBtn');
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const resetLocalBtn = document.getElementById('resetLocalStorageBtn');
+    const restartQuizBtn = document.getElementById('restartQuizBtn');
+    const shareResultBtn = document.getElementById('shareResultBtn');
+    const showMistakesBtn = document.getElementById('showMistakesBtn');
+
+    function playClick() {
+        if (soundEnabled) {
+            try {
+                const audio = new Audio();
+                audio.volume = 0.15;
+                audio.src = 'data:audio/wav;base64,U3RlYWQ=';
+                audio.play().catch(() => {});
+            } catch(e) {}
+        }
+    }
+
+    function playAlert() {
+        if (soundEnabled) {
+            try {
+                const audio = new Audio();
+                audio.volume = 0.25;
+                audio.src = 'data:audio/wav;base64,U3RlYWQ=';
+                audio.play().catch(() => {});
+            } catch(e) {}
+        }
+    }
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function selectRandomQuestions() {
+        const shuffledFull = shuffleArray([...FULL_QUESTIONS]);
+        const selected = shuffledFull.slice(0, 20);
+        return selected.map(q => {
+            let opts = [...q.options];
+            opts = shuffleArray([...new Set(opts)]);
+            return {
+                text: q.text,
+                correct: q.correct,
+                allOptions: opts,
+                userAnswer: null
+            };
+        });
+    }
+
+    function renderCurrentQuestion() {
+        const q = currentQuestions[currentIndex];
+        if (!q) return;
+        document.getElementById('questionText').innerHTML = q.text;
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+        
+        q.allOptions.forEach((opt, idx) => {
+            const letter = String.fromCharCode(65 + idx);
+            const div = document.createElement('div');
+            div.className = `option ${q.userAnswer === opt ? 'selected' : ''}`;
+            div.innerHTML = `
+                <div class="option-letter">${letter}</div>
+                <div class="option-text">${opt}</div>
+            `;
+            div.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!quizActive) return;
+                q.userAnswer = opt;
+                renderCurrentQuestion();
+                updateAnsweredCounter();
+                checkIfAllAnswered();
+                playClick();
+            });
+            container.appendChild(div);
+        });
+        document.getElementById('questionCounter').innerHTML = `Вопрос ${currentIndex + 1} / 20`;
+    }
+
+    function updateAnsweredCounter() {
+        const answered = currentQuestions.filter(q => q.userAnswer !== null).length;
+        document.getElementById('answeredCount').innerHTML = `✅ ${answered} отвечено`;
+        const percent = (answered / 20) * 100;
+        document.getElementById('progressFill').style.width = `${percent}%`;
+    }
+
+    function checkIfAllAnswered() {
+        const allAnswered = currentQuestions.every(q => q.userAnswer !== null);
+        if (allAnswered && quizActive) {
+            finishQuiz();
+        }
+    }
+
+    function nextQuestion() {
+        if (!quizActive) return;
+        const currentQ = currentQuestions[currentIndex];
+        if (currentQ.userAnswer === null) {
+            alert("Пожалуйста, выберите вариант ответа");
+            return;
+        }
+        if (currentIndex + 1 < 20) {
+            currentIndex++;
+            renderCurrentQuestion();
+        } else {
+            if (currentQuestions.every(q => q.userAnswer !== null)) finishQuiz();
+        }
+    }
+
+    function updateDonutChart(percentCorrect, correctCount, wrongCount) {
+        const donut = document.getElementById('donutChart');
+        const angle = (percentCorrect / 100) * 360;
+        if (percentCorrect === 100) {
+            donut.style.background = `conic-gradient(var(--correct) 0deg, var(--correct) 360deg)`;
+        } else if (percentCorrect === 0) {
+            donut.style.background = `conic-gradient(var(--wrong) 0deg, var(--wrong) 360deg)`;
+        } else {
+            donut.style.background = `conic-gradient(var(--correct) 0deg, var(--correct) ${angle}deg, var(--wrong) ${angle}deg, var(--wrong) 360deg)`;
+        }
+        document.getElementById('centerScore').innerText = (correctCount * 5);
+        document.getElementById('correctCount').innerText = correctCount;
+        document.getElementById('wrongCount').innerText = wrongCount;
+    }
+
+    function finishQuiz() {
+        if (timerInterval) clearInterval(timerInterval);
+        quizActive = false;
+        let correctCount = 0;
+        currentQuestions.forEach(q => {
+            if (q.userAnswer === q.correct) correctCount++;
+        });
+        const points = correctCount * 5;
+        let gradeLetter = "";
+        let gradeNumber = 0;
+        if (points >= 85) gradeNumber = 5;
+        else if (points >= 75) gradeNumber = 4;
+        else if (points >= 50) gradeNumber = 3;
+        else gradeNumber = 2;
+        
+        if (gradeNumber === 5) gradeLetter = "5 (отлично)";
+        else if (gradeNumber === 4) gradeLetter = "4 (хорошо)";
+        else if (gradeNumber === 3) gradeLetter = "3 (удовлетворительно)";
+        else gradeLetter = "2 (неудовлетворительно)";
+
+        document.getElementById('gradeDisplay').innerHTML = `<span style="background:${points >= 50 ? '#10b98120' : '#ef444420'}; padding:8px 24px; border-radius:40px; display:inline-block;">${gradeLetter}</span>`;
+        document.getElementById('greetingName').innerHTML = `${userName ? userName + ', ' : ''}ваш результат:`;
+        
+        const percentCorrect = (correctCount / 20) * 100;
+        updateDonutChart(percentCorrect, correctCount, 20 - correctCount);
+        
+        const motivationText = getRandomMessage(gradeNumber);
+        document.getElementById('motivationMessage').innerHTML = motivationText;
+        
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+        document.getElementById('mistakesList').classList.add('hidden');
+        window.mistakesData = currentQuestions.filter(q => q.userAnswer !== q.correct);
+    }
+
+    function showMistakes() {
+        const mistakes = window.mistakesData || [];
+        const container = document.getElementById('mistakesList');
+        if (mistakes.length === 0) {
+            container.innerHTML = '<div style="padding: 16px; text-align:center;">✨ Нет ошибок! Отличные знания ✨</div>';
+            container.classList.remove('hidden');
+            return;
+        }
+        let html = '<h3 style="margin-bottom: 16px; font-size: 1.2rem;">📌 Работа над ошибками</h3>';
+        mistakes.forEach((m, idx) => {
+            html += `<div class="mistake-item">
+                        <div class="mistake-question">${idx + 1}. ${m.text}</div>
+                        <div class="mistake-detail">❌ Ваш ответ: ${m.userAnswer}</div>
+                        <div class="mistake-detail" style="color: var(--correct);">✅ Правильный: ${m.correct}</div>
+                      </div>`;
+        });
+        container.innerHTML = html;
+        container.classList.remove('hidden');
+    }
+
+    function shareResult() {
+        const points = parseInt(document.getElementById('centerScore').innerText);
+        const gradeText = document.getElementById('gradeDisplay').innerText;
+        const text = `${userName ? userName : 'Я'} прошла зачёт по английскому на ${points} баллов — ${gradeText}! Попробуй и ты!`;
+        if (navigator.share) {
+            navigator.share({ title: 'Мой результат', text: text }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(text).then(() => alert('Результат скопирован!'));
+        }
+    }
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!quizActive) return;
+            if (timeSeconds <= 0) {
+                clearInterval(timerInterval);
+                quizActive = false;
+                playAlert();
+                alert("Время вышло! Тест завершается.");
+                finishQuiz();
+            } else {
+                timeSeconds--;
+                const mins = Math.floor(timeSeconds / 60);
+                const secs = timeSeconds % 60;
+                const timerDiv = document.getElementById('timerDisplay');
+                timerDiv.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (timeSeconds <= 120) timerDiv.classList.add('warning');
+                else timerDiv.classList.remove('warning');
+            }
+        }, 1000);
+    }
+
+    function initQuiz() {
+        currentQuestions = selectRandomQuestions();
+        currentIndex = 0;
+        timeSeconds = 20 * 60;
+        quizActive = true;
+        renderCurrentQuestion();
+        updateAnsweredCounter();
+        startTimer();
+        document.getElementById('timerDisplay').classList.remove('warning');
+        document.getElementById('timerDisplay').innerText = "20:00";
+        quizScreen.classList.remove('hidden');
+        startScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+    }
+
+    function initTheme() {
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+    }
+    
+    themeBtn.onclick = () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    };
+    
+    soundToggleBtn.onclick = () => {
+        soundEnabled = !soundEnabled;
+        soundToggleBtn.innerText = soundEnabled ? "🔊 Звук вкл" : "🔇 Звук выкл";
+    };
+    
+    startBtn.onclick = () => {
+        const name = userNameInput.value.trim();
+        if (name) {
+            userName = name;
+            localStorage.setItem('quizUserName', name);
+        } else {
+            userName = "Участник";
+        }
+        initQuiz();
+    };
+    
+    restartQuizBtn.onclick = () => {
+        if (timerInterval) clearInterval(timerInterval);
+        quizActive = false;
+        startScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        quizScreen.classList.add('hidden');
+    };
+    
+    shareResultBtn.onclick = shareResult;
+    showMistakesBtn.onclick = showMistakes;
+    document.getElementById('nextQuestionBtn').onclick = nextQuestion;
+    
+    resetLocalBtn.onclick = () => {
+        localStorage.removeItem('quizUserName');
+        userNameInput.value = '';
+        alert('Имя сброшено');
+    };
+    
+    const savedName = localStorage.getItem('quizUserName');
+    if (savedName) userNameInput.value = savedName;
+    initTheme();
+    soundToggleBtn.innerText = "🔊 Звук вкл";
+</script>
+</body>
+</html>
