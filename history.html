@@ -643,7 +643,6 @@
         { text: "Получившие распространение в СССР в застойный период подкуп должностных лиц, использование должностного положения в личных интересах называются:", correct: "коррупция", options: ["спекуляция", "коррупция", "тунеядство", "диссидентство"] }
     ];
 
-    // Спортивные сообщения
     const MOTIVATION = {
         5: ["🔥 Well done! Теперь покажи класс на настоящем зачёте.", "⭐ Perfect! Полная готовность на 100%.", "🎯 Отличный результат! Так держать.", "💪 Вы справитесь с любым вопросом.", "🏆 Высший пилотаж! Это успех."],
         4: ["📚 Good job! Ещё немного — и будет отлично.", "👍 Хороший результат! Пару тем подтянуть — и всё супер.", "🎓 Почти отлично! Ещё один вечер занятий — и будет 5.", "💡 Вы на правильном пути.", "🌟 Не останавливайтесь! Вы близки к идеалу."],
@@ -651,9 +650,7 @@
         2: ["🌱 Ничего страшного. Попрактикуемся ещё.", "📚 В следующий раз будет лучше.", "💡 Не сдавайтесь! С первой попытки не у всех получается.", "🔄 Это только начало. Продолжайте тренироваться.", "🎓 Ошибки — это опыт."]
     };
 
-    function getRandomMessage(grade) {
-        return MOTIVATION[grade][Math.floor(Math.random() * 5)];
-    }
+    function getRandomMessage(grade) { return MOTIVATION[grade][Math.floor(Math.random() * 5)]; }
 
     let currentQuestions = [], currentIndex = 0, quizActive = false, timerInterval = null, timeSeconds = 20*60, soundEnabled = true, userName = "";
     const startScreen = document.getElementById('startScreen'), quizScreen = document.getElementById('quizScreen'), resultScreen = document.getElementById('resultScreen');
@@ -662,7 +659,7 @@
     const shareResultBtn = document.getElementById('shareResultBtn'), showMistakesBtn = document.getElementById('showMistakesBtn');
 
     function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
-    function playClick() { if(soundEnabled) try { new Audio().play().catch(()=>{}); } catch(e){} }
+    function playClick() { if(soundEnabled) try { const a = new Audio(); a.volume=0.15; a.src='data:audio/wav;base64,U3RlYWQ='; a.play().catch(()=>{}); } catch(e){} }
 
     function selectRandomQuestions() {
         const shuffled = shuffleArray([...FULL_QUESTIONS]);
@@ -681,7 +678,15 @@
             const div = document.createElement('div');
             div.className = `option ${q.userAnswer === opt ? 'selected' : ''}`;
             div.innerHTML = `<div class="option-letter">${String.fromCharCode(65+idx)}</div><div class="option-text">${opt}</div>`;
-            div.addEventListener('click', () => { if(quizActive && !currentQuestions[currentIndex].userAnswer) { q.userAnswer = opt; renderCurrentQuestion(); updateAnsweredCounter(); checkIfAllAnswered(); playClick(); } });
+            div.addEventListener('click', () => { 
+                if(quizActive) { 
+                    q.userAnswer = opt; 
+                    renderCurrentQuestion(); 
+                    updateAnsweredCounter(); 
+                    checkIfAllAnswered(); 
+                    playClick(); 
+                } 
+            });
             container.appendChild(div);
         });
         document.getElementById('questionCounter').innerHTML = `Вопрос ${currentIndex+1} / 20`;
