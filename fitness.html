@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Физическая культура | Зачетный тренажер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #e67e22;
+            --primary-dark: #b85e0a;
+            --primary-light: #fef3e2;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --energy-bg: #2d2b26;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --card-radius: 24px;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --primary-light: #2d2a1f;
+            --energy-bg: #3a3226;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 16px 12px 40px;
+            transition: background 0.2s, color 0.2s;
+            min-height: 100vh;
+        }
+
+        .hidden-message {
+            position: fixed;
+            bottom: 8px;
+            right: 12px;
+            font-size: 11px;
+            color: var(--text-light);
+            opacity: 0.25;
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px 18px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .theme-toggle, .sound-toggle, .back-button {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+            width: auto;
+        }
+        
+        .theme-toggle:hover, .sound-toggle:hover, .back-button:hover {
+            background: var(--primary-light);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-screen h1 {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary), #f39c12);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .mode-buttons button {
+            flex: 1;
+            min-width: 140px;
+            font-size: 1.1rem;
+        }
+
+        .mode-train {
+            background: #3b82f6;
+        }
+        .mode-train:hover {
+            background: #2563eb;
+        }
+        .mode-exam {
+            background: var(--primary);
+        }
+        
+        .name-input-group {
+            margin: 24px 0 20px;
+            text-align: left;
+        }
+        
+        .name-input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            margin-top: 12px;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-area {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .energy-bar-bg {
+            background: var(--energy-bg);
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .energy-fill {
+            background: linear-gradient(90deg, #f39c12, #eab308, #10b981);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 40px;
+        }
+        
+        .timer-box {
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        
+        .timer-box.warning {
+            background: #fee2e2;
+            color: #b91c1c;
+            animation: pulse 1s infinite;
+        }
+        
+        body.dark .timer-box.warning {
+            background: #7f1a1a;
+            color: #ffcdcd;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.8; transform: scale(1.02);}
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 16px 0 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .option {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .option:active {
+            transform: scale(0.98);
+        }
+        
+        .option.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(230, 126, 34, 0.2);
+        }
+
+        .option.correct-highlight {
+            background: #10b98120;
+            border-color: var(--correct);
+        }
+
+        .option.wrong-highlight {
+            background: #ef444420;
+            border-color: var(--wrong);
+        }
+        
+        .option-letter {
+            font-weight: 800;
+            background: #e2e8f0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            flex-shrink: 0;
+        }
+        
+        body.dark .option-letter {
+            background: #334155;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+        
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .result-stats {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .grade {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+        
+        .grade-badge {
+            background: #10b98120;
+            padding: 8px 24px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        
+        .circle-chart {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+            position: relative;
+        }
+        .donut {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            position: relative;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body.dark .donut {
+            background: #334155;
+        }
+        .donut-inner {
+            width: 120px;
+            height: 120px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 28px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 2;
+        }
+        .donut-inner span {
+            font-size: 12px;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+        .donut-inner .score-value {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .stats-text {
+            margin-top: 12px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stats-correct { color: var(--correct); font-weight: 700; }
+        .stats-wrong { color: var(--wrong); font-weight: 700; }
+        
+        .combo-toast {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 1000;
+            animation: fadeUp 0.8s ease-out forwards;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+        }
+        
+        .medal-icon {
+            font-size: 2rem;
+            margin: 8px 0;
+        }
+        
+        .mistake-item {
+            background: var(--surface);
+            border-left: 5px solid var(--wrong);
+            padding: 14px;
+            margin-bottom: 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+        
+        .mistake-question {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .mistake-detail {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .motivation-message {
+            margin: 16px 0 8px;
+            padding: 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 550px) {
+            body {
+                padding: 12px 10px 30px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+            .option {
+                padding: 12px 14px;
+            }
+            .option-text {
+                font-size: 13px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+            .donut {
+                width: 130px;
+                height: 130px;
+            }
+            .donut-inner {
+                width: 95px;
+                height: 95px;
+                font-size: 24px;
+            }
+            .donut-inner .score-value {
+                font-size: 26px;
+            }
+            .grade {
+                font-size: 1.5rem;
+            }
+            .combo-toast {
+                font-size: 0.85rem;
+                padding: 6px 14px;
+                white-space: nowrap;
+            }
+            .mode-buttons button {
+                font-size: 1rem;
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="hidden-message">F. T'es la meilleure.</div>
+
+<div class="container" id="app">
+    <div class="header-bar">
+        <div style="font-weight: 600; font-size: 14px;">🏋️ ФИЗИЧЕСКАЯ КУЛЬТУРА | ЗАЧЕТ</div>
+        <div style="display: flex; gap: 8px;">
+            <button class="back-button hidden" id="backToMenuBtn">← Назад</button>
+            <button class="sound-toggle" id="soundToggleBtn">🔇 Звук выкл</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 Тёмная</button>
+        </div>
+    </div>
+
+    <!-- СТАРТОВЫЙ ЭКРАН (ГЛАВНЫЙ) -->
+    <div id="startScreen" class="card start-screen">
+        <h1>🏅 Тренажёр зачёта</h1>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 55 вопросов в базе</p>
+        
+        <div class="mode-buttons">
+            <button id="trainModeBtn" class="mode-train">🎓 ТРЕНИРОВКА</button>
+            <button id="examModeBtn" class="mode-exam">📝 ДЕМО-ЗАЧЁТ</button>
+        </div>
+        
+        <div class="name-input-group">
+            <label>👤 Ваше имя</label>
+            <input type="text" id="userNameInput" placeholder="Введите имя" autocomplete="off">
+        </div>
+        <button class="btn-outline" id="resetLocalStorageBtn" style="margin-top: 10px;">🔄 Сбросить имя</button>
+        <footer>Тренировка: после ответа нажми «Далее» → покажет правильный ответ • Демо-зачёт: как настоящий экзамен</footer>
+    </div>
+
+    <!-- ЭКРАН ТЕСТА -->
+    <div id="quizScreen" class="hidden">
+        <div class="card">
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <div class="flex-between">
+                        <span id="questionCounter">Вопрос 1 / 20</span>
+                        <span id="answeredCount">✅ 0 отвечено</span>
+                    </div>
+                    <div class="energy-bar-bg"><div class="energy-fill" id="energyFill"></div></div>
+                </div>
+                <div class="timer-box" id="timerDisplay">20:00</div>
+            </div>
+            <div id="quizInner">
+                <div class="question-text" id="questionText">Загрузка...</div>
+                <div class="options-list" id="optionsContainer"></div>
+                <button id="nextQuestionBtn" class="next-btn">Далее →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultScreen" class="hidden">
+        <div class="card">
+            <div class="result-stats">
+                <h2 style="font-size: 1.5rem;">📋 Результат</h2>
+                <div id="greetingName" style="font-size: 1.1rem; margin: 8px 0;"></div>
+                
+                <div class="circle-chart">
+                    <div class="donut" id="donutChart">
+                        <div class="donut-inner">
+                            <div class="score-value" id="centerScore">0</div>
+                            <span>баллов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-text">
+                    <span>✅ <span id="correctCount">0</span> правильных</span>
+                    <span>❌ <span id="wrongCount">0</span> ошибок</span>
+                </div>
+                
+                <div id="medalArea" class="medal-icon"></div>
+                <div id="gradeDisplay" class="grade"></div>
+                <div id="motivationMessage" class="motivation-message"></div>
+                <button id="showMistakesBtn" class="btn-outline" style="width: auto; padding: 10px 20px; margin-top: 8px;">📖 Показать ошибки</button>
+            </div>
+            <div id="mistakesList" class="hidden" style="margin-top: 20px;"></div>
+            <div class="action-buttons">
+                <button id="shareResultBtn">📤 Поделиться</button>
+                <button id="mainMenuBtn">🏠 Главный экран</button>
+                <button id="restartQuizBtn">🔄 Пройти заново</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== ЗВУКИ ====================
+    let soundEnabled = false;
+    let audioCorrect = null;
+    let audioWrong = null;
+    let audioClick = null;
+    
+    function initAudio() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                audioCorrect = {
+                    play: () => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = 880;
+                        gain.gain.value = 0.2;
+                        osc.start();
+                        gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
+                        osc.stop(ctx.currentTime + 0.5);
+                    }
+                };
+                audioWrong = {
+                    play: () => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = 440;
+                        gain.gain.value = 0.2;
+                        osc.start();
+                        gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.6);
+                        osc.stop(ctx.currentTime + 0.6);
+                    }
+                };
+                audioClick = {
+                    play: () => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = 660;
+                        gain.gain.value = 0.1;
+                        osc.start();
+                        gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.2);
+                        osc.stop(ctx.currentTime + 0.2);
+                    }
+                };
+            } else {
+                audioCorrect = { play: () => {} };
+                audioWrong = { play: () => {} };
+                audioClick = { play: () => {} };
+            }
+        } catch(e) { console.log("Audio not supported"); }
+    }
+    
+    function playSound(type) {
+        if (!soundEnabled) return;
+        if (type === 'correct' && audioCorrect) audioCorrect.play();
+        if (type === 'wrong' && audioWrong) audioWrong.play();
+        if (type === 'click' && audioClick) audioClick.play();
+    }
+    
+    // ==================== ФУНКЦИЯ СРАВНЕНИЯ ОТВЕТОВ ====================
+    function isAnswerCorrect(userAnswer, correctAnswer) {
+        if (!userAnswer || !correctAnswer) return false;
+        const userNorm = userAnswer.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        const correctNorm = correctAnswer.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        if (userNorm === correctNorm) return true;
+        if (userNorm.includes(correctNorm) || correctNorm.includes(userNorm)) return true;
+        return false;
+    }
+    
+    // ==================== БАЗА ДАННЫХ: 55 ВОПРОСОВ (ПО ТВОЕЙ НОВОЙ БАЗЕ) ====================
+    const FULL_QUESTIONS = [
+        { text: "Спорт это:", correct: "Деятельность, проводимая в соответствии с некоторыми правилами, состоящая в честном сопоставлении сил и способностей участников", options: ["Диета, упражнения, правильное дыхание.", "Физические упражнения и тренировки.", "Деятельность, проводимая в соответствии с некоторыми правилами, состоящая в честном сопоставлении сил и способностей участников"] },
+        { text: "Следует ли после длительной болезни приступать к разучиванию сложных гимнастических упражнений?", correct: "Нет", options: ["Да, в малом темпе.", "Нет", "Да, под присмотром тренера."] },
+        { text: "Физическая культура представляет собой:", correct: "Определенную часть культуры человека", options: ["Определенную часть культуры человека", "Учебную активность.", "Культуру здорового духа и тела."] },
+        { text: "Под физической культурой понимается:", correct: "Некоторый фрагмент деятельности человеческого общества", options: ["Воспитание любви к физической активности.", "Система нагрузок и упражнений.", "Некоторый фрагмент деятельности человеческого общества"] },
+        { text: "Возможности человека, обеспечивающие ему выполнение двигательных действий, называются:", correct: "Скоростная способность", options: ["Скоростная способность", "Двигательный рефлекс.", "Физическая возможность."] },
+        { text: "Эффект физических упражнений определяется, прежде всего:", correct: "Их содержанием", options: ["Их содержанием", "Их формой.", "Скоростью их выполнения."] },
+        { text: "Влияние физических упражнений на организм человека:", correct: "Положительное, если эти упражнения выполняются регулярно, в правильном темпе, верной последовательности, а занимающийся не имеет противопоказаний, исключающих данные занятия", options: ["Положительное, если эти упражнения выполняются регулярно, в правильном темпе, верной последовательности, а занимающийся не имеет противопоказаний, исключающих данные занятия", "Нейтральное, даже если заниматься усердно.", "Положительное, только в случае, если заниматься ими на пределе своих физических возможностей."] },
+        { text: "Главной причиной нарушения осанки является:", correct: "Малая подвижность в течение дня, неправильное поднятие тяжестей, часто принимаемая неправильная поза", options: ["Малая подвижность в течение дня, неправильное поднятие тяжестей, часто принимаемая неправильная поза", "Сутулость, сгорбленность, \"страх\" своего роста.", "Слабые мышцы спины."] },
+        { text: "Так называемое \"второе дыхание\" наступает:", correct: "Когда организм перестраивается в соответствии с нагрузками и в кровь начинает поступать достаточное количество кислорода", options: ["Когда организм перестраивается в соответствии с нагрузками и в кровь начинает поступать достаточное количество кислорода", "Когда мышцы входят в удобный ритм работы.", "Когда мозг и мышцы привыкают к действующим нагрузкам."] },
+        { text: "Результатом физической подготовки является:", correct: "Степень физической подготовленности", options: ["Количество разученных упражнений.", "Степень физической подготовленности", "Физическое совершенство."] },
+        { text: "Вход в спортивный зал:", correct: "Разрешен, если в зале находится преподаватель, тренер", options: ["Разрешен, если в зале находится преподаватель, тренер", "Разрешен, если зал открыт и свободен.", "Разрешен, если на входящем надета спортивная форма."] },
+        { text: "Несколько упражнений, подобранных в определенном порядке для решения конкретной задачи, называется:", correct: "Комплекс", options: ["Комплекс", "Группа.", "Алгоритм."] },
+        { text: "В местах соскоков со снаряда:", correct: "Необходимо располагать гимнастический мат", options: ["Должно располагаться страхующее лицо.", "Должна быть ровная, нескользкая поверхность.", "Необходимо располагать гимнастический мат"] },
+        { text: "Выход учащихся из спортивного зала возможен:", correct: "После разрешения тренера", options: ["После разрешения тренера", "По окончании комплекса упражнений.", "При необходимости."] },
+        { text: "Обувь для занятий спортивными играми должна быть:", correct: "На подошве, выполненной из нескользкого материала", options: ["На подошве, выполненной из нескользкого материала", "Мягкой и удобной.", "Плотно облегающей."] },
+        { text: "Начинать игру, делать остановки в игре и заканчивать игру нужно:", correct: "После разрешения преподавателя, тренера", options: ["По желанию любого участника игры.", "По необходимости.", "После разрешения преподавателя, тренера"] },
+        { text: "Можно ли выполнять прыжки на неровном и скользком грунте?", correct: "Нет, нельзя", options: ["Нет, нельзя", "Можно.", "Можно, если надета обувь на нескользкой подошве, наколенники и налокотники."] },
+        { text: "Можно ли выполнять упражнения на гимнастических снарядах с влажными руками?", correct: "Нет, нельзя", options: ["Можно.", "Можно, если используются кистевые бинты.", "Нет, нельзя"] },
+        { text: "Физическая культура представляет собой:", correct: "Область деятельности человека, поддерживающую и укрепляющую его здоровье", options: ["Область деятельности человека, поддерживающую и укрепляющую его здоровье", "Различные занятия в спортивных секциях.", "Культуру занятия профессиональным спортом."] },
+        { text: "Способность противостоять физическому утомлению в процессе мышечной деятельности называется:", correct: "Выносливость", options: ["Выносливость", "Тренированность.", "Второе дыхание."] },
+        { text: "Вид спорта, известный как 'Королева спорта':", correct: "Легкая атлетика", options: ["Легкая атлетика", "Стрельба из лука.", "Художественная гимнастика.", "Тяжелая атлетика."] },
+        { text: "Дата рождения волейбола:", correct: "1895", options: ["1795.", "1893.", "1895", "1900."] },
+        { text: "Дата рождения баскетбола:", correct: "1891", options: ["1781", "1891.", "1895.", "1900."] },
+        { text: "Девиз олимпийских игр:", correct: "Быстрее, выше, сильнее!", options: ["Олимпийцы - среди нас.", "О спорт! Ты - мир!", "Быстрее, выше, сильнее!", "Олимпийцы всех стран - соединяйтесь!"] },
+        { text: "Длительность физкультпаузы:", correct: "5-6 мин", options: ["1-2 мин.", "3-4 мин.", "5-6 мин", "8-10 мин."] },
+        { text: "Правильная осанка формируется:", correct: "Сама по себе", options: ["Сама по себе", "Под влиянием физических упражнений.", "С помощью рационального питания.", "Под влиянием гибкости позвоночного столба."] },
+        { text: "Для занятий физической культурой и спортом предъявляются гигиенические требования к спортивным залам; температура помещения должна быть:", correct: "16-17", options: ["15-16.", "16-17", "17-18.", "18-19 градусов."] },
+        { text: "В каком из перечисленных ответов присутствует не спортивный снаряд для занятий гимнастикой:", correct: "Перекладина, мостик", options: ["Конь, брусья.", "Перекладина, мостик", "Кольца, бревно.", "Трос, канат."] },
+        { text: "Сколько весит мяч для метания на дальность:", correct: "350г", options: ["150г.", "250г.", "350г"] },
+        { text: "До какого счета решающая партия в волейболе:", correct: "15", options: ["12.", "15", "17.", "25 очков."] },
+        { text: "Размеры волейбольной площадки:", correct: "9x18", options: ["8x16.", "9x18", "10x20.", "12x24 метров."] },
+        { text: "Длина дистанции марафонского бега:", correct: "42км 195м", options: ["30км 192м.", "35км 195м.", "40км 192м.", "42км 195м"] },
+        { text: "Укажите количество игроков баскетбольной команды:", correct: "5", options: ["5", "6.", "7."] },
+        { text: "Что означает баскетбольный термин 'пробежка' при выполнении броска в кольцо:", correct: "выполнение с мячом в руках трех шагов", options: ["выполнение с мячом в руках одного шага.", "выполнение с мячом в руках двух шагов.", "выполнение с мячом в руках трех шагов"] },
+        { text: "Укажите количество игроков футбольной команды:", correct: "11", options: ["7.", "9.", "11"] },
+        { text: "Предметом обучения в физическом воспитании являются...", correct: "двигательные действии", options: ["двигательные действии", "двигательные умения и навыки;", "техника физических упражнений;", "способы решения двигательных задач."] },
+        { text: "Какой вид прыжков в длину с разбега не существует?", correct: "Согнувшись", options: ["Согнувшись", "Прогнувшись.", "Согнув ноги."] },
+        { text: "Легкая атлетика не включает в себя следующие виды спорта:", correct: "Многоборье", options: ["Прыжки и метания.", "Бег, ходьба.", "Многоборье"] },
+        { text: "К основным физическим качествам человека относятся:", correct: "Выносливость, ловкость, сила, гибкость, быстрота.", options: ["Быстрота, аккуратность, выносливость, сила.", "Смелость, гибкость, быстрота, сила", "Выносливость, ловкость, сила, гибкость, быстрота."] },
+        { text: "Какое количество игроков из одной команды может одновременно находиться на баскетбольной площадке?", correct: "5", options: ["7.", "6.", "5"] },
+        { text: "Кросс - это бег:", correct: "По пересеченной местности", options: ["По пересеченной местности", "С ускорением.", "По дорожке вокруг стадиона."] },
+        { text: "Основное физическое качество - это:", correct: "Здоровье", options: ["Сила.", "Работоспособность.", "Здоровье"] },
+        { text: "При равном счете в баскетболе к основному времени судья может добавить:", correct: "5 мин", options: ["7 мин.", "3 мин.", "5 мин"] },
+        { text: "Бег на длинные и средние дистанции начинается с:", correct: "Высокого старта", options: ["Хода.", "Опоры на одну руку.", "Высокого старта"] },
+        { text: "Игра в баскетбол начинается с:", correct: "Спорного броска в центре поля", options: ["Приветствия.", "Спорного броска в центре поля", "Разминки."] },
+        { text: "Обязательными тестами по ОФП для студентов являются:", correct: "Бег на 100 м", options: ["Прыжки в длину с места.", "Бег на 100 м", "Плавание."] },
+        { text: "Что в легкой атлетике делают с ядром:", correct: "толкают", options: ["метают.", "бросают.", "толкают"] },
+        { text: "Какая страна является родиной Олимпийских Игр?", correct: "Древняя Греция", options: ["Рим.", "Китай.", "Древняя Греция", "Италия."] },
+        { text: "Сколько периодов в футболе?", correct: "2х45 минут", options: ["3х15 минут.", "4х20 минут.", "2х45 минут", "2х20 минут."] },
+        { text: "Туфли для бега называются:", correct: "шиповки", options: ["кеды.", "пуанты.", "чешки.", "шиповки"] },
+        { text: "Родиной баскетбола является...", correct: "США", options: ["Франция.", "Россия.", "США", "Англия."] },
+        { text: "Каким упражнением проверить физическое качество - гибкость:", correct: "наклон вперед из положения сидя, ноги врозь", options: ["подтягивание в висе на перекладине.", "прыжки в длину с места.", "наклон вперед из положения сидя, ноги врозь", "кувырок вперед."] },
+        { text: "В какой спортивной игре нет вратаря?", correct: "баскетбол", options: ["футбол.", "хоккей.", "баскетбол", "водное поло."] },
+        { text: "Какое количество игроков в волейболе находится на площадке?", correct: "6 человек", options: ["8 человек.", "6 человек", "4 человека.", "5 человек."] },
+        { text: "В каком году в нашей стране был введён предмет «физическая культура и спорт» в учебные планы как обязательный?", correct: "1929", options: ["1901;", "1910;", "1911;", "1929"] }
+    ];
+
+    // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+    let currentQuestions = [];
+    let userAnswers = [];
+    let currentIndex = 0;
+    let selectedOptionIndex = null;
+    let quizActive = false;
+    let timerInterval = null;
+    let timeSeconds = 20 * 60;
+    let currentMode = null;
+    let waitingForNext = false;
+    
+    // DOM элементы
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const userNameInput = document.getElementById('userNameInput');
+    const trainModeBtn = document.getElementById('trainModeBtn');
+    const examModeBtn = document.getElementById('examModeBtn');
+    const resetNameBtn = document.getElementById('resetLocalStorageBtn');
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const soundToggle = document.getElementById('soundToggleBtn');
+    const backButton = document.getElementById('backToMenuBtn');
+    const nextBtn = document.getElementById('nextQuestionBtn');
+    const questionTextSpan = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const questionCounter = document.getElementById('questionCounter');
+    const answeredCountSpan = document.getElementById('answeredCount');
+    const energyFill = document.getElementById('energyFill');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const restartBtn = document.getElementById('restartQuizBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
+    const shareBtn = document.getElementById('shareResultBtn');
+    const showMistakesBtn = document.getElementById('showMistakesBtn');
+    const mistakesListDiv = document.getElementById('mistakesList');
+    const correctCountSpan = document.getElementById('correctCount');
+    const wrongCountSpan = document.getElementById('wrongCount');
+    const centerScoreSpan = document.getElementById('centerScore');
+    const gradeDisplayDiv = document.getElementById('gradeDisplay');
+    const medalArea = document.getElementById('medalArea');
+    const motivationMessageDiv = document.getElementById('motivationMessage');
+    const greetingNameSpan = document.getElementById('greetingName');
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'combo-toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 800);
+    }
+
+    function updateEnergyBar() {
+        const answered = userAnswers.filter(a => a !== undefined && a !== null).length;
+        const percent = (answered / currentQuestions.length) * 100;
+        energyFill.style.width = `${percent}%`;
+        answeredCountSpan.innerText = `✅ ${answered} отвечено`;
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimerDisplay() {
+        timerDisplay.innerText = formatTime(timeSeconds);
+        if (timeSeconds <= 60) {
+            timerDisplay.classList.add('warning');
+        } else {
+            timerDisplay.classList.remove('warning');
+        }
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timerInterval = setInterval(() => {
+            if (!quizActive) return;
+            if (timeSeconds <= 0) {
+                stopTimer();
+                if (quizActive) {
+                    alert('Время вышло! Тест завершается.');
+                    finishQuiz();
+                }
+            } else {
+                timeSeconds--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+    
+    function showHighlightAndExplanation() {
+        if (selectedOptionIndex === null) return;
+        
+        const q = currentQuestions[currentIndex];
+        const userAnswer = q.options[selectedOptionIndex];
+        const isCorrect = isAnswerCorrect(userAnswer, q.correct);
+        
+        const optionElements = document.querySelectorAll('.option');
+        optionElements.forEach((el, idx) => {
+            el.classList.remove('correct-highlight', 'wrong-highlight');
+            if (isAnswerCorrect(q.options[idx], q.correct)) {
+                el.classList.add('correct-highlight');
+            }
+            if (idx === selectedOptionIndex && !isCorrect) {
+                el.classList.add('wrong-highlight');
+            }
+        });
+        
+        if (isCorrect) {
+            playSound('correct');
+            showToast('✅ Верно!');
+        } else {
+            playSound('wrong');
+            showToast(`❌ Неверно. Правильно: ${q.correct}`);
+        }
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentIndex >= currentQuestions.length) return;
+        const q = currentQuestions[currentIndex];
+        questionTextSpan.innerText = q.text;
+        
+        optionsContainer.innerHTML = '';
+        
+        q.options.forEach((opt, idx) => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option';
+            
+            if (selectedOptionIndex === idx) {
+                optionDiv.classList.add('selected');
+            }
+            
+            const letterSpan = document.createElement('div');
+            letterSpan.className = 'option-letter';
+            letterSpan.innerText = String.fromCharCode(65 + idx);
+            
+            const textSpan = document.createElement('div');
+            textSpan.className = 'option-text';
+            textSpan.innerText = opt;
+            
+            optionDiv.appendChild(letterSpan);
+            optionDiv.appendChild(textSpan);
+            
+            optionDiv.addEventListener('click', () => {
+                if (!quizActive) return;
+                if (waitingForNext) return;
+                
+                selectedOptionIndex = idx;
+                renderCurrentQuestion();
+            });
+            
+            optionsContainer.appendChild(optionDiv);
+        });
+        
+        questionCounter.innerText = `Вопрос ${currentIndex+1} / ${currentQuestions.length}`;
+        updateEnergyBar();
+    }
+    
+    function nextQuestion() {
+        if (!quizActive) return;
+        
+        if (currentMode === 'train') {
+            if (selectedOptionIndex === null) {
+                alert('Пожалуйста, выберите вариант ответа!');
+                return;
+            }
+            
+            if (!waitingForNext) {
+                waitingForNext = true;
+                showHighlightAndExplanation();
+                userAnswers[currentIndex] = selectedOptionIndex;
+                nextBtn.textContent = 'Следующий вопрос →';
+                return;
+            } else {
+                waitingForNext = false;
+                nextBtn.textContent = 'Далее →';
+                
+                if (currentIndex + 1 < currentQuestions.length) {
+                    currentIndex++;
+                    selectedOptionIndex = null;
+                    renderCurrentQuestion();
+                } else {
+                    finishQuiz();
+                }
+                return;
+            }
+        }
+        
+        if (currentMode === 'exam') {
+            if (selectedOptionIndex === null) {
+                alert('Пожалуйста, выберите вариант ответа!');
+                return;
+            }
+            
+            playSound('click');
+            userAnswers[currentIndex] = selectedOptionIndex;
+            
+            if (currentIndex + 1 < currentQuestions.length) {
+                currentIndex++;
+                selectedOptionIndex = null;
+                renderCurrentQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+    }
+    
+    function calculateScoreAndGrade(correct, maxScore) {
+        const totalPoints = correct * 5;
+        let grade = '';
+        
+        if (totalPoints >= 85) {
+            grade = '5 (Отлично)';
+        } else if (totalPoints >= 70) {
+            grade = '4 (Хорошо)';
+        } else if (totalPoints >= 50) {
+            grade = '3 (Удовлетворительно)';
+        } else {
+            grade = '2 (Неудовлетворительно)';
+        }
+        
+        return { score: totalPoints, grade };
+    }
+    
+    function finishQuiz() {
+        quizActive = false;
+        stopTimer();
+        
+        let correct = 0;
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndex = userAnswers[i];
+            if (userOptIndex === undefined || userOptIndex === null) continue;
+            const userAnswerText = currentQuestions[i].options[userOptIndex];
+            if (isAnswerCorrect(userAnswerText, currentQuestions[i].correct)) {
+                correct++;
+            }
+        }
+        
+        const wrong = currentQuestions.length - correct;
+        const { score, grade } = calculateScoreAndGrade(correct, currentQuestions.length);
+        
+        correctCountSpan.innerText = correct;
+        wrongCountSpan.innerText = wrong;
+        centerScoreSpan.innerText = score;
+        
+        let medal = '';
+        let motivation = '';
+        
+        if (score >= 85) {
+            medal = '🏆 Золотая медаль';
+            motivation = 'Превосходный результат! Вы отлично знаете материал.';
+        } else if (score >= 70) {
+            medal = '🥈 Серебряная медаль';
+            motivation = 'Хороший результат! Так держать.';
+        } else if (score >= 50) {
+            medal = '🥉 Бронзовая медаль';
+            motivation = 'Зачёт сдан. Рекомендуется повторить некоторые темы.';
+        } else {
+            medal = '📚 Нужно подтянуть знания';
+            motivation = 'Не расстраивайтесь! Пройдите тест ещё раз и улучшите результат.';
+        }
+        
+        gradeDisplayDiv.innerHTML = `<div class="grade-badge">${grade}</div>`;
+        medalArea.innerText = medal;
+        motivationMessageDiv.innerText = motivation;
+        
+        let userName = localStorage.getItem('quizUserName') || userNameInput.value.trim();
+        if (!userName) userName = 'Уважаемый студент';
+        greetingNameSpan.innerText = `${userName}, ваш результат:`;
+        
+        const donut = document.getElementById('donutChart');
+        const correctPercent = (correct / currentQuestions.length) * 360;
+        donut.style.background = `conic-gradient(var(--correct) 0deg ${correctPercent}deg, var(--wrong) ${correctPercent}deg 360deg)`;
+        
+        window.mistakes = [];
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndex = userAnswers[i];
+            if (userOptIndex === undefined || userOptIndex === null) {
+                window.mistakes.push({
+                    question: currentQuestions[i].text,
+                    userAnswer: 'Нет ответа',
+                    correctAnswer: currentQuestions[i].correct
+                });
+                continue;
+            }
+            const userAnswerText = currentQuestions[i].options[userOptIndex];
+            if (!isAnswerCorrect(userAnswerText, currentQuestions[i].correct)) {
+                window.mistakes.push({
+                    question: currentQuestions[i].text,
+                    userAnswer: userAnswerText,
+                    correctAnswer: currentQuestions[i].correct
+                });
+            }
+        }
+        
+        startScreen.classList.add('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+        backButton.classList.add('hidden');
+    }
+    
+    function initQuiz(mode) {
+        currentMode = mode;
+        waitingForNext = false;
+        
+        const shuffled = [...FULL_QUESTIONS];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        currentQuestions = shuffled.slice(0, 20);
+        userAnswers = new Array(20).fill(null);
+        currentIndex = 0;
+        selectedOptionIndex = null;
+        timeSeconds = 20 * 60;
+        quizActive = true;
+        updateTimerDisplay();
+        stopTimer();
+        startTimer();
+        renderCurrentQuestion();
+        nextBtn.textContent = 'Далее →';
+        backButton.classList.remove('hidden');
+    }
+    
+    function startQuizWithMode(mode) {
+        let userName = userNameInput.value.trim();
+        if (!userName) {
+            userName = prompt('Пожалуйста, введите ваше имя:', 'Студент');
+            if (!userName) userName = 'Студент';
+            userNameInput.value = userName;
+        }
+        localStorage.setItem('quizUserName', userName);
+        
+        initQuiz(mode);
+        startScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+    }
+    
+    function goToMainMenu() {
+        stopTimer();
+        quizActive = false;
+        startScreen.classList.remove('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        backButton.classList.add('hidden');
+        waitingForNext = false;
+        nextBtn.textContent = 'Далее →';
+    }
+    
+    function restartQuiz() {
+        if (currentMode) {
+            initQuiz(currentMode);
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+        } else {
+            goToMainMenu();
+        }
+    }
+    
+    function shareResult() {
+        const correct = parseInt(correctCountSpan.innerText);
+        const total = currentQuestions.length;
+        const userName = localStorage.getItem('quizUserName') || '';
+        const text = `${userName ? userName + ', ' : ''}результат зачёта по физкультуре: ${correct} из ${total}.`;
+        if (navigator.share) {
+            navigator.share({ title: 'Результат зачёта', text: text }).catch(() => alert(text));
+        } else {
+            alert('Результат: ' + text);
+            navigator.clipboard?.writeText(text);
+        }
+    }
+    
+    function toggleMistakes() {
+        if (mistakesListDiv.classList.contains('hidden')) {
+            if (window.mistakes && window.mistakes.length) {
+                mistakesListDiv.innerHTML = '<h3 style="margin-bottom: 12px;">📌 Ошибки</h3>';
+                window.mistakes.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'mistake-item';
+                    div.innerHTML = `
+                        <div class="mistake-question">❓ ${m.question}</div>
+                        <div class="mistake-detail">✖ Ваш ответ: ${m.userAnswer}</div>
+                        <div class="mistake-detail">✔ Правильно: ${m.correctAnswer}</div>
+                    `;
+                    mistakesListDiv.appendChild(div);
+                });
+            } else {
+                mistakesListDiv.innerHTML = '<p>🎉 Отлично! Ошибок нет.</p>';
+            }
+            mistakesListDiv.classList.remove('hidden');
+            showMistakesBtn.innerText = '📖 Скрыть ошибки';
+        } else {
+            mistakesListDiv.classList.add('hidden');
+            showMistakesBtn.innerText = '📖 Показать ошибки';
+        }
+    }
+    
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        themeToggle.innerText = isDark ? '☀️ Светлая' : '🌙 Тёмная';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+    
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        soundToggle.innerText = soundEnabled ? '🔊 Звук вкл' : '🔇 Звук выкл';
+        if (soundEnabled) {
+            showToast('Звук включён');
+            playSound('click');
+        } else {
+            showToast('Звук выключен');
+        }
+    }
+    
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            themeToggle.innerText = '☀️ Светлая';
+        } else {
+            document.body.classList.remove('dark');
+            themeToggle.innerText = '🌙 Тёмная';
+        }
+    }
+    
+    function loadUserName() {
+        const savedName = localStorage.getItem('quizUserName');
+        if (savedName) userNameInput.value = savedName;
+    }
+    
+    function resetUserName() {
+        localStorage.removeItem('quizUserName');
+        userNameInput.value = '';
+        showToast('Имя сброшено');
+    }
+    
+    // ==================== ОБРАБОТЧИКИ ====================
+    trainModeBtn.addEventListener('click', () => startQuizWithMode('train'));
+    examModeBtn.addEventListener('click', () => startQuizWithMode('exam'));
+    resetNameBtn.addEventListener('click', resetUserName);
+    themeToggle.addEventListener('click', toggleTheme);
+    soundToggle.addEventListener('click', toggleSound);
+    backButton.addEventListener('click', goToMainMenu);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    mainMenuBtn.addEventListener('click', goToMainMenu);
+    shareBtn.addEventListener('click', shareResult);
+    showMistakesBtn.addEventListener('click', toggleMistakes);
+    
+    initAudio();
+    loadTheme();
+    loadUserName();
+</script>
+</body>
+</html>
