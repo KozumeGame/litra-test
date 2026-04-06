@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Русский язык | Шпаргалка</title>
+    <title>Русский язык | Шпаргалка-справочник</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
@@ -18,13 +17,14 @@
             --text: #1e293b;
             --text-light: #475569;
             --border: #e2e8f0;
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #dbeafe;
+            --primary: #2c5f8a;
+            --primary-dark: #1e405e;
+            --primary-light: #e6f0f7;
             --correct: #10b981;
-            --correct-light: #d1fae5;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-            --card-radius: 24px;
+            --warning: #f59e0b;
+            --sidebar-bg: #f8fafc;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --card-radius: 16px;
         }
 
         body.dark {
@@ -33,863 +33,919 @@
             --text: #f1f5f9;
             --text-light: #cbd5e1;
             --border: #334155;
-            --primary-light: #1e293b;
-            --correct-light: #064e3b;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --primary-light: #1e2a3a;
+            --sidebar-bg: #111827;
         }
 
         body {
             background: var(--bg);
             color: var(--text);
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-            padding: 16px 12px 40px;
             transition: background 0.2s, color 0.2s;
             min-height: 100vh;
         }
 
-        .hidden-message {
+        /* Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
             position: fixed;
-            bottom: 8px;
-            right: 12px;
-            font-size: 11px;
-            color: var(--text-light);
-            opacity: 0.25;
-            font-family: monospace;
-            pointer-events: none;
-            z-index: 999;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 100;
         }
 
-        .container {
-            max-width: 750px;
-            margin: 0 auto;
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: inherit;
+            z-index: 10;
         }
 
-        .card {
-            background: var(--surface);
-            border-radius: var(--card-radius);
-            box-shadow: var(--shadow);
-            padding: 20px 18px;
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 40px;
             border: 1px solid var(--border);
-            transition: background 0.2s;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
         }
 
-        .header-bar {
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 6px 12px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .questions-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .question-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .question-item:hover {
+            background: var(--primary-light);
+        }
+
+        .question-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .question-item.bookmarked {
+            border-left: 3px solid var(--warning);
+        }
+
+        .question-num {
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        .bookmark-star {
+            margin-left: auto;
+            font-size: 14px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: transform 0.2s;
+        }
+
+        .bookmark-star:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .bookmark-star.active {
+            color: var(--warning);
+            opacity: 1;
+        }
+
+        /* Mobile menu button */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 101;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 14px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: 320px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Tip of the day */
+        .tip-card {
+            background: linear-gradient(135deg, var(--primary-light), var(--surface));
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--primary);
+            font-size: 13px;
+        }
+
+        /* Header */
+        .content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
         }
-        
-        .theme-toggle, .random-btn {
+
+        .content-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .icon-btn {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 40px;
-            padding: 8px 14px;
-            font-size: 13px;
-            font-weight: 500;
+            padding: 8px 16px;
+            font-size: 14px;
             cursor: pointer;
             color: var(--text);
             transition: all 0.2s;
-            width: auto;
         }
-        
-        .theme-toggle:hover, .random-btn:hover {
+
+        .icon-btn:hover {
             background: var(--primary-light);
+            transform: translateY(-1px);
         }
 
-        .shpargalka-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .shpargalka-header h1 {
-            font-size: 1.7rem;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, var(--primary), #3b82f6);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-        
-        .shpargalka-header p {
-            font-size: 14px;
-            color: var(--text-light);
-        }
-
-        /* Поиск */
-        .search-section {
-            margin-bottom: 20px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 60px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text);
-            font-size: 15px;
-            outline: none;
-        }
-        .search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
-        .search-results {
-            margin-top: 10px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            max-height: 250px;
-            overflow-y: auto;
-            display: none;
-        }
-        .search-results.show {
-            display: block;
-        }
-        .search-result-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-        .search-result-item:hover {
-            background: var(--primary-light);
-        }
-        .search-result-question {
-            font-size: 13px;
-            font-weight: 500;
-        }
-        .search-result-preview {
-            font-size: 11px;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-
-        /* Прогресс */
+        /* Progress bar */
         .progress-section {
-            margin: 16px 0;
+            margin-bottom: 16px;
         }
-        .progress-label {
-            font-size: 13px;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-        }
+
         .progress-bar-bg {
             background: var(--border);
             border-radius: 20px;
             height: 8px;
             overflow: hidden;
         }
-        .progress-bar-fill {
-            background: var(--primary);
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary), var(--correct));
             width: 0%;
             height: 100%;
-            transition: width 0.3s;
+            transition: width 0.3s ease;
             border-radius: 20px;
         }
 
-        /* Закладки */
-        .bookmarks-section {
-            margin-bottom: 16px;
+        .progress-stats {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .show-bookmarks-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-size: 13px;
-            cursor: pointer;
-            color: var(--text);
-        }
-        .show-bookmarks-btn:hover {
-            background: var(--primary-light);
-        }
-        .bookmarks-count {
-            font-size: 13px;
+            margin-top: 6px;
+            font-size: 12px;
             color: var(--text-light);
         }
-        .bookmarks-list {
-            margin-top: 12px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-        }
-        .bookmarks-list.show {
-            display: block;
-        }
-        .bookmark-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .bookmark-item:hover {
-            background: var(--primary-light);
-        }
-        .bookmark-question {
-            font-size: 13px;
-            flex: 1;
-        }
-        .remove-bookmark {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: var(--wrong);
-            padding: 0 8px;
-            width: auto;
-        }
 
+        /* Question card */
         .question-card {
-            margin-bottom: 24px;
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.3s ease;
         }
 
-        .question-text {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-title {
             font-size: 1.2rem;
-            font-weight: 700;
-            line-height: 1.4;
+            font-weight: 600;
             margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--primary);
+            line-height: 1.4;
         }
 
         .options-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
-        .option {
+        .option-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
             background: var(--surface);
-            border: 1.5px solid var(--border);
-            border-radius: 20px;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.15s;
+            transition: all 0.2s;
         }
 
-        .option.correct-option {
-            background: var(--correct-light);
+        .option-item.correct {
+            background: #10b98115;
             border-color: var(--correct);
         }
 
         .option-letter {
-            font-weight: 800;
-            background: #e2e8f0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 40px;
-            flex-shrink: 0;
-        }
-        
-        body.dark .option-letter {
-            background: #334155;
+            font-weight: 700;
+            display: inline-block;
+            width: 28px;
         }
 
-        .option.correct-option .option-letter {
+        .correct-badge {
+            display: inline-block;
             background: var(--correct);
             color: white;
-        }
-
-        .option-text {
-            flex: 1;
-            font-size: 14px;
-            line-height: 1.3;
-        }
-
-        .option.correct-option .option-text {
-            font-weight: 600;
-        }
-
-        .check-icon {
-            color: var(--correct);
-            font-weight: bold;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .bookmark-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 10px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            color: var(--text);
-            width: auto;
-            margin-bottom: 16px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .bookmark-btn.bookmarked {
-            background: #fef3c7;
-            border-color: #f59e0b;
-            color: #b45309;
-        }
-        body.dark .bookmark-btn.bookmarked {
-            background: #451a03;
-            border-color: #f59e0b;
-            color: #fbbf24;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 12px;
         }
 
         .nav-buttons {
             display: flex;
+            justify-content: space-between;
             gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            margin-top: 20px;
         }
 
-        .nav-buttons button {
-            flex: 1;
-            min-width: 100px;
+        .nav-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 15px;
+            padding: 10px 20px;
+            border-radius: 40px;
             cursor: pointer;
-            transition: 0.2s;
+            font-weight: 500;
+            flex: 1;
+            transition: all 0.2s;
         }
 
-        .nav-buttons button:hover {
+        .nav-btn:hover {
             background: var(--primary-dark);
             transform: translateY(-1px);
         }
 
-        .goto-section {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .goto-section label {
+        /* Timer */
+        .timer-display {
+            font-family: monospace;
             font-size: 14px;
-            font-weight: 500;
+            background: var(--primary-light);
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
-        .goto-section input {
-            width: 80px;
-            padding: 10px 12px;
-            border-radius: 60px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--text);
-            font-size: 14px;
-            text-align: center;
-            outline: none;
+        /* Hidden class */
+        .hidden {
+            display: none;
         }
 
-        .goto-section input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 60px 16px 20px;
+            }
+            .menu-toggle {
+                display: block;
+            }
         }
 
-        .goto-section button {
-            width: auto;
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--border);
+        }
+        ::-webkit-scrollbar-thumb {
             background: var(--primary);
-            padding: 10px 20px;
-        }
-
-        .question-counter {
-            text-align: center;
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 11px;
-            color: var(--text-light);
-        }
-
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        @media (max-width: 550px) {
-            body {
-                padding: 12px 10px 30px;
-            }
-            .card {
-                padding: 18px 16px;
-            }
-            .question-text {
-                font-size: 1.1rem;
-            }
-            .option {
-                padding: 12px 14px;
-            }
-            .option-text {
-                font-size: 13px;
-            }
-            .nav-buttons button {
-                padding: 10px 16px;
-                font-size: 14px;
-            }
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-<div class="hidden-message">F. Donne tout.</div>
-
-<div class="container" id="app">
-    <div class="header-bar">
-        <div style="font-weight: 600; font-size: 14px;">📖 РУССКИЙ ЯЗЫК | ШПАРГАЛКА</div>
-        <div style="display: flex; gap: 8px;">
-            <button class="random-btn" id="randomBtn">🎲 Случайный</button>
-            <button class="theme-toggle" id="themeToggleBtn">🌙 Тёмная</button>
+<div class="app">
+    <button class="menu-toggle" id="menuToggle">📋 Список</button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>📚 Все вопросы</h2>
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск по вопросам...">
+            <div class="filter-buttons">
+                <button class="filter-btn" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="bookmarks">⭐ Закладки</button>
+            </div>
         </div>
+        <div class="questions-list" id="questionsList"></div>
     </div>
 
-    <div class="card">
-        <div class="shpargalka-header">
-            <h1>📚 Шпаргалка к зачёту</h1>
-            <p>88 вопросов с правильными ответами (зелёным цветом)</p>
+    <!-- Main content -->
+    <div class="main-content">
+        <div class="content-header">
+            <h1>📖 Шпаргалка по русскому языку</h1>
+            <div class="header-buttons">
+                <span class="timer-display" id="timerDisplay">⏱️ 0:00</span>
+                <button class="icon-btn" id="randomBtn">🎲 Случайный</button>
+                <button class="icon-btn" id="themeToggle">🌙 Тёмная</button>
+            </div>
         </div>
 
-        <!-- Поиск -->
-        <div class="search-section">
-            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск по вопросам...">
-            <div class="search-results" id="searchResults"></div>
+        <!-- Совет дня -->
+        <div class="tip-card" id="tipCard">
+            💡 <strong>Совет дня:</strong> <span id="tipText">Загружаем...</span>
         </div>
 
-        <!-- Прогресс просмотра -->
+        <!-- Прогресс -->
         <div class="progress-section">
-            <div class="progress-label">
-                <span>📖 Просмотрено вопросов</span>
-                <span id="viewedCount">0</span>
-            </div>
             <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progressFill"></div>
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-stats">
+                <span>📊 Прогресс</span>
+                <span id="progressText">0%</span>
             </div>
         </div>
 
-        <!-- Закладки -->
-        <div class="bookmarks-section">
-            <button class="show-bookmarks-btn" id="showBookmarksBtn">⭐ Показать закладки</button>
-            <span class="bookmarks-count" id="bookmarksCount">⭐ 0</span>
-        </div>
-        <div class="bookmarks-list" id="bookmarksList"></div>
-
-        <!-- Основной контент -->
-        <div id="quizContent">
-            <div class="question-counter" id="questionCounter">Вопрос 1 из 88</div>
-            <div class="question-card">
-                <div class="question-text" id="questionText">Загрузка...</div>
-                <div class="options-list" id="optionsContainer"></div>
-                <button class="bookmark-btn" id="bookmarkThisBtn">⭐ В закладки</button>
-            </div>
+        <div class="question-card" id="questionCard">
+            <div class="question-title" id="questionText">Загрузка...</div>
+            <div class="options-list" id="optionsContainer"></div>
             <div class="nav-buttons">
-                <button id="prevBtn">← Предыдущий</button>
-                <button id="nextBtn">Следующий →</button>
-            </div>
-            <div class="goto-section">
-                <label>Перейти к вопросу №</label>
-                <input type="number" id="gotoInput" min="1" max="88" value="1">
-                <button id="gotoBtn">Перейти</button>
+                <button class="nav-btn" id="prevBtn">← Предыдущий</button>
+                <button class="nav-btn" id="nextBtn">Следующий →</button>
             </div>
         </div>
-        <footer>Правильные ответы выделены зелёным ✅ — листай, ищи, отмечай сложное</footer>
+
+        <div style="text-align: center; font-size: 11px; color: var(--text-light); margin-top: 20px;">
+            💡 Горячие клавиши: ← → | R - случайный | B - закладка
+        </div>
     </div>
 </div>
 
 <script>
-    // ==================== БАЗА ДАННЫХ: 88 ВОПРОСОВ ====================
-    const FULL_QUESTIONS = [
-        { text: "Укажите неверное утверждение.", type: "single", correct: ["2"], options: ["в современном русском звуков больше, чем букв", "в русском языке 10 гласных звуков и 10 гласных букв", "гласные звуки в русском языке делятся на ударные и безударные", "слово «алфавит» и «азбука» означает одно и тоже"] },
-        { text: "Укажите слово, в котором букв столько же, сколько и звуков.", type: "single", correct: ["4"], options: ["юла", "юннаты", "съест", "болеть"] },
-        { text: "Найдите слово, написание которого не совпадает с его произношением.", type: "single", correct: ["1"], options: ["чтобы", "взял", "азбука", "новый"] },
-        { text: "Найдите слова с непроизносимыми согласными в корне.", type: "multiple", correct: ["2","3"], options: ["интересный", "окрестный", "сверстник", "ровесник"] },
-        { text: "Укажите, в каких словах надо писать Ъ.", type: "multiple", correct: ["1","3"], options: ["предъюбилейный", "съуживались", "объединение", "пъяница"] },
-        { text: "Укажите, где надо писать ь после шипящих.", type: "multiple", correct: ["2","4"], options: ["зияет бреш", "намажь хлеб", "ребёнок пригож", "ударил наотмашь"] },
-        { text: "Укажите слова с буквой О после шипящих.", type: "multiple", correct: ["1","4"], options: ["чопорный вид", "сгнивший жёлудь", "изображённый на бумаге", "расписной сундучок"] },
-        { text: "Найдите слова с буквой И после Ц.", type: "multiple", correct: ["2","3"], options: ["пловцы", "целиком", "традиция", "цилиндр"] },
-        { text: "Укажите слова с ударением на первом слоге.", type: "multiple", correct: ["1","2"], options: ["шарфы", "банты", "балуясь", "прибыла"] },
-        { text: "В каком слове вместо точек пишется А?", type: "single", correct: ["2"], options: ["долина", "поглощать", "раздражение", "зарождение"] },
-        { text: "В каком слове вместо точек пишется Е?", type: "single", correct: ["1"], options: ["соединяет", "удивляется", "слетела", "слились"] },
-        { text: "Укажите слово, в котором пять звуков.", type: "single", correct: ["3"], options: ["январь", "июль", "юбка", "осень"] },
-        { text: "В каком слове первый звук корня является мягким согласным?", type: "single", correct: ["1"], options: ["удивление", "пришёл", "цифра", "женщина"] },
-        { text: "В каком слове произносится твёрдый согласный перед Е?", type: "single", correct: ["4"], options: ["фанера", "академик", "тема", "кашне"] },
-        { text: "В каком слове произносится (шн)?", type: "single", correct: ["1"], options: ["конечно", "вечный", "порочный", "наконечник"] },
-        { text: "Найдите слова с безударной гласной корня, проверяемой ударением.", type: "multiple", correct: ["1","4"], options: ["примирение", "вытереть", "коснуться", "запевать"] },
-        { text: "Укажите слова с буквой З в приставке.", type: "multiple", correct: ["3"], options: ["безвкусный", "сделать", "вздох", "бесплатный"] },
-        { text: "Выделите слово, где суффикс -ик имеет уменьшительное значение.", type: "single", correct: ["4"], options: ["тюбик", "половик", "массовик", "арбузик"] },
-        { text: "Отметьте слово, которое образовано при помощи приставки и суффикса одновременно.", type: "single", correct: ["4"], options: ["переезд", "берёзовый", "городской", "прибрежный"] },
-        { text: "Найдите слова, образованные бессуффиксным способом.", type: "multiple", correct: ["1","4"], options: ["отлёт", "рассмотрение", "погрузка", "тишь"] },
-        { text: "Вставьте пропущенные буквы. Укажите ряд, в котором все слова имеют приставку при-.", type: "single", correct: ["3"], options: ["пр..мирить, пр..забавный, пр..увеличить", "пр..сесть, пр..винтить, пр..спокойный", "пр..брежный, пр..ползти, пр..скакать", "пр..злой, пр..школьный, пр..ручить"] },
-        { text: "Какая из частей слова не является морфемой?", type: "single", correct: ["1"], options: ["основа", "приставка", "окончание", "суффикс"] },
-        { text: "Найдите верное утверждение.", type: "single", correct: ["4"], options: ["у глаголов не может быть нулевого окончания", "окончание служит для образования новых слов", "основа не может быть ровна всему слову", "корень слова содержит его главное лексическое значение"] },
-        { text: "Найдите неверное утверждение.", type: "single", correct: ["3"], options: ["корень-общая часть родственных слов", "в словах беда, бедолага один и тот же корень", "в словах водяной, подводный, заводь один и тот же корень", "в словах родник, народ, родина один и тот же корень"] },
-        { text: "Найдите неизменяемое слово.", type: "single", correct: ["4"], options: ["ворота", "работает", "друг", "вокруг"] },
-        { text: "Найдите склоняемое слово.", type: "single", correct: ["2"], options: ["сообща", "правило", "упасть", "темно"] },
-        { text: "Найдите спрягаемое слово.", type: "single", correct: ["1"], options: ["коротать", "май", "светло", "свидание"] },
-        { text: "Слово какой части речи состоит только из основы?", type: "single", correct: ["3"], options: ["существительное", "местоимение", "глагол", "прилагательное"] },
-        { text: "У какой пары слов приставки имеют противоположное значение?", type: "single", correct: ["4"], options: ["ввести-подвести", "свалить-перевалить", "приехать-съехать", "отъехать-подъехать"] },
-        { text: "В каком слове суффикс -тель не обозначает лицо по роду занятий?", type: "single", correct: ["4"], options: ["строитель", "преподаватель", "искатель", "отражатель"] },
-        { text: "Какой суффикс указывает на профессию человека?", type: "single", correct: ["2"], options: ["-к-", "-ист-", "-еньк-", "-ск-"] },
-        { text: "Какие из слов неверно разделены на морфемы?", type: "multiple", correct: ["2","4"], options: ["повтор-ени-е", "пре-крас-н-ый", "ус-меш-к-а", "от-вет"] },
-        { text: "В каком слове безударную гласную нельзя проверить ударением?", type: "single", correct: ["4"], options: ["кататься", "трава", "цветы", "растём"] },
-        { text: "В каком слове в корне с чередованием гласных пишется О?", type: "single", correct: ["2"], options: ["предлагать", "поклониться", "вырастили", "заря"] },
-        { text: "В каком слове в корне с чередованием гласных пишется А?", type: "single", correct: ["4"], options: ["коснуться", "положение", "загореть", "отрасль"] },
-        { text: "В каком слове произношение приставки расходится с её написанием?", type: "single", correct: ["4"], options: ["смещение", "сходка", "стащить", "сжатый"] },
-        { text: "На конце каких приставок пишется С?", type: "multiple", correct: ["2","3","4"], options: ["безграмотный", "исчезать", "исносится", "искатель"] },
-        { text: "Найдите лишнее слово.", type: "single", correct: ["1"], options: ["безынициативный", "подогреть", "предыстория", "розыгрыш"] },
-        { text: "Найдите значение, которое не может иметь приставка при-.", type: "single", correct: ["2"], options: ["присоединение", "превосходная степень", "неполнота действия", "приближение"] },
-        { text: "Найдите лишнее слово.", type: "single", correct: ["1"], options: ["преломить", "претрудный", "преструнить", "преинтересный"] },
-        { text: "Каким способом образовано слово зарплата.", type: "single", correct: ["4"], options: ["приставочным", "образованием слова из словосочетания", "сложением слогов", "сложением начальной части слова и целого слова"] },
-        { text: "В каком слове пишется безударная гласная а?", type: "single", correct: ["1"], options: ["компания друзей", "избирательная кампания", "долина", "горизонт"] },
-        { text: "В каком слове пишется безударная е?", type: "single", correct: ["1"], options: ["посидел перед дорогой", "сидящий на скамейке", "седеющая голова", "сидят в классе"] },
-        { text: "Найдите многозначные слова.", type: "multiple", correct: ["3"], options: ["акваланг", "диспут", "зеркало", "вестибюль"] },
-        { text: "Найдите пару синонимов.", type: "single", correct: ["3"], options: ["ветер-штиль", "коса-коза", "метель-вьюга", "крикнуть-пошептать"] },
-        { text: "Найдите архаизм.", type: "single", correct: ["2"], options: ["бурак", "перст", "изба", "атлет"] },
-        { text: "Найдите неологизм.", type: "single", correct: ["4"], options: ["боярин", "кафтан", "ливрея", "скотч"] },
-        { text: "Найдите фразеологизм.", type: "single", correct: ["4"], options: ["налил воды в стакан", "вода из чашки разлилась", "воды было по колено", "нас водой не разольёшь"] },
-        { text: "Найдите заимствованное слово.", type: "single", correct: ["2"], options: ["облако", "натюрморт", "дождь", "стол"] },
-        { text: "Найдите неправильное суждение.", type: "single", correct: ["1"], options: ["фразеология- словарный состав языка", "неологизмы -новые слова", "архаизмы-устаревшие слова", "фразеологизмы-устойчивые словосочетания"] },
-        { text: "Найдите служебную часть речи.", type: "single", correct: ["4"], options: ["местоимение", "глагол", "имя числительное", "частица"] },
-        { text: "Найдите самостоятельную часть речи.", type: "single", correct: ["2"], options: ["междометия", "имя числительное", "союз", "предлог"] },
-        { text: "На какой из вопросов может отвечать наречие?", type: "single", correct: ["3"], options: ["Кого?", "Сколько?", "Где?", "Чей?"] },
-        { text: "Какой из морфологических признаков есть у имени существительного?", type: "single", correct: ["4"], options: ["спряжение", "лицо", "время", "число"] },
-        { text: "Какого морфологического признака нет у имени существительного?", type: "single", correct: ["1"], options: ["лицо", "склонение", "одушевлённость", "род"] },
-        { text: "Найдите существительное нарицательное.", type: "single", correct: ["3"], options: ["Луна", "Жучка", "попугай", "«Костёр»"] },
-        { text: "Найдите существительное имя-собственное.", type: "single", correct: ["4"], options: ["тигр", "село", "институт", "Дон"] },
-        { text: "Найдите существительное 2-го склонения.", type: "single", correct: ["2"], options: ["речь", "рояль", "сладкоежка", "дедушка"] },
-        { text: "На конце какой приставки пишется З?", type: "single", correct: ["3"], options: ["восхождение", "бесславный", "раздатчик", "искатель"] },
-        { text: "Найдите существительное мужского рода.", type: "single", correct: ["4"], options: ["окно", "путешествие", "упорство", "кенгуру"] },
-        { text: "Найдите существительное, употребляемое только во множественном числе.", type: "single", correct: ["3"], options: ["пруды", "радости", "сутки", "гости"] },
-        { text: "Найдите неизменяемое существительное.", type: "single", correct: ["2"], options: ["ТЮЗ", "фортепиано", "бег", "фамилия"] },
-        { text: "В каком ряду во всех словах пропущена проверяемая безударная гласная.", type: "single", correct: ["4"], options: ["фестиваль, вершина, обласкать", "мотив, удивлять, касался", "оперение, пловец, нарядится", "замолчать, лекционный, космонавт"] },
-        { text: "Какого рода слово трудяга?", type: "single", correct: ["3"], options: ["женский род", "мужской род", "общий род", "средний род"] },
-        { text: "Укажите прилагательное с суффиксом -ск-.", type: "single", correct: ["3"], options: ["низкий", "близкий", "французский", "турецкий"] },
-        { text: "Какое прилагательное пишется через дефис?", type: "single", correct: ["4"], options: ["дальневосточный", "сельскохозяйственный", "древнерусский", "юго-западный"] },
-        { text: "В каких словах на месте пропуска пишется нн?", type: "multiple", correct: ["1","3"], options: ["картинный", "серебряный", "соломенный", "ледяной"] },
-        { text: "В какой строке во всех словах на месте пропуска пишется буква о?", type: "single", correct: ["3"], options: ["кумачовый, девчонка, лапшой, вещевой", "парчовый, дешёвый, речонка, тяжёлый", "ежовый, грошовый, одежонка, шорох", "образцовый, отцов, ключевой, тучей"] },
-        { text: "Укажите правильные варианты прилагательных в форме простой сравнительной степени.", type: "multiple", correct: ["3","4"], options: ["красивше", "легше", "лучше", "мельче"] },
-        { text: "Определите числительное, у которого при склонении изменяется только одно слово.", type: "single", correct: ["4"], options: ["шестьдесят два", "двадцать восьмой", "восемьдесят один", "сто пятнадцать"] },
-        { text: "Найдите неверное утверждение. Возвратное местоимение себя:", type: "single", correct: ["3"], options: ["указывает на того о ком говорят", "не имеет именительного падежа", "изменяется по родам, числам", "в предложениях является дополнением"] },
-        { text: "Определите, в каком варианте значение фразеологизма указано неверно?", type: "single", correct: ["4"], options: ["считать ворон-бездельничать", "тёртый калач-опытный", "в час по чайной ложке-медленно", "седьмая вода на киселе-близкие родственники"] },
-        { text: "От каких слов можно образовать существительные с суффиксом -щик?", type: "single", correct: ["2"], options: ["обида, разведать, камень", "угон, барабан, кровля", "поднос, автомат, заказ", "буфет, приводить, резать"] },
-        { text: "В каком ряду слов неправильное ударение?", type: "single", correct: ["2"], options: ["диалОг, обеспЕчение, сОздал", "бАнты, шАрфы, тОрты", "позвонИшь, повторИм, красИвее", "жалюзИ, мЕльком, созвонИмся"] },
-        { text: "Какой фразеологизм не соответствует значению «много»?", type: "single", correct: ["2"], options: ["куры не клюют", "семь пятниц на неделе", "тьма тьмущая", "хоть пруд пруди"] },
-        { text: "Укажите разносклоняемые имена существительные.", type: "single", correct: ["1"], options: ["знамя, время, племя", "армия, санаторий, волнение", "пальто, кофе, жюри", "такси, товарищ, брошь"] },
-        { text: "Какое прилагательное не имеет краткой формы?", type: "single", correct: ["4"], options: ["плохой", "хороший", "сильный", "маленький"] },
-        { text: "Какую форму имеет числительное семьсот шестьдесят восьмой в творительном падеже?", type: "single", correct: ["2"], options: ["семьсот шестьдесят восьмому", "семьюстами шестьюдесятью восемью", "семьсот шестьюдесятью восьмым", "семьсот шестьдесят восьмым"] },
-        { text: "Какое из данных слов является антонимом к слову «страдание»?", type: "single", correct: ["4"], options: ["печаль", "смятение", "праздник", "блаженство"] },
-        { text: "Указать, в каком ряду написаны только архаизмы.", type: "single", correct: ["2"], options: ["компьютер, хоккей, президент", "уста, чело, ланиты", "перст, сюжет, кашнэ", "лицедей, сыроежка, баталия"] },
-        { text: "Определи ряд, в котором пропущена одна и та же буква.", type: "single", correct: ["2"], options: ["неглядный, заходил, проплыл", "бесцельный, раскол, расписание", "бесжалостный, предобрый, пришкольный", "безыдейный, расплыл, безрадостный"] },
-        { text: "Сколько частей речи в русском языке?", type: "single", correct: ["3"], options: ["7", "9", "10", "6"] },
-        { text: "Какой принцип русской орфографии является основным?", type: "single", correct: ["3"], options: ["Дифференцирующий", "традиционный", "морфологический", "фонетический"] },
-        { text: "В каком ряду в сложных существительных пропущена одна и та же буква?", type: "single", correct: ["2"], options: ["сенокос, пароход, ледокол", "птицелов, волнорез, путеводитель", "баснописец, овцевод, кровожадный", "дальномер, змеелов, луноход"] },
-        { text: "Какое слово пишется без Ь?", type: "single", correct: ["3"], options: ["уменьшить", "режьте", "каменщик", "больше"] },
-        { text: "Написание какого слова нельзя проверить подбором однокоренного слова?", type: "single", correct: ["3"], options: ["здравствуйте", "честный", "лестница", "местный"] },
-        { text: "Укажите слова, образованные приставочно-суффиксальным способом.", type: "multiple", correct: ["1","2"], options: ["обходить", "выспаться", "правнук", "небольшой"] },
-        { text: "Отметьте ряды слов с чередующимися гласными в корне.", type: "multiple", correct: ["1","3"], options: ["запирать, озарение, Ростов", "выжигать, удивительный, долина", "загореть, собирать, промокательная", "часовой, коснулся, вокзал"] }
+    // ==================== СОВЕТЫ ДНЯ ====================
+    const TIPS = [
+        "В слове «звонишь» ударение падает на последний слог: «звонИшь».",
+        "Слова «одеть» и «надеть»: одевают человека, надевают одежду.",
+        "«По приезде» — правильно, а не «по приезду».",
+        "Слово «кофе» — мужского рода (чёрный кофе).",
+        "«Ихний» — неправильно, правильно «их».",
+        "В слове «торты» ударение на первый слог.",
+        "«Ложить» — неправильно, правильно «класть».",
+        "Слово «жалюзи» ударение на последний слог.",
+        "«Договор» — ударение на последний слог: «договОр».",
+        "«Свекла» — правильно «свёкла» с ударением на ё.",
+        "Частица «таки» пишется через дефис: «всё-таки», «пришёл-таки».",
+        "«В течение» (время) и «в течении» (река) — пишутся по-разному.",
+        "«Также» = «и», а «так же» — сравнение.",
+        "«Чтобы» = «для того чтобы», а «что бы» — с частицей бы.",
+        "Непроизносимые согласные: «солнце», «лестница», «чувство»."
     ];
+
+    // ==================== БАЗА ДАННЫХ: 88 ВОПРОСОВ (ПОЛНОСТЬЮ ИСПРАВЛЕНА) ====================
+    const FULL_QUESTIONS = [
+        { id: 1, text: "Укажите неверное утверждение.", correct: "в русском языке 10 гласных звуков и 10 гласных букв", options: ["в современном русском звуков больше, чем букв", "в русском языке 10 гласных звуков и 10 гласных букв", "гласные звуки в русском языке делятся на ударные и безударные", "слово «алфавит» и «азбука» означает одно и тоже"] },
+        { id: 2, text: "Укажите слово, в котором букв столько же, сколько и звуков.", correct: "съест", options: ["юла", "юннаты", "съест", "болеть"] },
+        { id: 3, text: "Найдите слово, написание которого не совпадает с его произношением.", correct: "чтобы", options: ["чтобы", "взял", "азбука", "новый"] },
+        { id: 4, text: "Найдите слова с непроизносимыми согласными в корне.", correct: "окрестный, сверстник", options: ["интересный", "окрестный", "сверстник", "ровесник"], multi: true },
+        { id: 5, text: "Укажите, в каких словах надо писать ъ.", correct: "предъюбилейный, объединение", options: ["предъюбилейный", "съуживались", "объединение", "пъяница"], multi: true },
+        { id: 6, text: "Укажите, где надо писать ь после шипящих.", correct: "брешь, намажь, наотмашь", options: ["зинет брешь", "намажь хлеб", "ребёнок пригож", "ударил наотмашь"], multi: true },
+        { id: 7, text: "Укажите слова с буквой О после шипящих.", correct: "чопорный, сундучок", options: ["чопорный вид", "сгнивший жёлудь", "изображённый на бумаге", "расписной сундучок"], multi: true },
+        { id: 8, text: "Найдите слова с буквой И после Ц.", correct: "традиция, цилиндр", options: ["пловцы", "циликом", "традиция", "цилиндр"], multi: true },
+        { id: 9, text: "Укажите слова с ударением на первом слоге.", correct: "шарфы, банты", options: ["шарфы", "банты", "балуясь", "прибыла"], multi: true },
+        { id: 10, text: "В каком слове вместо точек пишется А?", correct: "раздражение", options: ["долина", "поглощать", "раздражение", "зарождение"] },
+        { id: 11, text: "В каком слове вместо точек пишется Е?", correct: "слетела", options: ["соединяет", "удивляется", "слетела", "слились"] },
+        { id: 12, text: "Укажите слово, в котором пять звуков.", correct: "юбка", options: ["январь", "июль", "юбка", "осень"] },
+        { id: 13, text: "В каком слове первый звук корня является мягким согласным?", correct: "удивление", options: ["удивление", "пришёл", "цифра", "женщина"] },
+        { id: 14, text: "В каком слове произносится твёрдый согласный перед Е?", correct: "кашне", options: ["фанера", "академик", "тема", "кашне"] },
+        { id: 15, text: "В каком слове произносится (шн)?", correct: "конечно", options: ["конечно", "вечный", "порочный", "наконечник"] },
+        { id: 16, text: "Найдите слова с безударной гласной корня, проверяемой ударением.", correct: "примирение, запевать", options: ["примирение", "вытереть", "коснуться", "запевать"], multi: true },
+        { id: 17, text: "Укажите слова с буквой З в приставке.", correct: "безвкусный, вздох", options: ["безвкусный", "сделать", "вздох", "бесплатный"], multi: true },
+        { id: 18, text: "Выделите слово, где суффикс -ик имеет уменьшительное значение.", correct: "арбузик", options: ["тюбик", "половик", "массовик", "арбузик"] },
+        { id: 19, text: "Отметьте слово, которое образовано при помощи приставки и суффикса одновременно.", correct: "прибрежный", options: ["переезд", "берёзовый", "городской", "прибрежный"] },
+        { id: 20, text: "Найдите слова, образованные бессуффиксным способом.", correct: "отлёт, тишь", options: ["отлёт", "рассмотрение", "погрузка", "тишь"], multi: true },
+        { id: 21, text: "Вставьте пропущенные буквы. Укажите ряд, в котором все слова имеют приставку при-.", correct: "прибрежный, приползти, прискакать", options: ["премирить, презабавный, превыличить", "присесть, привинтить, преспокойный", "прибрежный, приползти, прискакать", "презлой, пришкольный, приручить"] },
+        { id: 22, text: "Какая из частей слова не является морфемой?", correct: "основа", options: ["основа", "приставка", "окончание", "суффикс"] },
+        { id: 23, text: "Найдите верное утверждение.", correct: "корень слова содержит его главное лексическое значение", options: ["у глаголов не может быть нулевого окончания", "окончание служит для образования новых слов", "основа не может быть равна всему слову", "корень слова содержит его главное лексическое значение"] },
+        { id: 24, text: "Найдите неверное утверждение.", correct: "в словах беда, бедолага один и тот же корень", options: ["корень-общая часть родственных слов", "в словах беда, бедолага один и тот же корень", "в словах водяной, подводный, заводь один и тот же корень", "в словах родник, народ, родина один и тот же корень"] },
+        { id: 25, text: "Найдите неизменяемое слово.", correct: "вокруг", options: ["ворота", "работает", "друг", "вокруг"] },
+        { id: 26, text: "Найдите склоняемое слово.", correct: "правило", options: ["сообща", "правило", "упасть", "темно"] },
+        { id: 27, text: "Найдите спрягаемое слово.", correct: "коротать", options: ["коротать", "май", "светло", "свидание"] },
+        { id: 28, text: "Слово какой части речи состоит только из основы?", correct: "прилагательное", options: ["существительное", "местоимение", "глагол", "прилагательное"] },
+        { id: 29, text: "У какой пары слов приставки имеют противоположное значение?", correct: "отъехать-подъехать", options: ["ввести-подвести", "свалить-перевалить", "приехать-съехать", "отъехать-подъехать"] },
+        { id: 30, text: "В каком слове суффикс -тель не обозначает лицо по роду занятий?", correct: "отражатель", options: ["строитель", "преподаватель", "искатель", "отражатель"] },
+        { id: 31, text: "Какой суффикс указывает на профессию человека?", correct: "-ист-", options: ["-к-", "-ист-", "-еньк-", "-ск-"] },
+        { id: 32, text: "Какие из слов неверно разделены на морфемы?", correct: "усмешка, ответ", options: ["повтор-ени-е", "пре-крас-н-ый", "ус-меш-к-а", "от-вет"], multi: true },
+        { id: 33, text: "В каком слове безударную гласную нельзя проверить ударением?", correct: "растём", options: ["кататься", "трава", "цветы", "растём"] },
+        { id: 34, text: "В каком слове в корне с чередованием гласных пишется О?", correct: "поклониться", options: ["предлагать", "поклониться", "вырастили", "заря"] },
+        { id: 35, text: "В каком слове в корне с чередованием гласных пишется А?", correct: "отрасль", options: ["коснуться", "положение", "загореть", "отрасль"] },
+        { id: 36, text: "В каком слове произношение приставки расходится с её написанием?", correct: "сжатый", options: ["смещение", "сходка", "стащить", "сжатый"] },
+        { id: 37, text: "На конце каких приставок пишется С?", correct: "исчезать, искатель", options: ["бесграмотный", "исчезать", "исносится", "искатель"], multi: true },
+        { id: 38, text: "Найдите лишнее слово.", correct: "подогреть", options: ["безынициативный", "подогреть", "предыстория", "розыгрыш"] },
+        { id: 39, text: "Найдите значение, которое не может иметь приставка при-.", correct: "превосходная степень", options: ["присоединение", "превосходная степень", "неполнота действия", "приближение"] },
+        { id: 40, text: "Найдите лишнее слово.", correct: "преструнить", options: ["преломить", "претрудный", "преструнить", "преинтересный"] },
+        { id: 41, text: "Каким способом образовано слово зарплата.", correct: "сложением начальной части слова и целого слова", options: ["приставочным", "образованием слова из словосочетания", "сложением слогов", "сложением начальной части слова и целого слова"] },
+        { id: 42, text: "В каком слове пишется безударная гласная буква а?", correct: "избирательная кампания", options: ["компания друзей", "избирательная кампания", "долина", "горизонт"] },
+        { id: 43, text: "В каком слове пишется безударная гласная е?", correct: "седеющая голова", options: ["посидел перед дорогой", "сидящий на скамейке", "седеющая голова", "сидят в классе"] },
+        { id: 44, text: "Найдите многозначные слова.", correct: "диспут, зеркало", options: ["акваланг", "диспут", "зеркало", "вестибюль"], multi: true },
+        { id: 45, text: "Найдите пару синонимов.", correct: "метель-вьюга", options: ["ветер-штиль", "коса-коза", "метель-вьюга", "крикнуть-пошептать"] },
+        { id: 46, text: "Найдите архаизм.", correct: "перст", options: ["бурак", "перст", "изба", "атлет"] },
+        { id: 47, text: "Найдите неологизм.", correct: "скотч", options: ["боярин", "кафтан", "ливрея", "скотч"] },
+        { id: 48, text: "Найдите фразеологизм.", correct: "нас водой не разольёшь", options: ["налил воды в стакан", "вода из чашки разлилась", "воды было по колено", "нас водой не разольёшь"] },
+        { id: 49, text: "Найдите заимствованное слово.", correct: "натюрморт", options: ["облако", "натюрморт", "дождь", "стол"] },
+        { id: 50, text: "Найдите неправильное суждение.", correct: "фразеология- словарный состав языка", options: ["фразеология- словарный состав языка", "неологизмы-новые слова", "архаизмы-устаревшие слова", "фразеологизмы-устойчивые словосочетания"] },
+        { id: 51, text: "Найдите служебную часть речи.", correct: "частица", options: ["местоимение", "глагол", "имя числительное", "частица"] },
+        { id: 52, text: "Найдите самостоятельную часть речи.", correct: "имя числительное", options: ["междометия", "имя числительное", "союз", "предлог"] },
+        { id: 53, text: "На какой из вопросов может отвечать наречие?", correct: "Где?", options: ["Кого?", "Сколько?", "Где?", "Чей?"] },
+        { id: 54, text: "Какой из морфологических признаков есть у имени существительного?", correct: "число", options: ["спряжение", "лицо", "время", "число"] },
+        { id: 55, text: "Какого морфологического признака нет у имени существительного?", correct: "лицо", options: ["лицо", "склонение", "одушевлённость", "род"] },
+        { id: 56, text: "Найдите существительное нарицательное.", correct: "попугай", options: ["Луна", "Жучка", "попугай", "«Костёр»"] },
+        { id: 57, text: "Найдите существительное имя собственное.", correct: "Дон", options: ["тигр", "село", "институт", "Дон"] },
+        { id: 58, text: "Найдите существительное 2-го склонения.", correct: "рояль", options: ["речь", "рояль", "сладкоежка", "дедушка"] },
+        { id: 59, text: "На конце какой приставки пишется З?", correct: "восхождение", options: ["восхождение", "бесславный", "раздатчик", "искатель"] },
+        { id: 60, text: "Найдите существительное мужского рода.", correct: "кенгуру", options: ["окно", "путешествие", "упорство", "кенгуру"] },
+        { id: 61, text: "Найдите существительное, употребляемое только во множественном числе.", correct: "сутки", options: ["пруды", "радости", "сутки", "гости"] },
+        { id: 62, text: "Найдите неизменяемое существительное.", correct: "фортепиано", options: ["ТЮЗ", "фортепиано", "бег", "фамилия"] },
+        { id: 63, text: "В каком ряду во всех словах пропущена проверяемая безударная гласная.", correct: "замолчать, лекционный, космонавт", options: ["фестиваль, вершина, обласкать", "мотив, удивлять, касался", "оперение, пловец, нарядится", "замолчать, лекционный, космонавт"] },
+        { id: 64, text: "Какого рода слово трудяга?", correct: "общий род", options: ["женский род", "мужской род", "общий род", "средний род"] },
+        { id: 65, text: "Укажите прилагательное с суффиксом -ск-.", correct: "французский", options: ["низкий", "близкий", "французский", "турецкий"] },
+        { id: 66, text: "Какое прилагательное пишется через дефис?", correct: "юго-западный", options: ["дальневосточный", "сельскохозяйственный", "древнерусский", "юго-западный"] },
+        { id: 67, text: "В каких словах на месте пропуска пишется нн?", correct: "картинный, соломенный", options: ["картинный", "серебряный", "соломенный", "ледяной"], multi: true },
+        { id: 68, text: "В какой строке во всех словах на месте пропуска пишется буква о?", correct: "ежовый, грошовый, одежонка, шорох", options: ["кумачовый, девчонка, лапшой, вещовой", "парчовый, дешёвый, речонка, тяжёлый", "ежовый, грошовый, одежонка, шорох", "образцовый, отцов, ключевой, тучей"] },
+        { id: 69, text: "Укажите правильные варианты прилагательных в форме простой сравнительной степени.", correct: "лучше, мельче", options: ["красивше", "легше", "лучше", "мельче"], multi: true },
+        { id: 70, text: "Определите числительное, у которого при склонении изменяется только одно слово.", correct: "двадцать восьмой", options: ["шестьдесят два", "двадцать восьмой", "восемьдесят один", "сто пятнадцать"] },
+        { id: 71, text: "Найдите неверное утверждение. Возвратное местоимение себя:", correct: "изменяется по родам, числам", options: ["указывает на того о ком говорят", "не имеет именительного падежа", "изменяется по родам, числам", "в предложениях является дополнением"] },
+        { id: 72, text: "Определите, в каком варианте значение фразеологизма указано неверно.", correct: "седьмая вода на киселе-близкие родственники", options: ["считать ворон-бездельничать", "тёртый калач-опытный", "в час по чайной ложке-медленно", "седьмая вода на киселе-близкие родственники"] },
+        { id: 73, text: "От каких слов можно образовать существительные с суффиксом -щик?", correct: "угон, барабан, кровля", options: ["обида, разведать, камень", "угон, барабан, кровля", "поднос, автомат, заказ", "буфет, приводить, резать"] },
+        { id: 74, text: "В каком ряду слов неправильное ударение?", correct: "банты, шарфы, торты", options: ["диалог, обеспечение, создал", "банты, шарфы, торты", "позвонишь, повторим, красивее", "жалюзи, мельком, созвонимся"] },
+        { id: 75, text: "Какой фразеологизм не соответствует значению «много»?", correct: "семь пятниц на неделе", options: ["куры не клюют", "семь пятниц на неделе", "тьма тьмущая", "хоть пруд пруди"] },
+        { id: 76, text: "Укажите разносклоняемые имена существительные.", correct: "знамя, время, племя", options: ["знамя, время, племя", "армия, санаторий, волнение", "пальто, кофе, жюри", "такси, товарищ, брошь"] },
+        { id: 77, text: "Какое прилагательное не имеет краткой формы?", correct: "маленький", options: ["плохой", "хороший", "сильный", "маленький"] },
+        { id: 78, text: "Какую форму имеет числительное семьсот шестьдесят восьмой в творительном падеже?", correct: "семьюстами шестьюдесятью восемью", options: ["семьсот шестьдесят восьмому", "семьюстами шестьюдесятью восемью", "семьсот шестьюдесятью восьмым", "семьсот шестьдесят восьмым"] },
+        { id: 79, text: "Какое из данных слов является антонимом к слову «страдание»?", correct: "блаженство", options: ["печаль", "смятение", "праздник", "блаженство"] },
+        { id: 80, text: "Указать, в каком ряду написаны только архаизмы.", correct: "уста, чело, ланиты", options: ["компьютер, хоккей, президент", "уста, чело, ланиты", "перст, сюжет, кашне", "лицедей, сыроежка, баталия"] },
+        { id: 81, text: "Определи ряд, в котором пропущена одна и та же буква.", correct: "бесцельный, раскол, расписание", options: ["неглядный, заходил, приплыл", "бесцельный, раскол, расписание", "бесжалостный, предобрый, пришкольный", "безыдейный, расплыл, безрадостный"] },
+        { id: 82, text: "Сколько частей речи в русском языке?", correct: "10", options: ["7", "9", "10", "6"] },
+        { id: 83, text: "Какой принцип русской орфографии является основным?", correct: "морфологический", options: ["Дифференцирующий", "традиционный", "морфологический", "фонетический"] },
+        { id: 84, text: "В каком ряду в сложных существительных пропущена одна и та же буква?", correct: "сенокос, пароход, ледокол", options: ["сенокос, пароход, ледокол", "птицелов, волнорез, путеводитель", "баснописец, овцевод, кровожадный", "дальномер, змеелов, луноход"] },
+        { id: 85, text: "Какое слово пишется без ь?", correct: "каменщик", options: ["уменьшить", "режьте", "каменщик", "больше"] },
+        { id: 86, text: "Написание какого слова нельзя проверить подбором однокоренного слова?", correct: "лестница", options: ["здравствуйте", "честный", "лестница", "местный"] },
+        { id: 87, text: "Укажите слова, образованные приставочно-суффиксальным способом.", correct: "обходить, выспаться", options: ["обходить", "выспаться", "правнук", "небольшой"], multi: true },
+        { id: 88, text: "Отметьте ряды слов с чередующимися гласными в корне.", correct: "запирать, озарение, Ростов; загореть, собирать, промокательная", options: ["запирать, озарение, Ростов", "выжигать, удивительный, долина", "загореть, собирать, промокательная", "часовой, коснулся, вокзал"], multi: true }
+    ];
+
+    // ==================== ФУНКЦИЯ СРАВНЕНИЯ ОТВЕТОВ ====================
+    function isAnswerCorrect(userAnswer, correctAnswer) {
+        if (!userAnswer || !correctAnswer) return false;
+        const userNorm = userAnswer.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        const correctNorm = correctAnswer.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        if (userNorm === correctNorm) return true;
+        if (userNorm.includes(correctNorm) || correctNorm.includes(userNorm)) return true;
+        return false;
+    }
 
     // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
     let currentIndex = 0;
-    const totalQuestions = FULL_QUESTIONS.length;
-    let viewedQuestions = JSON.parse(localStorage.getItem('russianViewedQuestions')) || [];
-    let bookmarks = JSON.parse(localStorage.getItem('russianBookmarks')) || [];
-    let currentHideAnswers = false;
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let bookmarks = JSON.parse(localStorage.getItem('russian_bookmarks') || '[]');
+    let viewed = JSON.parse(localStorage.getItem('russian_viewed') || '[]');
+    let filteredIds = [];
+    let sessionStart = Date.now();
+    let timerInterval = null;
 
     // DOM элементы
-    const themeToggle = document.getElementById('themeToggleBtn');
-    const randomBtn = document.getElementById('randomBtn');
+    const questionsListEl = document.getElementById('questionsList');
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const questionTextEl = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const gotoBtn = document.getElementById('gotoBtn');
-    const gotoInput = document.getElementById('gotoInput');
-    const questionCounter = document.getElementById('questionCounter');
-    const questionTextSpan = document.getElementById('questionText');
-    const optionsContainer = document.getElementById('optionsContainer');
-    const bookmarkThisBtn = document.getElementById('bookmarkThisBtn');
-    const showBookmarksBtn = document.getElementById('showBookmarksBtn');
-    const bookmarksList = document.getElementById('bookmarksList');
-    const bookmarksCountSpan = document.getElementById('bookmarksCount');
-    const searchInput = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResults');
-    const viewedCountSpan = document.getElementById('viewedCount');
+    const randomBtn = document.getElementById('randomBtn');
+    const themeToggle = document.getElementById('themeToggle');
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
     const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const tipText = document.getElementById('tipText');
 
-    function saveViewedQuestions() {
-        localStorage.setItem('russianViewedQuestions', JSON.stringify(viewedQuestions));
+    // Обновление таймера
+    function updateTimer() {
+        const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+        const mins = Math.floor(elapsed / 60);
+        const secs = elapsed % 60;
+        timerDisplay.textContent = `⏱️ ${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    // Обновление прогресса
+    function updateProgress() {
+        const percent = (viewed.length / FULL_QUESTIONS.length) * 100;
+        progressFill.style.width = `${percent}%`;
+        progressText.textContent = `${Math.round(percent)}% (${viewed.length}/${FULL_QUESTIONS.length})`;
+    }
+
+    // Сохранение закладок
+    function saveBookmarks() {
+        localStorage.setItem('russian_bookmarks', JSON.stringify(bookmarks));
+        renderQuestionsList();
+    }
+
+    // Сохранение просмотренных
+    function saveViewed() {
+        localStorage.setItem('russian_viewed', JSON.stringify(viewed));
         updateProgress();
     }
 
-    function saveBookmarks() {
-        localStorage.setItem('russianBookmarks', JSON.stringify(bookmarks));
-        updateBookmarksUI();
+    // Отметить вопрос как просмотренный
+    function markAsViewed(id) {
+        if (!viewed.includes(id)) {
+            viewed.push(id);
+            saveViewed();
+        }
     }
 
-    function updateProgress() {
-        const viewedCount = viewedQuestions.length;
-        viewedCountSpan.innerText = viewedCount;
-        const percent = (viewedCount / totalQuestions) * 100;
-        progressFill.style.width = `${percent}%`;
-    }
-
-    function updateBookmarksUI() {
-        bookmarksCountSpan.innerText = `⭐ ${bookmarks.length}`;
-        const isBookmarked = bookmarks.includes(currentIndex);
-        if (isBookmarked) {
-            bookmarkThisBtn.classList.add('bookmarked');
-            bookmarkThisBtn.innerHTML = '⭐ В закладках';
+    // Переключение закладки
+    function toggleBookmark(id, event) {
+        if (event) event.stopPropagation();
+        if (bookmarks.includes(id)) {
+            bookmarks = bookmarks.filter(b => b !== id);
+            showToast(`❌ Вопрос ${id} удалён из закладок`);
         } else {
-            bookmarkThisBtn.classList.remove('bookmarked');
-            bookmarkThisBtn.innerHTML = '⭐ В закладки';
-        }
-        renderBookmarksList();
-    }
-
-    function renderBookmarksList() {
-        if (bookmarks.length === 0) {
-            bookmarksList.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-light);">Нет отмеченных вопросов</div>';
-            return;
-        }
-        bookmarksList.innerHTML = '';
-        bookmarks.forEach(idx => {
-            const q = FULL_QUESTIONS[idx];
-            const item = document.createElement('div');
-            item.className = 'bookmark-item';
-            item.innerHTML = `
-                <div class="bookmark-question">${idx+1}. ${q.text.substring(0, 80)}${q.text.length > 80 ? '…' : ''}</div>
-                <button class="remove-bookmark" data-idx="${idx}">✖</button>
-            `;
-            item.querySelector('.bookmark-question').addEventListener('click', () => {
-                currentIndex = idx;
-                renderQuestion();
-                bookmarksList.classList.remove('show');
-            });
-            item.querySelector('.remove-bookmark').addEventListener('click', (e) => {
-                e.stopPropagation();
-                bookmarks = bookmarks.filter(i => i !== idx);
-                saveBookmarks();
-                renderBookmarksList();
-            });
-            bookmarksList.appendChild(item);
-        });
-    }
-
-    function markCurrentAsViewed() {
-        if (!viewedQuestions.includes(currentIndex)) {
-            viewedQuestions.push(currentIndex);
-            saveViewedQuestions();
-        }
-    }
-
-    function toggleBookmark() {
-        if (bookmarks.includes(currentIndex)) {
-            bookmarks = bookmarks.filter(i => i !== currentIndex);
-        } else {
-            bookmarks.push(currentIndex);
+            bookmarks.push(id);
+            showToast(`⭐ Вопрос ${id} добавлен в закладки`);
+            // Анимация пузырька
+            const star = event?.target;
+            if (star) {
+                star.style.transform = 'scale(1.3)';
+                setTimeout(() => { if(star) star.style.transform = ''; }, 200);
+            }
         }
         saveBookmarks();
+        renderCurrentQuestion();
     }
 
-    function renderQuestion() {
-        const q = FULL_QUESTIONS[currentIndex];
-        questionTextSpan.innerText = q.text;
-        questionCounter.innerText = `Вопрос ${currentIndex + 1} из ${totalQuestions}`;
-        gotoInput.value = currentIndex + 1;
+    // Получить отфильтрованные ID
+    function getFilteredIds() {
+        let ids = FULL_QUESTIONS.map(q => q.id);
         
-        markCurrentAsViewed();
+        if (currentFilter === 'bookmarks') {
+            ids = ids.filter(id => bookmarks.includes(id));
+        }
+        
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            ids = ids.filter(id => {
+                const q = FULL_QUESTIONS.find(qq => qq.id === id);
+                return q.text.toLowerCase().includes(query) ||
+                       q.options.some(opt => opt.toLowerCase().includes(query));
+            });
+        }
+        
+        return ids;
+    }
+
+    // Рендер списка вопросов
+    function renderQuestionsList() {
+        filteredIds = getFilteredIds();
+        
+        if (filteredIds.length === 0) {
+            questionsListEl.innerHTML = '<div style="padding: 20px; text-align: center;">🤔 Ничего не найдено</div>';
+            return;
+        }
+        
+        questionsListEl.innerHTML = '';
+        filteredIds.forEach(id => {
+            const q = FULL_QUESTIONS.find(qq => qq.id === id);
+            const isBookmarked = bookmarks.includes(id);
+            const isActive = (currentIndex >= 0 && filteredIds[currentIndex] === id);
+            
+            const div = document.createElement('div');
+            div.className = `question-item ${isActive ? 'active' : ''} ${isBookmarked ? 'bookmarked' : ''}`;
+            div.innerHTML = `
+                <span class="question-num">${id}.</span>
+                <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${q.text.substring(0, 50)}${q.text.length > 50 ? '…' : ''}</span>
+                <span class="bookmark-star" data-id="${id}">${isBookmarked ? '⭐' : '☆'}</span>
+            `;
+            
+            div.addEventListener('click', () => {
+                const newIndex = filteredIds.findIndex(fid => fid === id);
+                if (newIndex !== -1) {
+                    currentIndex = newIndex;
+                    renderCurrentQuestion();
+                    renderQuestionsList();
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+            
+            const starSpan = div.querySelector('.bookmark-star');
+            starSpan.addEventListener('click', (e) => toggleBookmark(id, e));
+            
+            questionsListEl.appendChild(div);
+        });
+    }
+
+    // Проверка ответа (для подсветки)
+    function isOptionCorrect(optText, correctAnswer) {
+        const correctList = correctAnswer.split(', ').map(s => s.trim());
+        for (let correct of correctList) {
+            if (isAnswerCorrect(optText, correct)) return true;
+        }
+        return false;
+    }
+
+    // Рендер текущего вопроса
+    function renderCurrentQuestion() {
+        if (filteredIds.length === 0) {
+            questionTextEl.textContent = '🤔 Нет вопросов по вашему запросу';
+            optionsContainer.innerHTML = '';
+            return;
+        }
+        
+        const currentId = filteredIds[currentIndex];
+        const q = FULL_QUESTIONS.find(qq => qq.id === currentId);
+        if (!q) return;
+        
+        markAsViewed(q.id);
+        
+        questionTextEl.textContent = `${q.id}. ${q.text}`;
+        questionTextEl.style.animation = 'none';
+        setTimeout(() => { questionTextEl.style.animation = 'fadeIn 0.3s ease'; }, 10);
         
         optionsContainer.innerHTML = '';
-        
         q.options.forEach((opt, idx) => {
-            const optionValue = String(idx + 1);
-            const isCorrect = q.correct.includes(optionValue);
-            
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'option';
-            if (isCorrect) {
-                optionDiv.classList.add('correct-option');
-            }
-            
-            const letterSpan = document.createElement('div');
-            letterSpan.className = 'option-letter';
-            letterSpan.innerText = String.fromCharCode(65 + idx);
-            
-            const textSpan = document.createElement('div');
-            textSpan.className = 'option-text';
-            textSpan.innerText = opt;
-            
-            optionDiv.appendChild(letterSpan);
-            optionDiv.appendChild(textSpan);
-            
-            if (isCorrect) {
-                const checkSpan = document.createElement('div');
-                checkSpan.className = 'check-icon';
-                checkSpan.innerText = '✅';
-                optionDiv.appendChild(checkSpan);
-            }
-            
-            optionsContainer.appendChild(optionDiv);
-        });
-        
-        updateBookmarksUI();
-    }
-    
-    function prevQuestion() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            renderQuestion();
-        }
-    }
-    
-    function nextQuestion() {
-        if (currentIndex < totalQuestions - 1) {
-            currentIndex++;
-            renderQuestion();
-        }
-    }
-    
-    function gotoQuestion() {
-        let num = parseInt(gotoInput.value);
-        if (isNaN(num)) num = 1;
-        if (num < 1) num = 1;
-        if (num > totalQuestions) num = totalQuestions;
-        currentIndex = num - 1;
-        renderQuestion();
-    }
-    
-    function randomQuestion() {
-        const newIndex = Math.floor(Math.random() * totalQuestions);
-        currentIndex = newIndex;
-        renderQuestion();
-    }
-    
-    function searchQuestions() {
-        const query = searchInput.value.toLowerCase().trim();
-        if (query.length < 2) {
-            searchResults.classList.remove('show');
-            return;
-        }
-        
-        const results = [];
-        FULL_QUESTIONS.forEach((q, idx) => {
-            const questionText = q.text.toLowerCase();
-            const optionsText = q.options.join(' ').toLowerCase();
-            if (questionText.includes(query) || optionsText.includes(query)) {
-                results.push({ idx, text: q.text });
-            }
-        });
-        
-        if (results.length === 0) {
-            searchResults.innerHTML = '<div style="padding: 16px; text-align: center;">Ничего не найдено</div>';
-            searchResults.classList.add('show');
-            return;
-        }
-        
-        searchResults.innerHTML = '';
-        results.slice(0, 10).forEach(r => {
-            const item = document.createElement('div');
-            item.className = 'search-result-item';
-            item.innerHTML = `
-                <div class="search-result-question">${r.idx+1}. ${r.text.substring(0, 100)}${r.text.length > 100 ? '…' : ''}</div>
+            const isCorrect = isOptionCorrect(opt, q.correct);
+            const div = document.createElement('div');
+            div.className = `option-item ${isCorrect ? 'correct' : ''}`;
+            div.innerHTML = `
+                <span class="option-letter">${String.fromCharCode(65 + idx)}.</span>
+                <span>${opt}</span>
+                ${isCorrect ? '<span class="correct-badge">✓ Правильно</span>' : ''}
             `;
-            item.addEventListener('click', () => {
-                currentIndex = r.idx;
-                renderQuestion();
-                searchResults.classList.remove('show');
-                searchInput.value = '';
-            });
-            searchResults.appendChild(item);
+            optionsContainer.appendChild(div);
         });
-        searchResults.classList.add('show');
+        
+        updateProgress();
     }
-    
-    function toggleBookmarksList() {
-        bookmarksList.classList.toggle('show');
+
+    // Переход к следующему вопросу
+    function nextQuestion() {
+        if (filteredIds.length === 0) return;
+        if (currentIndex + 1 < filteredIds.length) {
+            currentIndex++;
+            renderCurrentQuestion();
+            renderQuestionsList();
+            showToast(`📖 Вопрос ${filteredIds[currentIndex]}`);
+        } else {
+            showToast('🎉 Поздравляю! Это был последний вопрос');
+        }
     }
-    
+
+    // Переход к предыдущему вопросу
+    function prevQuestion() {
+        if (filteredIds.length === 0) return;
+        if (currentIndex - 1 >= 0) {
+            currentIndex--;
+            renderCurrentQuestion();
+            renderQuestionsList();
+            showToast(`📖 Вопрос ${filteredIds[currentIndex]}`);
+        } else {
+            showToast('📖 Это первый вопрос');
+        }
+    }
+
+    // Случайный вопрос
+    function randomQuestion() {
+        if (filteredIds.length === 0) return;
+        const randomIndex = Math.floor(Math.random() * filteredIds.length);
+        currentIndex = randomIndex;
+        renderCurrentQuestion();
+        renderQuestionsList();
+        showToast(`🎲 Случайный вопрос ${filteredIds[currentIndex]}`);
+    }
+
+    // Toast уведомление
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'combo-toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+
+    // Тёмная тема
     function toggleTheme() {
         document.body.classList.toggle('dark');
         const isDark = document.body.classList.contains('dark');
-        themeToggle.innerText = isDark ? '☀️ Светлая' : '🌙 Тёмная';
-        localStorage.setItem('russianShpargalkaTheme', isDark ? 'dark' : 'light');
+        themeToggle.textContent = isDark ? '☀️ Светлая' : '🌙 Тёмная';
+        localStorage.setItem('russian_theme', isDark ? 'dark' : 'light');
     }
-    
+
+    // Загрузка темы
     function loadTheme() {
-        const savedTheme = localStorage.getItem('russianShpargalkaTheme');
+        const savedTheme = localStorage.getItem('russian_theme');
         if (savedTheme === 'dark') {
             document.body.classList.add('dark');
-            themeToggle.innerText = '☀️ Светлая';
+            themeToggle.textContent = '☀️ Светлая';
         } else {
-            document.body.classList.remove('dark');
-            themeToggle.innerText = '🌙 Тёмная';
+            themeToggle.textContent = '🌙 Тёмная';
         }
     }
-    
-    // Обработчики
-    prevBtn.addEventListener('click', prevQuestion);
-    nextBtn.addEventListener('click', nextQuestion);
-    gotoBtn.addEventListener('click', gotoQuestion);
-    randomBtn.addEventListener('click', randomQuestion);
-    themeToggle.addEventListener('click', toggleTheme);
-    bookmarkThisBtn.addEventListener('click', toggleBookmark);
-    showBookmarksBtn.addEventListener('click', toggleBookmarksList);
-    searchInput.addEventListener('input', searchQuestions);
-    document.addEventListener('click', (e) => {
-        if (!searchResults.contains(e.target) && e.target !== searchInput) {
-            searchResults.classList.remove('show');
+
+    // Совет дня
+    function setTipOfDay() {
+        const dayOfYear = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+        const tipIndex = dayOfYear % TIPS.length;
+        tipText.textContent = TIPS[tipIndex];
+    }
+
+    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+    function init() {
+        loadTheme();
+        setTipOfDay();
+        startTimer();
+        
+        filteredIds = getFilteredIds();
+        if (filteredIds.length === 0) {
+            currentFilter = 'all';
+            searchQuery = '';
+            searchInput.value = '';
+            filteredIds = getFilteredIds();
         }
-        if (!bookmarksList.contains(e.target) && e.target !== showBookmarksBtn) {
-            bookmarksList.classList.remove('show');
-        }
-    });
+        
+        currentIndex = 0;
+        renderQuestionsList();
+        renderCurrentQuestion();
+        updateProgress();
+        
+        // Обработчики
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            filteredIds = getFilteredIds();
+            currentIndex = 0;
+            renderQuestionsList();
+            if (filteredIds.length > 0) renderCurrentQuestion();
+            else {
+                questionTextEl.textContent = '🤔 Ничего не найдено';
+                optionsContainer.innerHTML = '';
+            }
+        });
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                filteredIds = getFilteredIds();
+                currentIndex = 0;
+                renderQuestionsList();
+                if (filteredIds.length > 0) renderCurrentQuestion();
+                else {
+                    questionTextEl.textContent = '⭐ Нет закладок в этой категории';
+                    optionsContainer.innerHTML = '';
+                }
+            });
+        });
+        
+        prevBtn.addEventListener('click', prevQuestion);
+        nextBtn.addEventListener('click', nextQuestion);
+        randomBtn.addEventListener('click', randomQuestion);
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && e.target !== menuToggle) {
+                sidebar.classList.remove('open');
+            }
+        });
+        
+        // Горячие клавиши
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevQuestion();
+            if (e.key === 'ArrowRight') nextQuestion();
+            if (e.key === 'r' || e.key === 'R') randomQuestion();
+            if (e.key === 'b' || e.key === 'B') {
+                if (filteredIds.length > 0) {
+                    const currentId = filteredIds[currentIndex];
+                    toggleBookmark(currentId, null);
+                }
+            }
+        });
+    }
     
-    gotoInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') gotoQuestion();
-    });
-    
-    // Загрузка
-    loadTheme();
-    updateProgress();
-    renderQuestion();
+    init();
 </script>
+<style>
+    @keyframes fadeUp {
+        0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+    }
+    .combo-toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 8px 18px;
+        border-radius: 40px;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 1000;
+        animation: fadeUp 2s ease-out forwards;
+        pointer-events: none;
+    }
+</style>
 </body>
 </html>
