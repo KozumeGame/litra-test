@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Информатика | Зачетный тренажер + Шпаргалка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #2c5f8a;
+            --primary-dark: #1e405e;
+            --primary-light: #e6f0f7;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --energy-bg: #2d2b26;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --card-radius: 24px;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --primary-light: #1e2a3a;
+            --energy-bg: #3a3226;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 16px 12px 40px;
+            transition: background 0.2s, color 0.2s;
+            min-height: 100vh;
+        }
+
+        .hidden-message {
+            position: fixed;
+            bottom: 8px;
+            right: 12px;
+            font-size: 11px;
+            color: var(--text-light);
+            opacity: 0.25;
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px 18px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .mode-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            padding: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .theme-toggle, .sound-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+            width: auto;
+        }
+        
+        .theme-toggle:hover, .sound-toggle:hover {
+            background: var(--primary-light);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-screen h1 {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary), #4a90c4);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .mode-select-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .mode-select-buttons button {
+            flex: 1;
+            min-width: 140px;
+            font-size: 1.1rem;
+        }
+        .mode-train {
+            background: #3b82f6;
+        }
+        .mode-train:hover {
+            background: #2563eb;
+        }
+        .mode-exam {
+            background: var(--primary);
+        }
+
+        .name-input-group {
+            margin: 24px 0 20px;
+            text-align: left;
+        }
+        
+        .name-input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 95, 138, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            margin-top: 12px;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-area {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .energy-bar-bg {
+            background: var(--energy-bg);
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .energy-fill {
+            background: linear-gradient(90deg, #f39c12, #eab308, #10b981);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 40px;
+        }
+        
+        .timer-box {
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        
+        .timer-box.warning {
+            background: #fee2e2;
+            color: #b91c1c;
+            animation: pulse 1s infinite;
+        }
+        
+        body.dark .timer-box.warning {
+            background: #7f1a1a;
+            color: #ffcdcd;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.8; transform: scale(1.02);}
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 16px 0 20px;
+        }
+        
+        .multi-hint {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            padding: 6px 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .option {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .option:hover {
+            background: var(--primary-light);
+        }
+        
+        .option.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(44, 95, 138, 0.2);
+        }
+
+        .option.correct-highlight {
+            background: #10b98120;
+            border-color: var(--correct);
+        }
+
+        .option.wrong-highlight {
+            background: #ef444420;
+            border-color: var(--wrong);
+        }
+        
+        .option input {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--primary);
+            pointer-events: none;
+        }
+        
+        .option-label {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.3;
+            cursor: pointer;
+        }
+        
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .result-stats {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .grade {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+        
+        .grade-badge {
+            background: #10b98120;
+            padding: 8px 24px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        
+        .circle-chart {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+            position: relative;
+        }
+        .donut {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            position: relative;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body.dark .donut {
+            background: #334155;
+        }
+        .donut-inner {
+            width: 120px;
+            height: 120px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 28px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 2;
+        }
+        .donut-inner span {
+            font-size: 12px;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+        .donut-inner .score-value {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .stats-text {
+            margin-top: 12px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stats-correct { color: var(--correct); font-weight: 700; }
+        .stats-wrong { color: var(--wrong); font-weight: 700; }
+        
+        .combo-toast {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 1000;
+            animation: fadeUp 0.8s ease-out forwards;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+        }
+        
+        .medal-icon {
+            font-size: 2rem;
+            margin: 8px 0;
+        }
+        
+        .mistake-item {
+            background: var(--surface);
+            border-left: 5px solid var(--wrong);
+            padding: 14px;
+            margin-bottom: 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+        
+        .mistake-question {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .mistake-detail {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .motivation-message {
+            margin: 16px 0 8px;
+            padding: 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Шпаргалка */
+        .cheat-sheet {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+        .cheat-search {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .cheat-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cheat-questions-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .cheat-question-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 12px;
+            margin-bottom: 4px;
+        }
+        .cheat-question-item:hover {
+            background: var(--primary-light);
+        }
+        .cheat-question-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        .cheat-question-text {
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cheat-star {
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0.6;
+            padding: 4px;
+        }
+        .cheat-star.active {
+            color: #f59e0b;
+            opacity: 1;
+        }
+        .cheat-options {
+            margin-top: 20px;
+        }
+        .cheat-option {
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        .cheat-option.correct {
+            background: #10b98120;
+            border-color: var(--correct);
+        }
+        .cheat-badge {
+            background: var(--correct);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 550px) {
+            body {
+                padding: 12px 10px 30px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+            .option {
+                padding: 12px 14px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+            .donut {
+                width: 130px;
+                height: 130px;
+            }
+            .donut-inner {
+                width: 95px;
+                height: 95px;
+                font-size: 24px;
+            }
+            .donut-inner .score-value {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="hidden-message">F. Je suis fier de toi.</div>
+
+<div class="container" id="app">
+    <div class="mode-switch">
+        <button class="mode-btn" data-mode="exam">📝 Зачёт (тест)</button>
+        <button class="mode-btn" data-mode="cheat">📖 Шпаргалка</button>
+    </div>
+    
+    <div class="header-bar">
+        <div style="font-weight: 600; font-size: 14px;">💻 ИНФОРМАТИКА | ЗАЧЕТ</div>
+        <div style="display: flex; gap: 8px;">
+            <button class="sound-toggle" id="soundToggleBtn">🔇 Звук выкл</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 Тёмная</button>
+        </div>
+    </div>
+
+    <!-- СТАРТОВЫЙ ЭКРАН (только для режима экзамена) -->
+    <div id="startScreen" class="card start-screen">
+        <h1>💻 Тренажёр зачёта</h1>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 31 вопрос в базе</p>
+        
+        <div class="mode-select-buttons">
+            <button id="trainModeBtn" class="mode-train">🎓 ТРЕНИРОВКА</button>
+            <button id="examModeBtn" class="mode-exam">📝 ДЕМО-ЗАЧЁТ</button>
+        </div>
+        
+        <div class="name-input-group">
+            <label>👤 Ваше имя</label>
+            <input type="text" id="userNameInput" placeholder="Введите имя" autocomplete="off">
+        </div>
+        <button class="btn-outline" id="resetLocalStorageBtn" style="margin-top: 10px;">🔄 Сбросить имя</button>
+        <footer>Тренировка: после ответа нажми «Далее» → покажет правильный ответ • Демо-зачёт: как настоящий экзамен</footer>
+    </div>
+
+    <!-- ЭКРАН ТЕСТА -->
+    <div id="quizScreen" class="hidden">
+        <div class="card">
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <div class="flex-between">
+                        <span id="questionCounter">Вопрос 1 / 20</span>
+                        <span id="answeredCount">✅ 0 отвечено</span>
+                    </div>
+                    <div class="energy-bar-bg"><div class="energy-fill" id="energyFill"></div></div>
+                </div>
+                <div class="timer-box" id="timerDisplay">20:00</div>
+            </div>
+            <div id="quizInner">
+                <div class="question-text" id="questionText">Загрузка...</div>
+                <div class="options-list" id="optionsContainer"></div>
+                <button id="nextQuestionBtn" class="next-btn">Далее →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultScreen" class="hidden">
+        <div class="card">
+            <div class="result-stats">
+                <h2 style="font-size: 1.5rem;">📋 Результат</h2>
+                <div id="greetingName" style="font-size: 1.1rem; margin: 8px 0;"></div>
+                
+                <div class="circle-chart">
+                    <div class="donut" id="donutChart">
+                        <div class="donut-inner">
+                            <div class="score-value" id="centerScore">0</div>
+                            <span>баллов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-text">
+                    <span>✅ <span id="correctCount">0</span> правильных</span>
+                    <span>❌ <span id="wrongCount">0</span> ошибок</span>
+                </div>
+                
+                <div id="medalArea" class="medal-icon"></div>
+                <div id="gradeDisplay" class="grade"></div>
+                <div id="motivationMessage" class="motivation-message"></div>
+                <button id="showMistakesBtn" class="btn-outline" style="width: auto; padding: 10px 20px; margin-top: 8px;">📖 Показать ошибки</button>
+            </div>
+            <div id="mistakesList" class="hidden" style="margin-top: 20px;"></div>
+            <div class="action-buttons">
+                <button id="shareResultBtn">📤 Поделиться</button>
+                <button id="mainMenuBtn">🏠 Главный экран</button>
+                <button id="restartQuizBtn">🔄 Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ШПАРГАЛКА -->
+    <div id="cheatScreen" class="hidden">
+        <div class="cheat-sheet">
+            <input type="text" id="cheatSearch" class="cheat-search" placeholder="🔍 Поиск по вопросам...">
+            <div class="cheat-stats">
+                <span>📋 Всего: <strong id="cheatTotal">0</strong></span>
+                <span>⭐ Закладки: <strong id="cheatBookmarkCount">0</strong></span>
+                <span>👁️ Просмотрено: <strong id="cheatViewedCount">0</strong></span>
+            </div>
+            <div class="cheat-questions-list" id="cheatQuestionsList"></div>
+            <div id="cheatCurrentQuestion">
+                <div class="question-text" id="cheatQuestionText">Выберите вопрос из списка</div>
+                <div class="cheat-options" id="cheatOptionsContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== БАЗА ДАННЫХ: 31 ВОПРОС (ТОЧНО ПО ТВОИМ ОТВЕТАМ) ====================
+    const FULL_QUESTIONS = [
+        { id: 1, text: "В каком виде принтеров имеется красящая лента", correctIndex: 0, correctText: "матречный", options: ["матречный", "струйный", "лазерный"], multi: false },
+        { id: 2, text: "Существует ли в законодательстве РФ Закон «О правовой охране программ для ЭВМ и баз данных»", correctIndex: 0, correctText: "да", options: ["да", "нет"], multi: false },
+        { id: 3, text: "Римская система счисления является", correctIndex: 0, correctText: "непозиционной", options: ["непозиционной", "позиционной", "смешаной"], multi: false },
+        { id: 4, text: "Сколько цифр в двоичной системе счисления?", correctIndex: 0, correctText: "2", options: ["2", "3", "10", "8"], multi: false },
+        { id: 5, text: "Укажите максимальную цифру в восьмеричной системе счисления:", correctIndex: 0, correctText: "7", options: ["7", "8", "6"], multi: false },
+        { id: 6, text: "Чему равно основание шестнадцатеричной системы счисления?", correctIndex: 0, correctText: "16", options: ["16", "15", "10", "8"], multi: false },
+        { id: 7, text: "Какая система счисления используется в компьютере?", correctIndex: 0, correctText: "2", options: ["2", "10", "3", "5"], multi: false },
+        { id: 8, text: "В какой системе счисления значение цифры зависит от её положения в числе?", correctIndex: 0, correctText: "позиционной", options: ["позиционной", "непозиционной", "шестнадцатеричной", "восмиричной"], multi: false },
+        { id: 9, text: "Какие цифры содержатся в троичной системе счисления?", correctIndex: 2, correctText: "0,1,2", options: ["любые три цифры", "1,2,3", "0,1,2"], multi: false },
+        { id: 10, text: "Как называется количество цифр в системе счисления?", correctIndex: 0, correctText: "основание", options: ["основание", "разряд", "число"], multi: false },
+        { id: 11, text: "Глобальная сеть - это ...", correctIndex: 3, correctText: "компьютерная сеть, охватывающая большие территории и включающая большое число узлов", options: ["система обмена информацией на определенную тему", "множество компьютеров, связанных каналами передачи информации и находящихся в пределах одного помещения, здания", "компьютерная сеть, охватывающая большой город", "компьютерная сеть, охватывающая большие территории и включающая большое число узлов"], multi: false },
+        { id: 12, text: "Топология компьютерной сети, в которой все компьютеры сети присоединены к центральному сетевому устройству, называется:", correctIndex: 1, correctText: "звезда", options: ["шина", "звезда", "кольцо"], multi: false },
+        { id: 13, text: "Топология компьютерной сети, в которой все компьютеры сети присоединены к общему кабелю, называется", correctIndex: 0, correctText: "шина", options: ["шина", "звезда", "кольцо"], multi: false },
+        { id: 14, text: "Какой кабель обеспечивает скорость передачи данных до 10 Мбит/сек?", correctIndex: 0, correctText: "витая пара", options: ["витая пара", "коаксиальный", "оптоволоконный"], multi: false },
+        { id: 15, text: "Какая из приведенных схем соединения компьютеров представляет собой замкнутую цепочку?", correctIndex: 2, correctText: "кольцо", options: ["шина", "звезда", "кольцо"], multi: false },
+        { id: 16, text: "Какой кабель обеспечивает скорость передачи данных до 100 Мбит/сек?", correctIndex: 1, correctText: "оптоволоконный", options: ["витая пара", "оптоволоконный", "коаксиальный"], multi: false },
+        { id: 17, text: "По расстоянию между узлами компьютерные сети делятся на:", correctIndices: [2,3,4], correctTexts: ["глобальные", "региональные", "локальные"], options: ["ведомственные", "территориальные", "глобальные", "региональные", "локальные"], multi: true },
+        { id: 18, text: "Вирусы, находящиеся в памяти и являющиеся активными вплоть до выключения компьютера или перезагрузки операционной системы, являются:", correctIndex: 0, correctText: "резидентные", options: ["резидентные", "нерезидентные"], multi: false },
+        { id: 19, text: "Один килобайт равен …", correctIndex: 1, correctText: "1024 байт", options: ["8 бит", "1024 байт", "8 байт", "1024 бит"], multi: false },
+        { id: 20, text: "Наименьшая единица измерения информации - …", correctIndex: 0, correctText: "бит", options: ["бит", "байт"], multi: false },
+        { id: 21, text: "Информационная емкость DVD диска?", correctIndex: 0, correctText: "4,7 Гбайт", options: ["4,7 Гбайт", "700 Гбайт", "4,7 Мбайт", "700 Мбайт"], multi: false },
+        { id: 22, text: "Информационная емкость CD диска?", correctIndex: 3, correctText: "700 Мбайт", options: ["4,7 Гбайт", "700 Гбайт", "4,7 Мбайт", "700 Мбайт"], multi: false },
+        { id: 23, text: "Известно, что наибольший объем информации здоровый человек получает при помощи:", correctIndex: 0, correctText: "органа зрения", options: ["органа зрения", "органа слуха", "обоняния", "вкуса"], multi: false },
+        { id: 24, text: "Можно ли одно и то же число записать в разных системах счисления?", correctIndex: 0, correctText: "да", options: ["да", "нет"], multi: false },
+        { id: 25, text: "Конъюнкция (логическое умножение) - соединение двух логических выражений (высказываний) с помощью союза ...", correctIndex: 0, correctText: "и", options: ["и", "или", "не"], multi: false },
+        { id: 26, text: "Дизъюнкция (логическое сложение) - соединение двух логических высказываний с помощью союза ...", correctIndex: 1, correctText: "или", options: ["и", "или", "не"], multi: false },
+        { id: 27, text: "Отрицание (инверсия) - добавляется частица ...", correctIndex: 2, correctText: "не", options: ["и", "или", "не"], multi: false },
+        { id: 28, text: "Как кодируется логическая переменная, принимающая значение «ЛОЖЬ»?", correctIndex: 0, correctText: "0", options: ["0", "1"], multi: false },
+        { id: 29, text: "Как кодируется логическая переменная, принимающая значение «ИСТИНА»?", correctIndex: 1, correctText: "1", options: ["0", "1"], multi: false },
+        { id: 30, text: "Как называется логическое отрицание?", correctIndex: 0, correctText: "Инверсия", options: ["Инверсия", "Конъюнкция", "Дизъюнкция"], multi: false },
+        { id: 31, text: "Какая из логических операций не является базовой?", correctIndex: 3, correctText: "Импликация", options: ["Конъюнкция", "Дизъюнкция", "Инверсия", "Импликация"], multi: false }
+    ];
+
+    // ==================== ЗВУКИ ====================
+    let soundEnabled = false;
+    let audioCorrect = null;
+    let audioWrong = null;
+    let audioClick = null;
+    
+    function initAudio() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                audioCorrect = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 880; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5); osc.stop(ctx.currentTime + 0.5); } };
+                audioWrong = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 440; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.6); osc.stop(ctx.currentTime + 0.6); } };
+                audioClick = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 660; gain.gain.value = 0.1; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.2); osc.stop(ctx.currentTime + 0.2); } };
+            } else {
+                audioCorrect = audioWrong = audioClick = { play: () => {} };
+            }
+        } catch(e) { console.log("Audio not supported"); }
+    }
+    
+    function playSound(type) {
+        if (!soundEnabled) return;
+        if (type === 'correct') audioCorrect?.play();
+        if (type === 'wrong') audioWrong?.play();
+        if (type === 'click') audioClick?.play();
+    }
+    
+    // Строгое сравнение — без всяких "умных" проверок
+    function isAnswerCorrect(selectedText, correctText) {
+        return selectedText === correctText;
+    }
+
+    // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+    let currentMode = 'exam';
+    let currentQuestions = [];
+    let userAnswers = [];
+    let currentIndex = 0;
+    let selectedOptions = [];
+    let quizActive = false;
+    let timerInterval = null;
+    let timeSeconds = 20 * 60;
+    let currentExamMode = null;
+    let waitingForNext = false;
+    
+    // Шпаргалка
+    let cheatBookmarks = JSON.parse(localStorage.getItem('informatika_bookmarks') || '[]');
+    let cheatViewed = JSON.parse(localStorage.getItem('informatika_viewed') || '[]');
+    let cheatSearchQuery = '';
+    let cheatCurrentId = 1;
+    let cheatFilteredIds = [];
+    
+    // DOM элементы
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const cheatScreen = document.getElementById('cheatScreen');
+    const userNameInput = document.getElementById('userNameInput');
+    const trainModeBtn = document.getElementById('trainModeBtn');
+    const examModeBtn = document.getElementById('examModeBtn');
+    const resetNameBtn = document.getElementById('resetLocalStorageBtn');
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const soundToggle = document.getElementById('soundToggleBtn');
+    const nextBtn = document.getElementById('nextQuestionBtn');
+    const restartBtn = document.getElementById('restartQuizBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
+    const shareBtn = document.getElementById('shareResultBtn');
+    const showMistakesBtn = document.getElementById('showMistakesBtn');
+    const mistakesListDiv = document.getElementById('mistakesList');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'combo-toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 800);
+    }
+    
+    // ==================== РЕЖИМ ЭКЗАМЕНА ====================
+    function updateEnergyBar() {
+        const answered = userAnswers.filter(a => a !== undefined && a !== null && a.length > 0).length;
+        const percent = (answered / currentQuestions.length) * 100;
+        document.getElementById('energyFill').style.width = `${percent}%`;
+        document.getElementById('answeredCount').innerText = `✅ ${answered} отвечено`;
+    }
+    
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    function updateTimerDisplay() {
+        const timerDisplay = document.getElementById('timerDisplay');
+        timerDisplay.innerText = formatTime(timeSeconds);
+        if (timeSeconds <= 60) timerDisplay.classList.add('warning');
+        else timerDisplay.classList.remove('warning');
+    }
+    
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timerInterval = setInterval(() => {
+            if (!quizActive) return;
+            if (timeSeconds <= 0) {
+                stopTimer();
+                if (quizActive) { alert('Время вышло! Тест завершается.'); finishQuiz(); }
+            } else {
+                timeSeconds--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+    
+    function checkAnswerForCurrentQuestion() {
+        if (selectedOptions.length === 0) return false;
+        const q = currentQuestions[currentIndex];
+        if (q.multi) {
+            const selectedTexts = selectedOptions.map(idx => q.options[idx]);
+            const correctTexts = q.correctTexts;
+            if (selectedTexts.length !== correctTexts.length) return false;
+            for (let selected of selectedTexts) {
+                if (!correctTexts.includes(selected)) return false;
+            }
+            return true;
+        } else {
+            const selectedText = q.options[selectedOptions[0]];
+            return selectedText === q.correctText;
+        }
+    }
+    
+    function showHighlightAndExplanation() {
+        if (selectedOptions.length === 0) return;
+        const q = currentQuestions[currentIndex];
+        const isCorrect = checkAnswerForCurrentQuestion();
+        const optionElements = document.querySelectorAll('#optionsContainer .option');
+        optionElements.forEach((el, idx) => {
+            el.classList.remove('correct-highlight', 'wrong-highlight');
+            const optText = q.options[idx];
+            let isCorrectOption = false;
+            if (q.multi) {
+                isCorrectOption = q.correctTexts.includes(optText);
+            } else {
+                isCorrectOption = (optText === q.correctText);
+            }
+            if (isCorrectOption) el.classList.add('correct-highlight');
+            if (selectedOptions.includes(idx) && !isCorrectOption) el.classList.add('wrong-highlight');
+        });
+        if (isCorrect) { playSound('correct'); showToast('✅ Верно!'); }
+        else { playSound('wrong'); showToast(`❌ Неверно. Правильно: ${q.multi ? q.correctTexts.join(', ') : q.correctText}`); }
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentIndex >= currentQuestions.length) return;
+        const q = currentQuestions[currentIndex];
+        document.getElementById('questionText').innerText = q.text;
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+        const isMulti = q.multi === true;
+        if (isMulti) {
+            const hint = document.createElement('div');
+            hint.className = 'multi-hint';
+            hint.innerText = '✓ Можно выбрать несколько вариантов';
+            container.appendChild(hint);
+        }
+        q.options.forEach((opt, idx) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            if (selectedOptions.includes(idx)) div.classList.add('selected');
+            const input = document.createElement('input');
+            input.type = isMulti ? 'checkbox' : 'radio';
+            input.name = 'question';
+            input.value = idx;
+            input.checked = selectedOptions.includes(idx);
+            const label = document.createElement('span');
+            label.className = 'option-label';
+            label.innerText = opt;
+            div.appendChild(input);
+            div.appendChild(label);
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                if (!quizActive) return;
+                if (waitingForNext) return;
+                if (isMulti) {
+                    if (selectedOptions.includes(idx)) {
+                        selectedOptions = selectedOptions.filter(i => i !== idx);
+                        input.checked = false;
+                    } else {
+                        selectedOptions.push(idx);
+                        input.checked = true;
+                    }
+                } else {
+                    selectedOptions = [idx];
+                }
+                renderCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+        document.getElementById('questionCounter').innerText = `Вопрос ${currentIndex+1} / ${currentQuestions.length}`;
+        updateEnergyBar();
+    }
+    
+    function nextQuestion() {
+        if (!quizActive) return;
+        if (currentExamMode === 'train') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            if (!waitingForNext) {
+                waitingForNext = true;
+                showHighlightAndExplanation();
+                userAnswers[currentIndex] = [...selectedOptions];
+                nextBtn.textContent = 'Следующий вопрос →';
+                return;
+            } else {
+                waitingForNext = false;
+                nextBtn.textContent = 'Далее →';
+                if (currentIndex + 1 < currentQuestions.length) {
+                    currentIndex++;
+                    selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                    renderCurrentQuestion();
+                } else { finishQuiz(); }
+                return;
+            }
+        }
+        if (currentExamMode === 'exam') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            playSound('click');
+            userAnswers[currentIndex] = [...selectedOptions];
+            if (currentIndex + 1 < currentQuestions.length) {
+                currentIndex++;
+                selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                renderCurrentQuestion();
+            } else { finishQuiz(); }
+        }
+    }
+    
+    function calculateScoreAndGrade(correct, maxScore) {
+        const totalPoints = correct * 5;
+        let grade = '';
+        if (totalPoints >= 85) grade = '5 (Отлично)';
+        else if (totalPoints >= 70) grade = '4 (Хорошо)';
+        else if (totalPoints >= 50) grade = '3 (Удовлетворительно)';
+        else grade = '2 (Неудовлетворительно)';
+        return { score: totalPoints, grade };
+    }
+    
+    function finishQuiz() {
+        quizActive = false;
+        stopTimer();
+        let correct = 0;
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) continue;
+            const q = currentQuestions[i];
+            if (q.multi) {
+                const selectedTexts = userOptIndices.map(idx => q.options[idx]);
+                const correctTexts = q.correctTexts;
+                if (selectedTexts.length !== correctTexts.length) continue;
+                let allCorrect = true;
+                for (let selected of selectedTexts) {
+                    if (!correctTexts.includes(selected)) { allCorrect = false; break; }
+                }
+                if (allCorrect) correct++;
+            } else {
+                const selectedText = q.options[userOptIndices[0]];
+                if (selectedText === q.correctText) correct++;
+            }
+        }
+        const wrong = currentQuestions.length - correct;
+        const { score, grade } = calculateScoreAndGrade(correct, currentQuestions.length);
+        document.getElementById('correctCount').innerText = correct;
+        document.getElementById('wrongCount').innerText = wrong;
+        document.getElementById('centerScore').innerText = score;
+        let medal = '', motivation = '';
+        if (score >= 85) { medal = '🏆 Золотая медаль'; motivation = 'Превосходный результат! Вы отлично знаете материал.'; }
+        else if (score >= 70) { medal = '🥈 Серебряная медаль'; motivation = 'Хороший результат! Так держать.'; }
+        else if (score >= 50) { medal = '🥉 Бронзовая медаль'; motivation = 'Зачёт сдан. Рекомендуется повторить некоторые темы.'; }
+        else { medal = '📚 Нужно подтянуть знания'; motivation = 'Не расстраивайтесь! Пройдите тест ещё раз и улучшите результат.'; }
+        document.getElementById('gradeDisplay').innerHTML = `<div class="grade-badge">${grade}</div>`;
+        document.getElementById('medalArea').innerText = medal;
+        document.getElementById('motivationMessage').innerText = motivation;
+        let userName = localStorage.getItem('informatika_userName') || userNameInput.value.trim();
+        if (!userName) userName = 'Уважаемый студент';
+        document.getElementById('greetingName').innerText = `${userName}, ваш результат:`;
+        const donut = document.getElementById('donutChart');
+        const correctPercent = (correct / currentQuestions.length) * 360;
+        donut.style.background = `conic-gradient(var(--correct) 0deg ${correctPercent}deg, var(--wrong) ${correctPercent}deg 360deg)`;
+        window.mistakes = [];
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) {
+                window.mistakes.push({ question: currentQuestions[i].text, userAnswer: 'Нет ответа', correctAnswer: currentQuestions[i].multi ? currentQuestions[i].correctTexts.join(', ') : currentQuestions[i].correctText });
+                continue;
+            }
+            const q = currentQuestions[i];
+            if (q.multi) {
+                const selectedTexts = userOptIndices.map(idx => q.options[idx]);
+                const correctTexts = q.correctTexts;
+                let allCorrect = true;
+                for (let selected of selectedTexts) {
+                    if (!correctTexts.includes(selected)) { allCorrect = false; break; }
+                }
+                if (selectedTexts.length !== correctTexts.length) allCorrect = false;
+                if (!allCorrect) {
+                    window.mistakes.push({ question: q.text, userAnswer: selectedTexts.join(', '), correctAnswer: correctTexts.join(', ') });
+                }
+            } else {
+                const selectedText = q.options[userOptIndices[0]];
+                if (selectedText !== q.correctText) {
+                    window.mistakes.push({ question: q.text, userAnswer: selectedText, correctAnswer: q.correctText });
+                }
+            }
+        }
+        startScreen.classList.add('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+        cheatScreen.classList.add('hidden');
+    }
+    
+    function initQuiz(mode) {
+        currentExamMode = mode;
+        waitingForNext = false;
+        const shuffled = [...FULL_QUESTIONS];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        currentQuestions = shuffled.slice(0, 20);
+        userAnswers = new Array(20).fill(null);
+        currentIndex = 0;
+        selectedOptions = [];
+        timeSeconds = 20 * 60;
+        quizActive = true;
+        updateTimerDisplay();
+        stopTimer();
+        startTimer();
+        renderCurrentQuestion();
+        nextBtn.textContent = 'Далее →';
+    }
+    
+    function startQuizWithMode(mode) {
+        let userName = userNameInput.value.trim();
+        if (!userName) {
+            userName = prompt('Пожалуйста, введите ваше имя:', 'Студент');
+            if (!userName) userName = 'Студент';
+            userNameInput.value = userName;
+        }
+        localStorage.setItem('informatika_userName', userName);
+        initQuiz(mode);
+        startScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    // ==================== ШПАРГАЛКА ====================
+    function saveCheatBookmarks() {
+        localStorage.setItem('informatika_bookmarks', JSON.stringify(cheatBookmarks));
+        renderCheatQuestionsList();
+        updateCheatStats();
+    }
+    
+    function saveCheatViewed() {
+        localStorage.setItem('informatika_viewed', JSON.stringify(cheatViewed));
+        updateCheatStats();
+    }
+    
+    function markCheatAsViewed(id) {
+        if (!cheatViewed.includes(id)) {
+            cheatViewed.push(id);
+            saveCheatViewed();
+        }
+    }
+    
+    function getCheatFilteredIds() {
+        let ids = FULL_QUESTIONS.map(q => q.id);
+        if (cheatSearchQuery.trim()) {
+            const query = cheatSearchQuery.toLowerCase();
+            ids = ids.filter(id => {
+                const q = FULL_QUESTIONS.find(qq => qq.id === id);
+                return q.text.toLowerCase().includes(query) || q.options.some(opt => opt.toLowerCase().includes(query));
+            });
+        }
+        return ids;
+    }
+    
+    function renderCheatQuestionsList() {
+        cheatFilteredIds = getCheatFilteredIds();
+        const container = document.getElementById('cheatQuestionsList');
+        if (cheatFilteredIds.length === 0) {
+            container.innerHTML = '<div style="padding: 20px; text-align: center;">🤔 Ничего не найдено</div>';
+            return;
+        }
+        container.innerHTML = '';
+        cheatFilteredIds.forEach(id => {
+            const q = FULL_QUESTIONS.find(qq => qq.id === id);
+            const isBookmarked = cheatBookmarks.includes(id);
+            const div = document.createElement('div');
+            div.className = `cheat-question-item ${cheatCurrentId === id ? 'active' : ''}`;
+            div.innerHTML = `
+                <div class="cheat-question-text">
+                    <span>${id}. ${q.text.substring(0, 60)}${q.text.length > 60 ? '…' : ''}</span>
+                    <span class="cheat-star ${isBookmarked ? 'active' : ''}" data-id="${id}">${isBookmarked ? '⭐' : '☆'}</span>
+                </div>
+            `;
+            div.addEventListener('click', (e) => {
+                if (e.target.classList.contains('cheat-star')) return;
+                cheatCurrentId = id;
+                markCheatAsViewed(id);
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            const starSpan = div.querySelector('.cheat-star');
+            starSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (cheatBookmarks.includes(id)) {
+                    cheatBookmarks = cheatBookmarks.filter(b => b !== id);
+                    showToast(`❌ Вопрос ${id} удалён из закладок`);
+                } else {
+                    cheatBookmarks.push(id);
+                    showToast(`⭐ Вопрос ${id} добавлен в закладки`);
+                }
+                saveCheatBookmarks();
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+    }
+    
+    function renderCheatCurrentQuestion() {
+        const q = FULL_QUESTIONS.find(qq => qq.id === cheatCurrentId);
+        if (!q) return;
+        document.getElementById('cheatQuestionText').innerHTML = `${q.id}. ${q.text}`;
+        const container = document.getElementById('cheatOptionsContainer');
+        container.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            let isCorrect = false;
+            if (q.multi) {
+                isCorrect = q.correctTexts.includes(opt);
+            } else {
+                isCorrect = (opt === q.correctText);
+            }
+            const div = document.createElement('div');
+            div.className = `cheat-option ${isCorrect ? 'correct' : ''}`;
+            div.innerHTML = `
+                <span style="font-weight:700;">${String.fromCharCode(65 + idx)}.</span>
+                <span>${opt}</span>
+                ${isCorrect ? '<span class="cheat-badge">✓ Правильно</span>' : ''}
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function updateCheatStats() {
+        document.getElementById('cheatTotal').innerText = FULL_QUESTIONS.length;
+        document.getElementById('cheatBookmarkCount').innerText = cheatBookmarks.length;
+        document.getElementById('cheatViewedCount').innerText = cheatViewed.length;
+    }
+    
+    function initCheat() {
+        cheatFilteredIds = getCheatFilteredIds();
+        if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+            cheatCurrentId = cheatFilteredIds[0];
+        }
+        renderCheatQuestionsList();
+        renderCheatCurrentQuestion();
+        updateCheatStats();
+    }
+    
+    // ==================== ОБЩИЕ ФУНКЦИИ ====================
+    function goToMainMenu() {
+        stopTimer();
+        quizActive = false;
+        startScreen.classList.remove('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    function restartQuiz() {
+        if (currentExamMode) {
+            initQuiz(currentExamMode);
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+        } else { goToMainMenu(); }
+    }
+    
+    function shareResult() {
+        const correct = parseInt(document.getElementById('correctCount').innerText);
+        const total = currentQuestions.length;
+        const userName = localStorage.getItem('informatika_userName') || '';
+        const text = `${userName ? userName + ', ' : ''}результат зачёта по информатике: ${correct} из ${total}.`;
+        if (navigator.share) navigator.share({ title: 'Результат зачёта', text: text }).catch(() => alert(text));
+        else { alert('Результат: ' + text); navigator.clipboard?.writeText(text); }
+    }
+    
+    function toggleMistakes() {
+        if (mistakesListDiv.classList.contains('hidden')) {
+            if (window.mistakes && window.mistakes.length) {
+                mistakesListDiv.innerHTML = '<h3 style="margin-bottom: 12px;">📌 Ошибки</h3>';
+                window.mistakes.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'mistake-item';
+                    div.innerHTML = `<div class="mistake-question">❓ ${m.question}</div><div class="mistake-detail">✖ Ваш ответ: ${m.userAnswer}</div><div class="mistake-detail">✔ Правильно: ${m.correctAnswer}</div>`;
+                    mistakesListDiv.appendChild(div);
+                });
+            } else { mistakesListDiv.innerHTML = '<p>🎉 Отлично! Ошибок нет.</p>'; }
+            mistakesListDiv.classList.remove('hidden');
+            showMistakesBtn.innerText = '📖 Скрыть ошибки';
+        } else {
+            mistakesListDiv.classList.add('hidden');
+            showMistakesBtn.innerText = '📖 Показать ошибки';
+        }
+    }
+    
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        themeToggle.innerText = isDark ? '☀️ Светлая' : '🌙 Тёмная';
+        localStorage.setItem('informatika_theme', isDark ? 'dark' : 'light');
+    }
+    
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        soundToggle.innerText = soundEnabled ? '🔊 Звук вкл' : '🔇 Звук выкл';
+        showToast(soundEnabled ? 'Звук включён' : 'Звук выключен');
+        if (soundEnabled) playSound('click');
+    }
+    
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('informatika_theme');
+        if (savedTheme === 'dark') { document.body.classList.add('dark'); themeToggle.innerText = '☀️ Светлая'; }
+        else { themeToggle.innerText = '🌙 Тёмная'; }
+    }
+    
+    function loadUserName() {
+        const savedName = localStorage.getItem('informatika_userName');
+        if (savedName) userNameInput.value = savedName;
+    }
+    
+    function resetUserName() {
+        localStorage.removeItem('informatika_userName');
+        userNameInput.value = '';
+        showToast('Имя сброшено');
+    }
+    
+    function switchMode(mode) {
+        currentMode = mode;
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === mode) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        if (mode === 'exam') {
+            startScreen.classList.remove('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+            if (timerInterval) stopTimer();
+        } else {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.remove('hidden');
+            if (timerInterval) stopTimer();
+            initCheat();
+        }
+    }
+    
+    // ==================== ОБРАБОТЧИКИ ====================
+    trainModeBtn.addEventListener('click', () => startQuizWithMode('train'));
+    examModeBtn.addEventListener('click', () => startQuizWithMode('exam'));
+    resetNameBtn.addEventListener('click', resetUserName);
+    themeToggle.addEventListener('click', toggleTheme);
+    soundToggle.addEventListener('click', toggleSound);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    mainMenuBtn.addEventListener('click', goToMainMenu);
+    shareBtn.addEventListener('click', shareResult);
+    showMistakesBtn.addEventListener('click', toggleMistakes);
+    
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+    });
+    
+    const cheatSearch = document.getElementById('cheatSearch');
+    if (cheatSearch) {
+        cheatSearch.addEventListener('input', (e) => {
+            cheatSearchQuery = e.target.value;
+            cheatFilteredIds = getCheatFilteredIds();
+            if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+                cheatCurrentId = cheatFilteredIds[0];
+            }
+            renderCheatQuestionsList();
+            renderCheatCurrentQuestion();
+        });
+    }
+    
+    initAudio();
+    loadTheme();
+    loadUserName();
+    switchMode('exam');
+</script>
+</body>
+</html>
