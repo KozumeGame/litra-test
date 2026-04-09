@@ -684,7 +684,7 @@
     <!-- СТАРТОВЫЙ ЭКРАН -->
     <div id="startScreen" class="card start-screen">
         <h1>📐 Тренажёр зачёта</h1>
-        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 150+ вопросов в базе</p>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 102 вопроса в базе</p>
         
         <div class="warning-card">
             <div class="warning-title">⚠️ Внимание!</div>
@@ -700,7 +700,7 @@
                 <div class="status-item"><span class="status-badge success">✅</span> Координаты и векторы (12)</div>
                 <div class="status-item"><span class="status-badge success">✅</span> Многогранники (39)</div>
                 <div class="status-item"><span class="status-badge success">✅</span> Прямые и плоскости (20)</div>
-                <div class="status-item"><span class="status-badge success">✅</span> Корни, степени, логарифмы (11)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Корни, степени, логарифмы (10)</div>
                 <div class="status-item"><span class="status-badge progress">🟡</span> Тригонометрия (в разработке)</div>
                 <div class="status-item"><span class="status-badge progress">🟡</span> Функции и графики (в разработке)</div>
                 <div class="status-item"><span class="status-badge progress">🟡</span> Производная (в разработке)</div>
@@ -794,7 +794,7 @@
 </div>
 
 <script>
-    // ==================== БАЗА ДАННЫХ: ВОПРОСЫ ПО МАТЕМАТИКЕ ====================
+    // ==================== БАЗА ДАННЫХ: ВСЕ ВОПРОСЫ С ОДНИМ ПРАВИЛЬНЫМ ОТВЕТОМ ====================
     const FULL_QUESTIONS = [
         { id: 1, text: "Натуральным является число:", correctIndex: 1, correctText: "3⁴", options: ["2⁻³", "3⁴", "5²", "7⁶"], multi: false },
         { id: 2, text: "Вычислите: (21:80+0,45):4,75", correctIndex: 0, correctText: "0,15", options: ["0,15", "0,25", "0,3", "0,45"], multi: false },
@@ -900,7 +900,7 @@
         { id: 102, text: "Решите уравнение: 3^x = 1/81", correctIndex: 1, correctText: "-4", options: ["4", "-4", "1/4", "27"], multi: false }
     ];
 
-    // ==================== ЗВУКИ ====================
+    // ==================== ВСЯ ОСТАЛЬНАЯ ЛОГИКА ТЕСТА (БЕЗ ИЗМЕНЕНИЙ) ====================
     let soundEnabled = false;
     let audioCorrect = null;
     let audioWrong = null;
@@ -936,7 +936,6 @@
         return false;
     }
 
-    // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
     let currentMode = 'exam';
     let currentQuestions = [];
     let userAnswers = [];
