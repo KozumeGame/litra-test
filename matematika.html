@@ -82,7 +82,7 @@
 
         .warning-card {
             background: var(--warning-bg);
-            border-left: 4px solid var(--warning);
+            border-left: 4px solid #f59e0b;
             border-radius: 16px;
             padding: 12px 16px;
             margin-bottom: 20px;
@@ -794,9 +794,8 @@
 </div>
 
 <script>
-    // ==================== БАЗА ДАННЫХ: ВОПРОСЫ ПО МАТЕМАТИКЕ (ИСПРАВЛЕННАЯ ВЕРСИЯ - БЕЗ ДВОЙНЫХ ОТВЕТОВ) ====================
+    // ==================== БАЗА ДАННЫХ: ВОПРОСЫ ПО МАТЕМАТИКЕ ====================
     const FULL_QUESTIONS = [
-        // Раздел: Развитие понятия о числе (вопросы 1–14) - ТОЛЬКО ПО ОДНОМУ ПРАВИЛЬНОМУ ОТВЕТУ
         { id: 1, text: "Натуральным является число:", correctIndex: 1, correctText: "3⁴", options: ["2⁻³", "3⁴", "5²", "7⁶"], multi: false },
         { id: 2, text: "Вычислите: (21:80+0,45):4,75", correctIndex: 0, correctText: "0,15", options: ["0,15", "0,25", "0,3", "0,45"], multi: false },
         { id: 3, text: "Установите соответствие: (2⁻²)⁻¹", correctIndex: 1, correctText: "4", options: ["1/4", "4", "1/16", "16"], multi: false },
@@ -811,8 +810,6 @@
         { id: 12, text: "Для какого уравнения x=3,5 является корнем?", correctIndex: 0, correctText: "(2x-2)/5=(2x-4)/3", options: ["(2x-2)/5=(2x-4)/3", "(4x-5)/2=(5+5x)/3", "(4x-5)/3=(5+5x)/2"], multi: false },
         { id: 13, text: "Упростите: 28(a-1)+55(a+6) при a=5", correctIndex: 2, correctText: "717", options: ["600", "610", "717", "625"], multi: false },
         { id: 14, text: "Вычислите: 6 6/13 + 7 6/15 + 9 7/13 + 11 9/15 + 5,37 + 4,63", correctIndex: 1, correctText: "45", options: ["42", "45", "46", "48"], multi: false },
-        
-        // Раздел: Комбинаторика (вопросы 56–62) - ИСПРАВЛЕНЫ
         { id: 15, text: "Неверно характеризует понятие «комбинаторика» утверждение:", correctIndex: 3, correctText: "Комбинаторика занимается исследованием закономерностей в массовых явлениях", options: ["Комбинаторика – раздел математики, посвящённый решению задач выбора и расположения элементов", "Комбинаторика – раздел математики, в котором изучается, сколько различных комбинаций можно составить", "Комбинаторика – раздел математики, который приобрел важное значение в теории вероятностей", "Комбинаторика занимается исследованием закономерностей в массовых явлениях"], multi: false },
         { id: 16, text: "Соединения, которые состоят из одних и тех же элементов и отличаются только порядком их расположения – это:", correctIndex: 0, correctText: "перестановки", options: ["перестановки", "размещения", "сочетания"], multi: false },
         { id: 17, text: "Вычислите: P₅", correctIndex: 2, correctText: "120", options: ["24", "45", "120", "182"], multi: false },
@@ -820,8 +817,6 @@
         { id: 19, text: "Сколькими способами можно положить 6 различных писем в 6 различных конвертов?", correctIndex: 1, correctText: "720", options: ["30", "720", "120", "548"], multi: false },
         { id: 20, text: "Сколькими способами можно обозначить данный вектор, используя буквы К, L, M, N, P, Q?", correctIndex: 2, correctText: "30", options: ["9", "120", "30", "548"], multi: false },
         { id: 21, text: "В аудитории 16 ламп. Сколько существует вариантов ее освещения, если одновременно должны светиться 14 ламп?", correctIndex: 2, correctText: "120", options: ["9", "30", "120", "548"], multi: false },
-        
-        // Раздел: Координаты и векторы (вопросы 63–74)
         { id: 22, text: "Укажите координаты вектора a = i + 3k", correctIndex: 1, correctText: "(1;0;3)", options: ["(0;1;3)", "(1;0;3)", "(1;3;0)", "(3;0;1)"], multi: false },
         { id: 23, text: "При каких значениях n и p векторы коллинеарны?", correctIndex: 0, correctText: "n=-6, p=4", options: ["n=-6, p=4", "n=6, p=-4", "n=-6, p=-4", "n=6, p=4"], multi: false },
         { id: 24, text: "Укажите координаты вектора 1/2 AB, если A(2;-3;4) и B(-8;4;6)", correctIndex: 1, correctText: "(-5;3,5;1)", options: ["(1;3,5;-5)", "(-5;3,5;1)", "(5;-3,5;-1)", "(-5;-3,5;1)"], multi: false },
@@ -833,8 +828,6 @@
         { id: 30, text: "Укажите середину отрезка AB: A(3;-7;11), B(-1;3;-3)", correctIndex: 2, correctText: "(1;-2;4)", options: ["(-2;5;-7)", "(4;-2;1)", "(1;-2;4)", "(2;-4;8)"], multi: false },
         { id: 31, text: "Какие из точек принадлежат прямой 2x+3y=13?", correctIndex: 1, correctText: "(-4;-6)", options: ["(2;3)", "(-4;-6)", "(-2;3)", "(4;2)"], multi: false },
         { id: 32, text: "Какой нормальный вектор имеет прямая y-2x+5=0?", correctIndex: 0, correctText: "(-2;1)", options: ["(-2;1)", "(-2;-1)", "(1;-2)", "(2;-1)"], multi: false },
-        
-        // Раздел: Прямые и плоскости (вопросы 36–55) - ИСПРАВЛЕНЫ
         { id: 33, text: "Прямую, перпендикулярную любой прямой в плоскости, называют...", correctIndex: 1, correctText: "перпендикулярной к этой плоскости", options: ["параллельной этой плоскости", "перпендикулярной к этой плоскости", "наклонной к плоскости", "скрещивающейся с плоскостью"], multi: false },
         { id: 34, text: "Наклонной к плоскости называют прямую, пересекающую плоскость и ...", correctIndex: 2, correctText: "не перпендикулярную к ней", options: ["параллельную ей", "лежащую в этой плоскости", "не перпендикулярную к ней", "имеющую с ней две общие точки"], multi: false },
         { id: 35, text: "Параллельными называют плоскости,...", correctIndex: 1, correctText: "которые не имеют общих точек", options: ["которые пересекаются под прямым углом", "которые не имеют общих точек", "которые имеют только одну общую точку", "которые имеют одну общую прямую"], multi: false },
@@ -855,8 +848,6 @@
         { id: 50, text: "Две плоскости параллельны, если они...", correctIndex: 2, correctText: "не имеют общих точек", options: ["пересекаются по прямой", "имеют общую точку", "не имеют общих точек", "перпендикулярны третьей плоскости"], multi: false },
         { id: 51, text: "Если две прямые параллельны третьей, то они...", correctIndex: 2, correctText: "параллельны между собой", options: ["пересекаются", "скрещиваются", "параллельны между собой", "перпендикулярны"], multi: false },
         { id: 52, text: "Две плоскости совпадают, если они имеют...", correctIndex: 0, correctText: "три общие точки, не лежащие на одной прямой", options: ["три общие точки, не лежащие на одной прямой", "только одну общую точку", "две общие точки", "одну общую прямую"], multi: false },
-        
-        // Раздел: Многогранники (сокращенно)
         { id: 53, text: "Тело, поверхность которого состоит из конечного числа плоских многоугольников, называется:", correctIndex: 0, correctText: "многогранник", options: ["многогранник", "призма", "пирамида", "многоугольник"], multi: false },
         { id: 54, text: "К многогранникам относятся:", correctIndex: 0, correctText: "призма, пирамида", options: ["призма, пирамида", "конус, цилиндр", "сфера, шар", "окружность, круг"], multi: false },
         { id: 55, text: "Отрезок, соединяющий две вершины призмы, не принадлежащие одной грани, называется:", correctIndex: 2, correctText: "диагональ призмы", options: ["ребро", "высота", "диагональ призмы", "боковое ребро"], multi: false },
@@ -896,8 +887,6 @@
         { id: 89, text: "Гранями выпуклого многогранника являются:", correctIndex: 0, correctText: "выпуклые многоугольники", options: ["выпуклые многоугольники", "невыпуклые многоугольники", "треугольники", "квадраты"], multi: false },
         { id: 90, text: "Боковая поверхность призмы состоит из:", correctIndex: 0, correctText: "параллелограммов", options: ["параллелограммов", "прямоугольников", "треугольников", "трапеций"], multi: false },
         { id: 91, text: "Боковая поверхность прямой призмы равна:", correctIndex: 0, correctText: "произведению периметра основания на высоту", options: ["произведению периметра основания на высоту", "произведению площади основания на высоту", "сумме площадей боковых граней", "произведению стороны на высоту"], multi: false },
-        
-        // Раздел: Корни, степени и логарифмы (исправленные)
         { id: 92, text: "Вычислите: -54 · (1/27)^(-2/3) - 33", correctIndex: 0, correctText: "-519", options: ["-519", "-39", "39", "519"], multi: false },
         { id: 93, text: "В каких степенных равенствах допущены ошибки? 1) aⁿ:aᵐ = aⁿ⁺ᵐ 2) (aⁿ)ᵐ = aⁿᵐ 3) aⁿ·aᵐ = aⁿ⁺ᵐ 4) aⁿ·aᵐ = aⁿᵐ", correctIndex: 0, correctText: "1", options: ["1", "2", "3", "4"], multi: false },
         { id: 94, text: "Представьте выражение ∛2 · √2 в виде степени с дробным показателем", correctIndex: 1, correctText: "2^(5/6)", options: ["2^(1/6)", "2^(5/6)", "2^(2/5)", "2^(1/5)"], multi: false },
@@ -911,13 +900,636 @@
         { id: 102, text: "Решите уравнение: 3^x = 1/81", correctIndex: 1, correctText: "-4", options: ["4", "-4", "1/4", "27"], multi: false }
     ];
 
-    // ==================== ОСТАЛЬНАЯ ЛОГИКА ТЕСТА (та же, что и раньше) ====================
-    // (функции initAudio, playSound, isAnswerCorrect, renderCurrentQuestion, nextQuestion, finishQuiz и т.д.)
-    // Они полностью идентичны предыдущей версии, поэтому я их не дублирую для краткости.
-    // В финальном коде они будут присутствовать полностью.
+    // ==================== ЗВУКИ ====================
+    let soundEnabled = false;
+    let audioCorrect = null;
+    let audioWrong = null;
+    let audioClick = null;
     
-    // [ВНИМАНИЕ: В ПОЛНОМ КОДЕ ВСЕ ФУНКЦИИ ПРИСУТСТВУЮТ ПОЛНОСТЬЮ]
-    // Для краткости здесь показана только структура. При отправке я пришлю полный код.
+    function initAudio() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                audioCorrect = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 880; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5); osc.stop(ctx.currentTime + 0.5); } };
+                audioWrong = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 440; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.6); osc.stop(ctx.currentTime + 0.6); } };
+                audioClick = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 660; gain.gain.value = 0.1; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.2); osc.stop(ctx.currentTime + 0.2); } };
+            } else {
+                audioCorrect = audioWrong = audioClick = { play: () => {} };
+            }
+        } catch(e) { console.log("Audio not supported"); }
+    }
+    
+    function playSound(type) {
+        if (!soundEnabled) return;
+        if (type === 'correct') audioCorrect?.play();
+        if (type === 'wrong') audioWrong?.play();
+        if (type === 'click') audioClick?.play();
+    }
+    
+    function isAnswerCorrect(selectedText, correctText) {
+        if (!selectedText || !correctText) return false;
+        const userNorm = selectedText.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        const correctNorm = correctText.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        if (userNorm === correctNorm) return true;
+        if (userNorm.includes(correctNorm) || correctNorm.includes(userNorm)) return true;
+        return false;
+    }
+
+    // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+    let currentMode = 'exam';
+    let currentQuestions = [];
+    let userAnswers = [];
+    let currentIndex = 0;
+    let selectedOptions = [];
+    let quizActive = false;
+    let timerInterval = null;
+    let timeSeconds = 20 * 60;
+    let currentExamMode = null;
+    let waitingForNext = false;
+    
+    let cheatBookmarks = JSON.parse(localStorage.getItem('matematika_bookmarks') || '[]');
+    let cheatViewed = JSON.parse(localStorage.getItem('matematika_viewed') || '[]');
+    let cheatSearchQuery = '';
+    let cheatCurrentId = 1;
+    let cheatFilteredIds = [];
+    
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const cheatScreen = document.getElementById('cheatScreen');
+    const userNameInput = document.getElementById('userNameInput');
+    const trainModeBtn = document.getElementById('trainModeBtn');
+    const examModeBtn = document.getElementById('examModeBtn');
+    const resetNameBtn = document.getElementById('resetLocalStorageBtn');
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const soundToggle = document.getElementById('soundToggleBtn');
+    const nextBtn = document.getElementById('nextQuestionBtn');
+    const restartBtn = document.getElementById('restartQuizBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
+    const shareBtn = document.getElementById('shareResultBtn');
+    const showMistakesBtn = document.getElementById('showMistakesBtn');
+    const mistakesListDiv = document.getElementById('mistakesList');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'combo-toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 800);
+    }
+    
+    function updateEnergyBar() {
+        const answered = userAnswers.filter(a => a !== undefined && a !== null && a.length > 0).length;
+        const percent = (answered / currentQuestions.length) * 100;
+        document.getElementById('energyFill').style.width = `${percent}%`;
+        document.getElementById('answeredCount').innerText = `✅ ${answered} отвечено`;
+    }
+    
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    function updateTimerDisplay() {
+        const timerDisplay = document.getElementById('timerDisplay');
+        timerDisplay.innerText = formatTime(timeSeconds);
+        if (timeSeconds <= 60) timerDisplay.classList.add('warning');
+        else timerDisplay.classList.remove('warning');
+    }
+    
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timerInterval = setInterval(() => {
+            if (!quizActive) return;
+            if (timeSeconds <= 0) {
+                stopTimer();
+                if (quizActive) { alert('Время вышло! Тест завершается.'); finishQuiz(); }
+            } else {
+                timeSeconds--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+    
+    function checkAnswerForCurrentQuestion() {
+        if (selectedOptions.length === 0) return false;
+        const q = currentQuestions[currentIndex];
+        if (q.multi) {
+            const selectedTexts = selectedOptions.map(idx => q.options[idx]);
+            const correctTexts = q.correctTexts;
+            if (selectedTexts.length !== correctTexts.length) return false;
+            for (let selected of selectedTexts) {
+                let found = false;
+                for (let correct of correctTexts) {
+                    if (isAnswerCorrect(selected, correct)) { found = true; break; }
+                }
+                if (!found) return false;
+            }
+            return true;
+        } else {
+            const selectedText = q.options[selectedOptions[0]];
+            return isAnswerCorrect(selectedText, q.correctText);
+        }
+    }
+    
+    function showHighlightAndExplanation() {
+        if (selectedOptions.length === 0) return;
+        const q = currentQuestions[currentIndex];
+        const isCorrect = checkAnswerForCurrentQuestion();
+        const optionElements = document.querySelectorAll('#optionsContainer .option');
+        optionElements.forEach((el, idx) => {
+            el.classList.remove('correct-highlight', 'wrong-highlight');
+            const optText = q.options[idx];
+            let isCorrectOption = false;
+            if (q.multi) {
+                for (let correct of q.correctTexts) {
+                    if (isAnswerCorrect(optText, correct)) { isCorrectOption = true; break; }
+                }
+            } else {
+                isCorrectOption = isAnswerCorrect(optText, q.correctText);
+            }
+            if (isCorrectOption) el.classList.add('correct-highlight');
+            if (selectedOptions.includes(idx) && !isCorrectOption) el.classList.add('wrong-highlight');
+        });
+        if (isCorrect) { playSound('correct'); showToast('✅ Верно!'); }
+        else { playSound('wrong'); showToast(`❌ Неверно. Правильно: ${q.multi ? q.correctTexts.join(', ') : q.correctText}`); }
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentIndex >= currentQuestions.length) return;
+        const q = currentQuestions[currentIndex];
+        document.getElementById('questionText').innerText = q.text;
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+        const isMulti = q.multi === true;
+        if (isMulti) {
+            const hint = document.createElement('div');
+            hint.className = 'multi-hint';
+            hint.innerText = '✓ Можно выбрать несколько вариантов';
+            container.appendChild(hint);
+        }
+        q.options.forEach((opt, idx) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            if (selectedOptions.includes(idx)) div.classList.add('selected');
+            const input = document.createElement('input');
+            input.type = isMulti ? 'checkbox' : 'radio';
+            input.name = 'question';
+            input.value = idx;
+            input.checked = selectedOptions.includes(idx);
+            const label = document.createElement('span');
+            label.className = 'option-label';
+            label.innerText = opt;
+            div.appendChild(input);
+            div.appendChild(label);
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                if (!quizActive) return;
+                if (waitingForNext) return;
+                if (isMulti) {
+                    if (selectedOptions.includes(idx)) {
+                        selectedOptions = selectedOptions.filter(i => i !== idx);
+                        input.checked = false;
+                    } else {
+                        selectedOptions.push(idx);
+                        input.checked = true;
+                    }
+                } else {
+                    selectedOptions = [idx];
+                }
+                renderCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+        document.getElementById('questionCounter').innerText = `Вопрос ${currentIndex+1} / ${currentQuestions.length}`;
+        updateEnergyBar();
+    }
+    
+    function nextQuestion() {
+        if (!quizActive) return;
+        if (currentExamMode === 'train') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            if (!waitingForNext) {
+                waitingForNext = true;
+                showHighlightAndExplanation();
+                userAnswers[currentIndex] = [...selectedOptions];
+                nextBtn.textContent = 'Следующий вопрос →';
+                return;
+            } else {
+                waitingForNext = false;
+                nextBtn.textContent = 'Далее →';
+                if (currentIndex + 1 < currentQuestions.length) {
+                    currentIndex++;
+                    selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                    renderCurrentQuestion();
+                } else { finishQuiz(); }
+                return;
+            }
+        }
+        if (currentExamMode === 'exam') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            playSound('click');
+            userAnswers[currentIndex] = [...selectedOptions];
+            if (currentIndex + 1 < currentQuestions.length) {
+                currentIndex++;
+                selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                renderCurrentQuestion();
+            } else { finishQuiz(); }
+        }
+    }
+    
+    function calculateScoreAndGrade(correct, maxScore) {
+        const totalPoints = correct * 5;
+        let grade = '';
+        if (totalPoints >= 85) grade = '5 (Отлично)';
+        else if (totalPoints >= 70) grade = '4 (Хорошо)';
+        else if (totalPoints >= 50) grade = '3 (Удовлетворительно)';
+        else grade = '2 (Неудовлетворительно)';
+        return { score: totalPoints, grade };
+    }
+    
+    function finishQuiz() {
+        quizActive = false;
+        stopTimer();
+        let correct = 0;
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) continue;
+            const q = currentQuestions[i];
+            if (q.multi) {
+                const selectedTexts = userOptIndices.map(idx => q.options[idx]);
+                const correctTexts = q.correctTexts;
+                if (selectedTexts.length !== correctTexts.length) continue;
+                let allCorrect = true;
+                for (let selected of selectedTexts) {
+                    let found = false;
+                    for (let correct of correctTexts) {
+                        if (isAnswerCorrect(selected, correct)) { found = true; break; }
+                    }
+                    if (!found) { allCorrect = false; break; }
+                }
+                if (allCorrect) correct++;
+            } else {
+                const selectedText = q.options[userOptIndices[0]];
+                if (isAnswerCorrect(selectedText, q.correctText)) correct++;
+            }
+        }
+        const wrong = currentQuestions.length - correct;
+        const { score, grade } = calculateScoreAndGrade(correct, currentQuestions.length);
+        document.getElementById('correctCount').innerText = correct;
+        document.getElementById('wrongCount').innerText = wrong;
+        document.getElementById('centerScore').innerText = score;
+        let medal = '', motivation = '';
+        if (score >= 85) { medal = '🏆 Золотая медаль'; motivation = 'Превосходный результат! Вы отлично знаете материал.'; }
+        else if (score >= 70) { medal = '🥈 Серебряная медаль'; motivation = 'Хороший результат! Так держать.'; }
+        else if (score >= 50) { medal = '🥉 Бронзовая медаль'; motivation = 'Зачёт сдан. Рекомендуется повторить некоторые темы.'; }
+        else { medal = '📚 Нужно подтянуть знания'; motivation = 'Не расстраивайтесь! Пройдите тест ещё раз и улучшите результат.'; }
+        document.getElementById('gradeDisplay').innerHTML = `<div class="grade-badge">${grade}</div>`;
+        document.getElementById('medalArea').innerText = medal;
+        document.getElementById('motivationMessage').innerText = motivation;
+        let userName = localStorage.getItem('matematika_userName') || userNameInput.value.trim();
+        if (!userName) userName = 'Уважаемый студент';
+        document.getElementById('greetingName').innerText = `${userName}, ваш результат:`;
+        const donut = document.getElementById('donutChart');
+        const correctPercent = (correct / currentQuestions.length) * 360;
+        donut.style.background = `conic-gradient(var(--correct) 0deg ${correctPercent}deg, var(--wrong) ${correctPercent}deg 360deg)`;
+        window.mistakes = [];
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) {
+                window.mistakes.push({ question: currentQuestions[i].text, userAnswer: 'Нет ответа', correctAnswer: currentQuestions[i].multi ? currentQuestions[i].correctTexts.join(', ') : currentQuestions[i].correctText });
+                continue;
+            }
+            const q = currentQuestions[i];
+            if (q.multi) {
+                const selectedTexts = userOptIndices.map(idx => q.options[idx]);
+                const correctTexts = q.correctTexts;
+                let allCorrect = true;
+                for (let selected of selectedTexts) {
+                    let found = false;
+                    for (let correct of correctTexts) {
+                        if (isAnswerCorrect(selected, correct)) { found = true; break; }
+                    }
+                    if (!found) allCorrect = false;
+                }
+                if (selectedTexts.length !== correctTexts.length) allCorrect = false;
+                if (!allCorrect) {
+                    window.mistakes.push({ question: q.text, userAnswer: selectedTexts.join(', '), correctAnswer: correctTexts.join(', ') });
+                }
+            } else {
+                const selectedText = q.options[userOptIndices[0]];
+                if (!isAnswerCorrect(selectedText, q.correctText)) {
+                    window.mistakes.push({ question: q.text, userAnswer: selectedText, correctAnswer: q.correctText });
+                }
+            }
+        }
+        startScreen.classList.add('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+        cheatScreen.classList.add('hidden');
+    }
+    
+    function initQuiz(mode) {
+        currentExamMode = mode;
+        waitingForNext = false;
+        const shuffled = [...FULL_QUESTIONS];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        currentQuestions = shuffled.slice(0, 20);
+        userAnswers = new Array(20).fill(null);
+        currentIndex = 0;
+        selectedOptions = [];
+        timeSeconds = 20 * 60;
+        quizActive = true;
+        updateTimerDisplay();
+        stopTimer();
+        startTimer();
+        renderCurrentQuestion();
+        nextBtn.textContent = 'Далее →';
+    }
+    
+    function startQuizWithMode(mode) {
+        let userName = userNameInput.value.trim();
+        if (!userName) {
+            userName = prompt('Пожалуйста, введите ваше имя:', 'Студент');
+            if (!userName) userName = 'Студент';
+            userNameInput.value = userName;
+        }
+        localStorage.setItem('matematika_userName', userName);
+        initQuiz(mode);
+        startScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    function saveCheatBookmarks() {
+        localStorage.setItem('matematika_bookmarks', JSON.stringify(cheatBookmarks));
+        renderCheatQuestionsList();
+        updateCheatStats();
+    }
+    
+    function saveCheatViewed() {
+        localStorage.setItem('matematika_viewed', JSON.stringify(cheatViewed));
+        updateCheatStats();
+    }
+    
+    function markCheatAsViewed(id) {
+        if (!cheatViewed.includes(id)) {
+            cheatViewed.push(id);
+            saveCheatViewed();
+        }
+    }
+    
+    function getCheatFilteredIds() {
+        let ids = FULL_QUESTIONS.map(q => q.id);
+        if (cheatSearchQuery.trim()) {
+            const query = cheatSearchQuery.toLowerCase();
+            ids = ids.filter(id => {
+                const q = FULL_QUESTIONS.find(qq => qq.id === id);
+                return q.text.toLowerCase().includes(query) || q.options.some(opt => opt.toLowerCase().includes(query));
+            });
+        }
+        return ids;
+    }
+    
+    function renderCheatQuestionsList() {
+        cheatFilteredIds = getCheatFilteredIds();
+        const container = document.getElementById('cheatQuestionsList');
+        if (cheatFilteredIds.length === 0) {
+            container.innerHTML = '<div style="padding: 20px; text-align: center;">🤔 Ничего не найдено</div>';
+            return;
+        }
+        container.innerHTML = '';
+        cheatFilteredIds.forEach(id => {
+            const q = FULL_QUESTIONS.find(qq => qq.id === id);
+            const isBookmarked = cheatBookmarks.includes(id);
+            const div = document.createElement('div');
+            div.className = `cheat-question-item ${cheatCurrentId === id ? 'active' : ''}`;
+            div.innerHTML = `
+                <div class="cheat-question-text">
+                    <span>${id}. ${q.text.substring(0, 60)}${q.text.length > 60 ? '…' : ''}</span>
+                    <span class="cheat-star ${isBookmarked ? 'active' : ''}" data-id="${id}">${isBookmarked ? '⭐' : '☆'}</span>
+                </div>
+            `;
+            div.addEventListener('click', (e) => {
+                if (e.target.classList.contains('cheat-star')) return;
+                cheatCurrentId = id;
+                markCheatAsViewed(id);
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            const starSpan = div.querySelector('.cheat-star');
+            starSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (cheatBookmarks.includes(id)) {
+                    cheatBookmarks = cheatBookmarks.filter(b => b !== id);
+                    showToast(`❌ Вопрос ${id} удалён из закладок`);
+                } else {
+                    cheatBookmarks.push(id);
+                    showToast(`⭐ Вопрос ${id} добавлен в закладки`);
+                }
+                saveCheatBookmarks();
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+    }
+    
+    function renderCheatCurrentQuestion() {
+        const q = FULL_QUESTIONS.find(qq => qq.id === cheatCurrentId);
+        if (!q) return;
+        document.getElementById('cheatQuestionText').innerHTML = `${q.id}. ${q.text}`;
+        const container = document.getElementById('cheatOptionsContainer');
+        container.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            let isCorrect = false;
+            if (q.multi) {
+                for (let correct of q.correctTexts) {
+                    if (isAnswerCorrect(opt, correct)) { isCorrect = true; break; }
+                }
+            } else {
+                isCorrect = isAnswerCorrect(opt, q.correctText);
+            }
+            const div = document.createElement('div');
+            div.className = `cheat-option ${isCorrect ? 'correct' : ''}`;
+            div.innerHTML = `
+                <span style="font-weight:700;">${String.fromCharCode(65 + idx)}.</span>
+                <span>${opt}</span>
+                ${isCorrect ? '<span class="cheat-badge">✓ Правильно</span>' : ''}
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function updateCheatStats() {
+        document.getElementById('cheatTotal').innerText = FULL_QUESTIONS.length;
+        document.getElementById('cheatBookmarkCount').innerText = cheatBookmarks.length;
+        document.getElementById('cheatViewedCount').innerText = cheatViewed.length;
+    }
+    
+    function initCheat() {
+        cheatFilteredIds = getCheatFilteredIds();
+        if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+            cheatCurrentId = cheatFilteredIds[0];
+        }
+        renderCheatQuestionsList();
+        renderCheatCurrentQuestion();
+        updateCheatStats();
+    }
+    
+    function goToMainMenu() {
+        stopTimer();
+        quizActive = false;
+        startScreen.classList.remove('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    function restartQuiz() {
+        if (currentExamMode) {
+            initQuiz(currentExamMode);
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+        } else { goToMainMenu(); }
+    }
+    
+    function shareResult() {
+        const correct = parseInt(document.getElementById('correctCount').innerText);
+        const total = currentQuestions.length;
+        const userName = localStorage.getItem('matematika_userName') || '';
+        const text = `${userName ? userName + ', ' : ''}результат зачёта по математике: ${correct} из ${total}.`;
+        if (navigator.share) navigator.share({ title: 'Результат зачёта', text: text }).catch(() => alert(text));
+        else { alert('Результат: ' + text); navigator.clipboard?.writeText(text); }
+    }
+    
+    function toggleMistakes() {
+        if (mistakesListDiv.classList.contains('hidden')) {
+            if (window.mistakes && window.mistakes.length) {
+                mistakesListDiv.innerHTML = '<h3 style="margin-bottom: 12px;">📌 Ошибки</h3>';
+                window.mistakes.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'mistake-item';
+                    div.innerHTML = `<div class="mistake-question">❓ ${m.question}</div><div class="mistake-detail">✖ Ваш ответ: ${m.userAnswer}</div><div class="mistake-detail">✔ Правильно: ${m.correctAnswer}</div>`;
+                    mistakesListDiv.appendChild(div);
+                });
+            } else { mistakesListDiv.innerHTML = '<p>🎉 Отлично! Ошибок нет.</p>'; }
+            mistakesListDiv.classList.remove('hidden');
+            showMistakesBtn.innerText = '📖 Скрыть ошибки';
+        } else {
+            mistakesListDiv.classList.add('hidden');
+            showMistakesBtn.innerText = '📖 Показать ошибки';
+        }
+    }
+    
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        themeToggle.innerText = isDark ? '☀️ Светлая' : '🌙 Тёмная';
+        localStorage.setItem('matematika_theme', isDark ? 'dark' : 'light');
+    }
+    
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        soundToggle.innerText = soundEnabled ? '🔊 Звук вкл' : '🔇 Звук выкл';
+        showToast(soundEnabled ? 'Звук включён' : 'Звук выключен');
+        if (soundEnabled) playSound('click');
+    }
+    
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('matematika_theme');
+        if (savedTheme === 'dark') { document.body.classList.add('dark'); themeToggle.innerText = '☀️ Светлая'; }
+        else { themeToggle.innerText = '🌙 Тёмная'; }
+    }
+    
+    function loadUserName() {
+        const savedName = localStorage.getItem('matematika_userName');
+        if (savedName) userNameInput.value = savedName;
+    }
+    
+    function resetUserName() {
+        localStorage.removeItem('matematika_userName');
+        userNameInput.value = '';
+        showToast('Имя сброшено');
+    }
+    
+    function switchMode(mode) {
+        currentMode = mode;
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === mode) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        if (mode === 'exam') {
+            startScreen.classList.remove('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+            if (timerInterval) stopTimer();
+        } else {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.remove('hidden');
+            if (timerInterval) stopTimer();
+            initCheat();
+        }
+    }
+    
+    trainModeBtn.addEventListener('click', () => startQuizWithMode('train'));
+    examModeBtn.addEventListener('click', () => startQuizWithMode('exam'));
+    resetNameBtn.addEventListener('click', resetUserName);
+    themeToggle.addEventListener('click', toggleTheme);
+    soundToggle.addEventListener('click', toggleSound);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    mainMenuBtn.addEventListener('click', goToMainMenu);
+    shareBtn.addEventListener('click', shareResult);
+    showMistakesBtn.addEventListener('click', toggleMistakes);
+    
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+    });
+    
+    const cheatSearch = document.getElementById('cheatSearch');
+    if (cheatSearch) {
+        cheatSearch.addEventListener('input', (e) => {
+            cheatSearchQuery = e.target.value;
+            cheatFilteredIds = getCheatFilteredIds();
+            if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+                cheatCurrentId = cheatFilteredIds[0];
+            }
+            renderCheatQuestionsList();
+            renderCheatCurrentQuestion();
+        });
+    }
+    
+    initAudio();
+    loadTheme();
+    loadUserName();
+    switchMode('exam');
 </script>
 </body>
 </html>
