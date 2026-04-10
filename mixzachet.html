@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Химия, Физика, Биология | Зачетный тренажер + Шпаргалка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #2c5f8a;
+            --primary-dark: #1e405e;
+            --primary-light: #e6f0f7;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --energy-bg: #2d2b26;
+            --status-success: #10b981;
+            --status-progress: #f59e0b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --card-radius: 24px;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --primary-light: #1e2a3a;
+            --energy-bg: #3a3226;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 16px 12px 40px;
+            transition: background 0.2s, color 0.2s;
+            min-height: 100vh;
+        }
+
+        .hidden-message {
+            position: fixed;
+            bottom: 8px;
+            right: 12px;
+            font-size: 11px;
+            color: var(--text-light);
+            opacity: 0.25;
+            font-family: monospace;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px 18px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .mode-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            padding: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .theme-toggle, .sound-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+            width: auto;
+        }
+        
+        .theme-toggle:hover, .sound-toggle:hover {
+            background: var(--primary-light);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-screen h1 {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary), #4a90c4);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .status-panel {
+            background: var(--primary-light);
+            border-radius: 20px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .status-panel h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+        .status-item {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-badge {
+            width: 24px;
+            font-size: 14px;
+        }
+        .status-badge.success { color: var(--status-success); }
+        .status-badge.progress { color: var(--status-progress); }
+
+        .mode-select-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .mode-select-buttons button {
+            flex: 1;
+            min-width: 140px;
+            font-size: 1.1rem;
+        }
+        .mode-train {
+            background: #3b82f6;
+        }
+        .mode-train:hover {
+            background: #2563eb;
+        }
+        .mode-exam {
+            background: var(--primary);
+        }
+
+        .name-input-group {
+            margin: 24px 0 20px;
+            text-align: left;
+        }
+        
+        .name-input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 95, 138, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            margin-top: 12px;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-area {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .energy-bar-bg {
+            background: var(--energy-bg);
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .energy-fill {
+            background: linear-gradient(90deg, #f39c12, #eab308, #10b981);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 40px;
+        }
+        
+        .timer-box {
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        
+        .timer-box.warning {
+            background: #fee2e2;
+            color: #b91c1c;
+            animation: pulse 1s infinite;
+        }
+        
+        body.dark .timer-box.warning {
+            background: #7f1a1a;
+            color: #ffcdcd;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.8; transform: scale(1.02);}
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 16px 0 20px;
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .option {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .option:hover {
+            background: var(--primary-light);
+        }
+        
+        .option.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(44, 95, 138, 0.2);
+        }
+
+        .option.correct-highlight {
+            background: #10b98120;
+            border-color: var(--correct);
+        }
+
+        .option.wrong-highlight {
+            background: #ef444420;
+            border-color: var(--wrong);
+        }
+        
+        .option input {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--primary);
+            pointer-events: none;
+        }
+        
+        .option-label {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.3;
+            cursor: pointer;
+        }
+        
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .result-stats {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .grade {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+        
+        .grade-badge {
+            background: #10b98120;
+            padding: 8px 24px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        
+        .circle-chart {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+            position: relative;
+        }
+        .donut {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            position: relative;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body.dark .donut {
+            background: #334155;
+        }
+        .donut-inner {
+            width: 120px;
+            height: 120px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 28px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 2;
+        }
+        .donut-inner span {
+            font-size: 12px;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+        .donut-inner .score-value {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .stats-text {
+            margin-top: 12px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stats-correct { color: var(--correct); font-weight: 700; }
+        .stats-wrong { color: var(--wrong); font-weight: 700; }
+        
+        .combo-toast {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 1000;
+            animation: fadeUp 0.8s ease-out forwards;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+        }
+        
+        .medal-icon {
+            font-size: 2rem;
+            margin: 8px 0;
+        }
+        
+        .mistake-item {
+            background: var(--surface);
+            border-left: 5px solid var(--wrong);
+            padding: 14px;
+            margin-bottom: 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+        
+        .mistake-question {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .mistake-detail {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .motivation-message {
+            margin: 16px 0 8px;
+            padding: 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .cheat-sheet {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+        .cheat-search {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .cheat-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cheat-questions-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .cheat-question-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 12px;
+            margin-bottom: 4px;
+        }
+        .cheat-question-item:hover {
+            background: var(--primary-light);
+        }
+        .cheat-question-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        .cheat-question-text {
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cheat-star {
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0.6;
+            padding: 4px;
+        }
+        .cheat-star.active {
+            color: #f59e0b;
+            opacity: 1;
+        }
+        .cheat-options {
+            margin-top: 20px;
+        }
+        .cheat-option {
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        .cheat-option.correct {
+            background: #10b98120;
+            border-color: var(--correct);
+        }
+        .cheat-badge {
+            background: var(--correct);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 550px) {
+            body {
+                padding: 12px 10px 30px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+            .option {
+                padding: 12px 14px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+            .donut {
+                width: 130px;
+                height: 130px;
+            }
+            .donut-inner {
+                width: 95px;
+                height: 95px;
+                font-size: 24px;
+            }
+            .donut-inner .score-value {
+                font-size: 26px;
+            }
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="hidden-message">F. Je suis fier de toi.</div>
+
+<div class="container" id="app">
+    <div class="mode-switch">
+        <button class="mode-btn" data-mode="exam">📝 Зачёт (тест)</button>
+        <button class="mode-btn" data-mode="cheat">📖 Шпаргалка</button>
+    </div>
+    
+    <div class="header-bar">
+        <div style="font-weight: 600; font-size: 14px;">🧪 ХИМИЯ | ⚡ ФИЗИКА | 🧬 БИОЛОГИЯ</div>
+        <div style="display: flex; gap: 8px;">
+            <button class="sound-toggle" id="soundToggleBtn">🔇 Звук выкл</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 Тёмная</button>
+        </div>
+    </div>
+
+    <!-- СТАРТОВЫЙ ЭКРАН -->
+    <div id="startScreen" class="card start-screen">
+        <h1>🧪⚡🧬 Тренажёр зачёта</h1>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 150 вопросов в базе</p>
+        
+        <div class="status-panel">
+            <h3>📚 Доступные разделы:</h3>
+            <div class="status-grid">
+                <div class="status-item"><span class="status-badge success">✅</span> Химия (50 вопросов)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Физика (50 вопросов)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Биология (50 вопросов)</div>
+            </div>
+        </div>
+        
+        <div class="mode-select-buttons">
+            <button id="trainModeBtn" class="mode-train">🎓 ТРЕНИРОВКА</button>
+            <button id="examModeBtn" class="mode-exam">📝 ДЕМО-ЗАЧЁТ</button>
+        </div>
+        
+        <div class="name-input-group">
+            <label>👤 Ваше имя</label>
+            <input type="text" id="userNameInput" placeholder="Введите имя" autocomplete="off">
+        </div>
+        <button class="btn-outline" id="resetLocalStorageBtn" style="margin-top: 10px;">🔄 Сбросить имя</button>
+        <footer>Тренировка: после ответа нажми «Далее» → покажет правильный ответ • Демо-зачёт: как настоящий экзамен</footer>
+    </div>
+
+    <!-- ЭКРАН ТЕСТА -->
+    <div id="quizScreen" class="hidden">
+        <div class="card">
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <div class="flex-between">
+                        <span id="questionCounter">Вопрос 1 / 20</span>
+                        <span id="answeredCount">✅ 0 отвечено</span>
+                    </div>
+                    <div class="energy-bar-bg"><div class="energy-fill" id="energyFill"></div></div>
+                </div>
+                <div class="timer-box" id="timerDisplay">20:00</div>
+            </div>
+            <div id="quizInner">
+                <div class="question-text" id="questionText">Загрузка...</div>
+                <div class="options-list" id="optionsContainer"></div>
+                <button id="nextQuestionBtn" class="next-btn">Далее →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultScreen" class="hidden">
+        <div class="card">
+            <div class="result-stats">
+                <h2 style="font-size: 1.5rem;">📋 Результат</h2>
+                <div id="greetingName" style="font-size: 1.1rem; margin: 8px 0;"></div>
+                
+                <div class="circle-chart">
+                    <div class="donut" id="donutChart">
+                        <div class="donut-inner">
+                            <div class="score-value" id="centerScore">0</div>
+                            <span>баллов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-text">
+                    <span>✅ <span id="correctCount">0</span> правильных</span>
+                    <span>❌ <span id="wrongCount">0</span> ошибок</span>
+                </div>
+                
+                <div id="medalArea" class="medal-icon"></div>
+                <div id="gradeDisplay" class="grade"></div>
+                <div id="motivationMessage" class="motivation-message"></div>
+                <button id="showMistakesBtn" class="btn-outline" style="width: auto; padding: 10px 20px; margin-top: 8px;">📖 Показать ошибки</button>
+            </div>
+            <div id="mistakesList" class="hidden" style="margin-top: 20px;"></div>
+            <div class="action-buttons">
+                <button id="shareResultBtn">📤 Поделиться</button>
+                <button id="mainMenuBtn">🏠 Главный экран</button>
+                <button id="restartQuizBtn">🔄 Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ШПАРГАЛКА -->
+    <div id="cheatScreen" class="hidden">
+        <div class="cheat-sheet">
+            <input type="text" id="cheatSearch" class="cheat-search" placeholder="🔍 Поиск по вопросам...">
+            <div class="cheat-stats">
+                <span>📋 Всего: <strong id="cheatTotal">0</strong></span>
+                <span>⭐ Закладки: <strong id="cheatBookmarkCount">0</strong></span>
+                <span>👁️ Просмотрено: <strong id="cheatViewedCount">0</strong></span>
+            </div>
+            <div class="cheat-questions-list" id="cheatQuestionsList"></div>
+            <div id="cheatCurrentQuestion">
+                <div class="question-text" id="cheatQuestionText">Выберите вопрос из списка</div>
+                <div class="cheat-options" id="cheatOptionsContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== БАЗА ДАННЫХ: 150 ВОПРОСОВ (ХИМИЯ, ФИЗИКА, БИОЛОГИЯ) ====================
+    const FULL_QUESTIONS = [
+        // ХИМИЯ (1-50)
+        { id: 1, text: "Изомером, для бутана, является:", correctIndex: 0, options: ["2метилпропан", "2этилпропан", "2пропилпропан"], multi: false },
+        { id: 2, text: "К углеводам не относятся:", correctIndex: 2, options: ["тетрозы, пентозы, гексозы", "моносахариды, олигосахариды, полисахариды", "первичные, вторичные и третичные амины"], multi: false },
+        { id: 3, text: "В состав 2 метилгесанола входят элементы", correctIndex: 1, options: ["С, Н", "C, H, O", "C, H, N"], multi: false },
+        { id: 4, text: "Для алкенов характерны реакции:", correctIndex: 0, options: ["присоединения", "отщепления", "обмена"], multi: false },
+        { id: 5, text: "Валентность О (кислород) в органических соединениях:", correctIndex: 2, options: ["I", "III", "II", "VI"], multi: false },
+        { id: 6, text: "Названия альдегидов оканчиваются на суффикс:", correctIndex: 0, options: ["-аль", "-ол", "-овый"], multi: false },
+        { id: 7, text: "К кратным связям не относят:", correctIndex: 3, options: ["двойные и тройные связи", "двойные связи", "тройные связи", "одинарные связи"], multi: false },
+        { id: 8, text: "Углеводы не выполняют:", correctIndex: 3, options: ["транспортную функцию", "энергетическую функцию", "защитную функцию", "двигательную функцию"], multi: false },
+        { id: 9, text: "Суффикс -ин, в названиях, свидетельствует о том, что это соединение относится к:", correctIndex: 2, options: ["алканам", "алкенам", "алкинам"], multi: false },
+        { id: 10, text: "Гидролиз белков - это:", correctIndex: 0, options: ["распад на простейшие аминокислоты", "распад до азота, углекислого газа и воды", "набухание"], multi: false },
+        { id: 11, text: "Белый аморфный порошок, не растворимый в холодной воде, но разбухающий в горячей - это:", correctIndex: 3, options: ["целлюлоза", "сахароза", "фруктоза", "крахмал"], multi: false },
+        { id: 12, text: "Качественной реакцией на крахмал, является, взаимодействие с:", correctIndex: 0, options: ["йодом", "Cu(OH)2", "H2SO4 (конц)", "HNO3 (конц)"], multi: false },
+        { id: 13, text: "Названия спиртов оканчиваются на суффикс:", correctIndex: 0, options: ["-ол", "-аль", "-овый"], multi: false },
+        { id: 14, text: "В углеводородных радикалах предельных кислородсодержащих соединений, все связи между атомами углерода:", correctIndex: 0, options: ["одинарные", "имеют одну двойную связь", "имеют одну тройную связь"], multi: false },
+        { id: 15, text: "Функциональная группа предельных одноатомных спиртов:", correctIndex: 1, options: ["-СОН", "-ОН", "-СООН"], multi: false },
+        { id: 16, text: "Функциональная группа альдегидов:", correctIndex: 2, options: ["-СООН", "-ОН", "-СОН"], multi: false },
+        { id: 17, text: "Суффикс -ен, в названиях, свидетельствует о том, что в соединениях все связи между атомами:", correctIndex: 1, options: ["одинарные", "двойные", "тройные"], multi: false },
+        { id: 18, text: "Денатурация - это свойство:", correctIndex: 2, options: ["жиров", "углеводов", "белков"], multi: false },
+        { id: 19, text: "Изомерия положения кратной связи характерна для:", correctIndex: 0, options: ["непредельных углеводородов - алкенов", "предельных углеводородов - алканов", "ароматических соединений - аренов", "предельных одноатомных спиртов"], multi: false },
+        { id: 20, text: "Реакция дегидратация характерна для:", correctIndex: 0, options: ["одноатомных спиртов", "карбоновых кислот", "альдегидов"], multi: false },
+        { id: 21, text: "Суффикс -ан, в названиях, свидетельствует о том, что это соединение относится к:", correctIndex: 1, options: ["алкенам", "алканам", "алкинам"], multi: false },
+        { id: 22, text: "Для алканов характерны реакции:", correctIndex: 2, options: ["разложения", "присоединения", "замещения", "обмена"], multi: false },
+        { id: 23, text: "Реакции взаимодействия органических соединений с HCl, называются:", correctIndex: 2, options: ["галогенирование", "гидратация", "гидрогалогенирование", "гидрирование"], multi: false },
+        { id: 24, text: "Реакция дегидратация, обозначает:", correctIndex: 0, options: ["отщепление H2O", "присоединение H2", "присоединение Cl2", "отщепление HCl"], multi: false },
+        { id: 25, text: "Реакции полимеризации, не характерны для:", correctIndex: 0, options: ["алканов", "алкенов", "алкинов"], multi: false },
+        { id: 26, text: "Формула CnH2n-6, соответствует общей формуле:", correctIndex: 0, options: ["ароматических углеводородов", "алканов", "алкинов", "алкенов"], multi: false },
+        { id: 27, text: "Органические вещества, в состав которых входят С и Н, называются:", correctIndex: 2, options: ["карбиды", "гидриды", "углеводороды", "галогениды"], multi: false },
+        { id: 28, text: "Какие функциональные группы входят в состав аминокислот:", correctIndex: 0, options: ["-NH2 и -COOH", "-NH2 и -OH", "-NO2 и -COOH", "-NO2 и -OH"], multi: false },
+        { id: 29, text: "Процесс образования этилового спирта из глюкозы, называется:", correctIndex: 1, options: ["гидратация", "брожение", "гидролиз", "этерификация"], multi: false },
+        { id: 30, text: "Автором явления изомерии, является:", correctIndex: 2, options: ["С.В. Лебедев", "В.В. Марковников", "Бутлеров А.М."], multi: false },
+        { id: 31, text: "Белки - это...:", correctIndex: 2, options: ["органические соединения, содержащие два или более остатка аминокислот", "азотсодержащие органические соединения природного происхождения", "природные полимеры, состоящие из большого числа остатков аминокислот, связанных между собой пептидными связями"], multi: false },
+        { id: 32, text: "Процесс изменения углеродного скелета в пространстве называется:", correctIndex: 0, options: ["изомеризация", "полимеризация", "гидролиз"], multi: false },
+        { id: 33, text: "Какие радикалы входят в состав метилпропиламин:", correctIndex: 3, options: ["CH3- и C2H5-", "C2H5- и C3H7-", "CH3- и CH3-", "CH3- и C3H7-"], multi: false },
+        { id: 34, text: "Формула глюкозы:", correctIndex: 1, options: ["C6H12O5", "C6H12O6", "C6H6O5"], multi: false },
+        { id: 35, text: "При нагревании белка происходит:", correctIndex: 3, options: ["гидролиз с образованием аминокислот", "свертывание белка", "растворение", "денатурация"], multi: false },
+        { id: 36, text: "2 метил3этил пентен-1 соответствует общая формула:", correctIndex: 2, options: ["CnH2n-2", "CnH2n+2", "CnH2n", "CnH2n+1"], multi: false },
+        { id: 37, text: "Общая формула алкинов:", correctIndex: 2, options: ["CnH2n+2", "CnH2n", "CnH2n-2", "CnH2n+1"], multi: false },
+        { id: 38, text: "Молекулярная формула сахарозы", correctIndex: 0, options: ["C12H22O11", "C6H12O6", "C6H6O5"], multi: false },
+        { id: 39, text: "Крахмал, вещество:", correctIndex: 3, options: ["животного происхождения", "является основной частью стенок растений", "является продуктом гидролиза углеводов", "образуется в результате фотосинтеза"], multi: false },
+        { id: 40, text: "Качественной реакцией на глицерин, является взаимодействие с:", correctIndex: 2, options: ["сульфатом меди (II)", "гидроксидом натрия", "гидроксидом меди (II)"], multi: false },
+        { id: 41, text: "Изомером для 3,3 диметилбутановой кислоты, является:", correctIndex: 1, options: ["гексановая кислота", "2этилпропановая кислота", "2метилпропановая кислота"], multi: false },
+        { id: 42, text: "Общим свойством одноатомных спиртов и карбоновых кислот, является:", correctIndex: 2, options: ["внутримолекулярная дегидратация", "брожение", "взаимодействие с активными металлами"], multi: false },
+        { id: 43, text: "Реакция взаимодействия одноатомных спиртов с карбоновыми кислотами, называется реакцией:", correctIndex: 2, options: ["ароматизация", "гидратация", "этерификация"], multi: false },
+        { id: 44, text: "Соединения, в молекулах которых есть амидные (пептидные) связи, называются:", correctIndex: 2, options: ["жиры", "углеводороды", "белки", "углеводы"], multi: false },
+        { id: 45, text: "Уксусный альдегид имеет формулу:", correctIndex: 0, options: ["CH3COH", "CH3COOH", "CH3CH2OH"], multi: false },
+        { id: 46, text: "К дисахаридам относится:", correctIndex: 1, options: ["рибоза", "сахароза", "глюкоза"], multi: false },
+        { id: 47, text: "Укажите название групп в молекуле белка, образовавшихся при соединении аминокислот:", correctIndex: 2, options: ["карбонильные группы", "аминогруппы", "амидные (пептидные) группы"], multi: false },
+        { id: 48, text: "Диметиламин, является амином:", correctIndex: 1, options: ["первичным", "вторичным", "третичным"], multi: false },
+        { id: 49, text: "Рибоза и дезоксирибоза, являются:", correctIndex: 1, options: ["нуклеиновыми кислотами", "углеводами", "белками"], multi: false },
+        { id: 50, text: "Попадание какого спирта в организм более 50 мл вызывает смерть:", correctIndex: 2, options: ["CH3CH2OH", "C3H7O", "CH3OH"], multi: false },
+        
+        // ФИЗИКА (51-100)
+        { id: 51, text: "Автомобиль, трогаясь с места, движется с ускорением 3 м/с². Через 4 с скорость автомобиля будет равна", correctIndex: 0, options: ["12 м/с", "0,75 м/с", "48 м/с", "6 м/с"], multi: false },
+        { id: 52, text: "За 1 цикл рабочее тело теплового двигателя совершило работу 30 кДж и отдало холодильнику 70 кДж количества теплоты. КПД двигателя равен", correctIndex: 2, options: ["70%", "43%", "30%", "35%"], multi: false },
+        { id: 53, text: "Температура нагревателя идеальной машины Карно 700 К, а температура холодильника 420 К. Каков КПД идеальной машины?", correctIndex: 1, options: ["60%", "40%", "30%", "45%"], multi: false },
+        { id: 54, text: "Давление газа на стенку сосуда обусловлено", correctIndex: 1, options: ["притяжением молекул друг к другу", "столкновениями молекул со стенками сосудов", "столкновением молекул газа между собой", "проникновением молекул сквозь стенки сосуда"], multi: false },
+        { id: 55, text: "При повышении температуры идеального газа в запаянном сосуде его давление увеличивается. Это объясняется тем, что с ростом температуры...", correctIndex: 1, options: ["увеличиваются размеры молекул газа", "увеличивается энергия движения молекул газа", "увеличивается потенциальная энергия молекул газа", "увеличивается хаотичность движения молекул газа"], multi: false },
+        { id: 56, text: "Как изменится концентрация молекул газа при уменьшении объема сосуда в 2 раза?", correctIndex: 0, options: ["увеличится в 2 раза", "уменьшится в 2 раза", "не изменится", "уменьшится в 4 раза"], multi: false },
+        { id: 57, text: "При уменьшении температуры средняя кинетическая энергия молекул", correctIndex: 1, options: ["увеличится", "уменьшится", "не изменится", "иногда увеличится, иногда уменьшится"], multi: false },
+        { id: 58, text: "В каких единицах измеряют импульс в системе СИ?", correctIndex: 2, options: ["1 кг", "1 Н", "1 кг*м/с", "1 Дж"], multi: false },
+        { id: 59, text: "Какая из названных ниже физических величин является векторной?", correctIndex: 2, options: ["работа", "энергия", "сила", "масса"], multi: false },
+        { id: 60, text: "Какое выражение соответствует определению кинетической энергии тела?", correctIndex: 2, options: ["mv", "mv2", "mv2/2", "Ft"], multi: false },
+        { id: 61, text: "Какое выражение соответствует определению потенциальной энергии поднятого над Землей?", correctIndex: 1, options: ["mv2/2", "mgh", "kx2/2", "mgh/2"], multi: false },
+        { id: 62, text: "Какое из приведенных ниже выражений соответствует закону сохранения импульса для случая взаимодействия двух тел?", correctIndex: 2, options: ["m1v12/2+mgh1 = mv22/2+mgh2", "F t = mv2-mv1", "m1v1+ m2v2 = m1u1 +m2u2", "р= mv"], multi: false },
+        { id: 63, text: "Как изменится потенциальная энергия деформированного тела при увеличении его деформации в 2 раза?", correctIndex: 0, options: ["Увеличится в 4 раза", "Уменьшится в 2 раза", "Увеличится в 2 раза", "Уменьшится в 4 раза"], multi: false },
+        { id: 64, text: "Каким видом энергии обладает парашютист во время прыжка?", correctIndex: 2, options: ["ЕК", "ЕР", "ЕК + ЕР", "Е=0"], multi: false },
+        { id: 65, text: "Каким видом энергии обладает мяч, лежащий на футбольном поле?", correctIndex: 1, options: ["ЕК", "ЕР", "ЕК + ЕР", "Е=0"], multi: false },
+        { id: 66, text: "В каких единицах измеряют энергию в системе СИ?", correctIndex: 3, options: ["1 Вт", "1 Н", "1 кг*м/с", "1 Дж"], multi: false },
+        { id: 67, text: "Какая из названных ниже физических величин является скалярной?", correctIndex: 1, options: ["сила", "работа", "импульс", "перемещение"], multi: false },
+        { id: 68, text: "Какое выражение соответствует определению импульса тела?", correctIndex: 1, options: ["ma", "mv", "Ft", "mv²/2"], multi: false },
+        { id: 69, text: "Какое из приведенных ниже выражений соответствует закону сохранения механической энергии?", correctIndex: 2, options: ["А= mgh2-mgh1", "А= mv2²/2-mv1²/2", "Еk1+Еp1= Еk2+ Еp2", "m1v1+m2v2 = m1u1 +m2u2"], multi: false },
+        { id: 70, text: "Гравитационная постоянная равна.", correctIndex: 2, options: ["9.8 Н*м²/кг²", "9.8 кг*м/с²", "6,672*10⁻¹¹ Н*м²/кг²", "6,672*10⁻¹¹ кг*м/с²"], multi: false },
+        { id: 71, text: "Из закона всемирного тяготения: все тела притягиваются друг к другу с силой, модуль которой прямо пропорционален произведению их.... и обратно пропорционален .....", correctIndex: 1, options: ["сил и массе", "масс и квадрату расстояния между ними", "сил и квадрату расстояния между ними", "сил и квадрату расстояния между ними"], multi: false },
+        { id: 72, text: "Какая единица времени является основной в Международной системе?", correctIndex: 0, options: ["1с", "1мин", "1час", "1сутки"], multi: false },
+        { id: 73, text: "Какие из перечисленных ниже величин являются векторными величинами? Путь , перемещение и скорость.", correctIndex: 3, options: ["Путь", "Перемещение", "скорость", "Перемещение и скорость"], multi: false },
+        { id: 74, text: "Автомобиль дважды проехал вокруг Москвы по кольцевой дороге, длина которой 109 км. Чему равны пройденный автомобилем путь l и модуль его перемещения S?", correctIndex: 1, options: ["l = 109 км, S = 0 км", "l = 218 км, S = 0 км", "l = S = 218 км", "l = S = 0 км"], multi: false },
+        { id: 75, text: "Поезд длиной 200 м въезжает в тоннель длиной 300 м, двигаясь равномерно со скоростью 10 м/с. Через какое время поезд полностью выйдет из тоннеля?", correctIndex: 3, options: ["10 с", "20 с", "30 с", "50 с"], multi: false },
+        { id: 76, text: "Равнодействующая всех сил, действующих на тело, равна нулю. Движется это тело или находится в состоянии покоя?", correctIndex: 1, options: ["Тело обязательно находится в состоянии покоя", "Тело движется равномерно прямолинейно или находится в состоянии покоя", "Тело обязательно движется равномерно прямолинейно", "Тело движется равноускоренно"], multi: false },
+        { id: 77, text: "Два мальчика взялись за руки. Первый мальчик толкает второго с силой 120 Н. С какой силой толкает второй мальчик первого?", correctIndex: 3, options: ["0 Н", "60 Н", "80 Н", "120 Н"], multi: false },
+        { id: 78, text: "Чему равна скорость свободно падающего тела через 10 секунд?", correctIndex: 3, options: ["20 м/с", "40 м/с", "80 м/с", "100 м/с"], multi: false },
+        { id: 79, text: "Какой путь пройдет свободно падающее тело за 5 секунд?", correctIndex: 3, options: ["25 м", "30 м", "50 м", "125 м"], multi: false },
+        { id: 80, text: "В каких направлениях движутся частицы среды при распространении поперечных механических волн?", correctIndex: 2, options: ["Только по направлению распространения волны", "В направлении, противоположном направлению распространения волны", "Только перпендикулярно распространению волны", "По направлению распространения волны и противоположно этому направлению"], multi: false },
+        { id: 81, text: "Во время грозы человек услышал гром через 10 с после вспышки молнии. Как далеко от него произошел разряд? (скорость звука 340 м/с)", correctIndex: 2, options: ["34 м", "340 м", "3400 м", "34000 м"], multi: false },
+        { id: 82, text: "Электрическим током называют ...", correctIndex: 2, options: ["движение заряженных частиц", "направленное движение частиц", "направленное движение заряженных частиц", "направленное движение электронов"], multi: false },
+        { id: 83, text: "Какие необходимо соблюсти два непременных условия для того, чтобы электрическая цепь работала?", correctIndex: 0, options: ["замкнутость в цепи и наличие в ней источника тока", "наличие в цепи потребителей электроэнергии и ключа", "замкнутость в цепи и наличие потребителей электроэнергии"], multi: false },
+        { id: 84, text: "Как следует поступить, чтобы удалить практически весь заряд с наэлектризованного тела?", correctIndex: 2, options: ["привести его в соприкосновение с каким-нибудь незаряженным телом", "соединить это тело проводником с незаряженным металлическим предметом", "соединить его проводником с Землей", "прикоснутся к нему телом с зарядом другого знака"], multi: false },
+        { id: 85, text: "Каково назначение источника тока?", correctIndex: 0, options: ["Поддерживать существование в проводнике электрического поля", "Создавать электрические заряды в проводнике", "Освобождать электроны в проводнике со связи с атомами"], multi: false },
+        { id: 86, text: "Электрическая цепь это ...", correctIndex: 2, options: ["соединенные между собой проводами потребители электроэнергии", "разные электроприборы, соединенные проводами между собой и выключателем", "потребители электроэнергии, соединенные проводами с источником тока и замыкающим устройством", "соединенные между собой проводами источник тока и потребители электроэнергии"], multi: false },
+        { id: 87, text: "Чтобы в проводнике возник электрический ток необходимо ...", correctIndex: 1, options: ["действие на электроны сил, вызывающих их движение", "создание в проводнике электрического поля", "наэлектризовать проводник"], multi: false },
+        { id: 88, text: "Аккумулятор дает электрический ток только после того как ...", correctIndex: 2, options: ["его согрели в теплом помещении", "наэлектризовали его электроды", "его зарядили от другого источника тока"], multi: false },
+        { id: 89, text: "Какую массу принимают за единицу массы в атомной физике?", correctIndex: 2, options: ["1/16 долю массы атома кислорода", "массу атома кислорода", "1/12 долю массы атома углерода", "массу атома водорода", "массу одного нейтрона"], multi: false },
+        { id: 90, text: "Перемещением называют:", correctIndex: 1, options: ["линию в пространстве, описываемую точкой при движении", "вектор, соединяющий начальное и конечное положение точки", "вектор, соединяющий начало координат и конечную точку пути"], multi: false },
+        { id: 91, text: "Первый закон Ньютона имеет следующую формулировку:", correctIndex: 0, options: ["существуют такие системы отсчета, в которых свободные тела движутся прямолинейно и равномерно", "сила есть произведение массы на ускорение", "силы в природе возникают симметричными парами"], multi: false },
+        { id: 92, text: "Второй закон Ньютона имеет следующую формулировку:", correctIndex: 3, options: ["существуют такие системы отсчета, в которых свободные тела движутся прямолинейно и равномерно", "сила есть произведение массы на ускорение", "силы в природе возникают симметричными парами", "ускорение, с которым движется тело, под воздействием силы, прямо пропорционально ускорению и обратно пропорционально массе"], multi: false },
+        { id: 93, text: "Третий закон Ньютона имеет следующую формулировку:", correctIndex: 3, options: ["существуют такие системы отсчета, в которых свободные тела движутся прямолинейно и равномерно", "сила есть произведение массы на ускорение", "силы в природе возникают симметричными парами", "два тела взаимодействуют друг на друга с силами, равными по модулю, но противоположными по направлению"], multi: false },
+        { id: 94, text: "Стальной шарик это...", correctIndex: 0, options: ["физическое тело", "физическая величина", "физическое явление"], multi: false },
+        { id: 95, text: "Найдите из указанных скоростей наибольшую...", correctIndex: 3, options: ["1 м/с", "100 см/с", "100 см/мин", "100 дм/с"], multi: false },
+        { id: 96, text: "Диффузия это...", correctIndex: 2, options: ["физическое тело", "физическая величина", "физическое явление"], multi: false },
+        { id: 97, text: "Имеет ли электрический заряд электрон и протон?", correctIndex: 1, options: ["электрон да, протон нет", "электрон и протон имеют заряды", "обна не имеют зарядов", "электрон нет, протон да"], multi: false },
+        { id: 98, text: "Молекула - это", correctIndex: 2, options: ["наименьшая частица", "наименьшая устойчивая частица вещества", "наименьшая устойчивая частица вещества, обладающая его основными химическими свойствами", "частица, состоящая из атомов", "нет правильного ответа"], multi: false },
+        { id: 99, text: "Число Авогадро - это", correctIndex: 0, options: ["число молекул в одном моле вещества", "число молекул в одном килограмме вещества", "число молекул в одном метре кубическом"], multi: false },
+        { id: 100, text: "Переведите температуру 30 градусов по шкале Цельсия в температуру по шкале Кельвина...", correctIndex: 3, options: ["200 К", "-300", "143", "303 К"], multi: false },
+        
+        // БИОЛОГИЯ (101-150)
+        { id: 101, text: "Клеточное строение организмов свидетельствует о:", correctIndex: 1, options: ["принципиальном отличии растений от животных", "единстве органического мира", "сходстве живой и неживой материи"], multi: false },
+        { id: 102, text: "К макроэлементам относятся:", correctIndex: 2, options: ["железо, медь, хлор", "цинк, никель, фосфор", "кислород, азот, углерод"], multi: false },
+        { id: 103, text: "Функция воды в живых клетках:", correctIndex: 2, options: ["растворитель", "транспортная", "растворитель и транспортная"], multi: false },
+        { id: 104, text: "Каковы функции белков в клетках?", correctIndex: 2, options: ["каталитическая", "регуляторная", "каталитическая и регуляторная"], multi: false },
+        { id: 105, text: "Двумембранное строение имеют:", correctIndex: 0, options: ["ядро, митохондрии, пластиды", "комплекс Гольджи, ЭПС", "митохондрии, лизосомы, рибосомы"], multi: false },
+        { id: 106, text: "В темновой фазе фотосинтеза идет образование:", correctIndex: 2, options: ["ферментов", "АТФ", "органического вещества"], multi: false },
+        { id: 107, text: "Самыми длинными молекулами в клетке являются молекулы:", correctIndex: 1, options: ["целлюлозы", "белка", "крахмала"], multi: false },
+        { id: 108, text: "Транскрипцией называется:", correctIndex: 0, options: ["синтез РНК с использованием ДНК в качестве матрицы", "синтез полипептида", "удвоение ДНК"], multi: false },
+        { id: 109, text: "Чистой линией называется:", correctIndex: 1, options: ["особи одного вида", "потомство, не дающие разнообразия по изучаемому признаку", "потомство, полученное от двух линий"], multi: false },
+        { id: 110, text: "Какой органоид не имеет мембранного строения?", correctIndex: 1, options: ["лизосома", "рибосома", "митохондрии"], multi: false },
+        { id: 111, text: "К одномембранным органоидам относится:", correctIndex: 1, options: ["митохондрии", "ЭПС"], multi: false },
+        { id: 112, text: "Каковы функции белков в клетке?", correctIndex: 2, options: ["защитная", "регуляторная", "защитная и регуляторная"], multi: false },
+        { id: 113, text: "Что входит в состав белков?", correctIndex: 2, options: ["вода, эфир", "бензин", "аминокислоты"], multi: false },
+        { id: 114, text: "Свободный кислород при фотосинтезе выделяется при расщеплении:", correctIndex: 2, options: ["углекислого газа", "глюкозы", "воды"], multi: false },
+        { id: 115, text: "Если одна цепь ДНК имеет нуклеотидная последовательность: ААГТТЦЦТТА, вторая цепь будет", correctIndex: 0, options: ["ТТЦААГГААТ", "ГТТААЦЦТАЦ", "ТТААЦЦТТТЦ"], multi: false },
+        { id: 116, text: "Однослойный зародыш, образующийся, после завершения процесса дробления яйцеклетки называется:", correctIndex: 0, options: ["бластула", "гаструла", "нейрула"], multi: false },
+        { id: 117, text: "При моногибридном скрещивании у Менделя по фенотипу имели соотношения доминантных и рецессивных признаков соответственно:", correctIndex: 1, options: ["1:1", "3:1", "1:2"], multi: false },
+        { id: 118, text: "Молекулы белков образуются из:", correctIndex: 2, options: ["из глицерина и карбоновых кислот", "этилового спирта и глюкозы", "аминокислот"], multi: false },
+        { id: 119, text: "Функция воды в живых клетках:", correctIndex: 2, options: ["терморегуляторная", "транспортная", "терморегуляторная и транспортная"], multi: false },
+        { id: 120, text: "Какое вещество не содержит аминокислот?", correctIndex: 0, options: ["сахароза", "гемоглобин", "инсулин"], multi: false },
+        { id: 121, text: "Из перечисленных ниже научных фактов доказательствами единства живой природы являются:", correctIndex: 2, options: ["все организмы состоят из клеток", "новые клетки образуются путем деления", "оба варианта верны"], multi: false },
+        { id: 122, text: "Из перечисленных свойств для рибосом не характерно:", correctIndex: 1, options: ["расположение внутри митохондрии", "мембранное строение", "расположение на мембранах ЭПС"], multi: false },
+        { id: 123, text: "Укажите, какие из перечисленных веществ, необходимы для фиксации углерода", correctIndex: 1, options: ["кислород", "АТФ", "вода"], multi: false },
+        { id: 124, text: "Гемоглобин орла отличается от гемоглобина зайца - беляка:", correctIndex: 1, options: ["видом мономеров", "последовательностью мономеров", "функциями"], multi: false },
+        { id: 125, text: "Гаструляция - это:", correctIndex: 1, options: ["образование первичной полости зародыша", "образование двухслойного зародыша", "завершения дробления"], multi: false },
+        { id: 126, text: "Количество фенотипов при скрещивании Аа х Аа в случае полного доминирования составляет:", correctIndex: 1, options: ["1", "2", "3"], multi: false },
+        { id: 127, text: "Центр происхождения пшеницы:", correctIndex: 1, options: ["Африканский", "Переднеазиатский", "Средиземноморской"], multi: false },
+        { id: 128, text: "Учение об исходном материале в селекции было разработано:", correctIndex: 1, options: ["Ч.Дарвином", "Н.И.Вавиловым", "В.И.Вернадским"], multi: false },
+        { id: 129, text: "В митозе конъюгация хромосом происходит:", correctIndex: 2, options: ["метафазе", "телофазе", "профазе"], multi: false },
+        { id: 130, text: "Центр происхождения кукурузы:", correctIndex: 1, options: ["Африканский", "Среднеамериканский", "Средиземноморской"], multi: false },
+        { id: 131, text: "Генеологический метод основан на:", correctIndex: 1, options: ["изучении количества хромосом", "изучении родословной", "изучении обмена веществ"], multi: false },
+        { id: 132, text: "Однородную группу животных созданный человеком называется:", correctIndex: 2, options: ["видом", "родом", "породой"], multi: false },
+        { id: 133, text: "Назовите цвет шерсти зайчонка, рожденного летом:", correctIndex: 0, options: ["серый", "белый", "красный"], multi: false },
+        { id: 134, text: "Центр происхождения риса:", correctIndex: 1, options: ["Африканский", "Китайско-Японский", "Средиземноморской"], multi: false },
+        { id: 135, text: "Загар - это пример:", correctIndex: 2, options: ["мутации", "комбинации", "модификации"], multi: false },
+        { id: 136, text: "Родиной картофеля является:", correctIndex: 0, options: ["Южноамериканский", "Средиземноморской", "Переднеазиатский"], multi: false },
+        { id: 137, text: "Какие из органоидов клетки имеют собственную ДНК?", correctIndex: 1, options: ["вакуоли", "митохондрии", "лизосомы"], multi: false },
+        { id: 138, text: "Мембраны клеток состоят:", correctIndex: 0, options: ["из липидов, белков и углеводов", "из липидов, белков и нуклеиновых кислот", "из целлюлозы и пектиновых веществ"], multi: false },
+        { id: 139, text: "Двумембранное строение имеют:", correctIndex: 0, options: ["митохондрии и пластиды", "рибосомы и лизосомы", "ЭПС и клеточный центр"], multi: false },
+        { id: 140, text: "Конечными продуктами реакции вызываемых светом являются:", correctIndex: 2, options: ["АТФ и кислород", "углевод и кислород", "АТФ, углевод, кислород"], multi: false },
+        { id: 141, text: "Правило комплементарности соблюдается в молекуле:", correctIndex: 2, options: ["белка", "и-РНК", "ДНК"], multi: false },
+        { id: 142, text: "Количество генотипов при скрещивании Аа х Аа составляет:", correctIndex: 2, options: ["1", "2", "3"], multi: false },
+        { id: 143, text: "Какие органоиды клетки состоят только из белка и РНК?", correctIndex: 2, options: ["хлоропласты", "митохондрии", "рибосомы"], multi: false },
+        { id: 144, text: "Растительная клетка отличается от животной:", correctIndex: 2, options: ["наличием митохондрии и рибосом", "наличием пластид и ядра", "наличием клеточной стенки, пластид и вакуолей"], multi: false },
+        { id: 145, text: "Молекулы белков образуются из:", correctIndex: 1, options: ["из глицерина и карбоновых кислот", "из аминокислот", "глюкозы"], multi: false },
+        { id: 146, text: "К животным, органы и ткани которых развиваются из двух зародышевых листков, относятся:", correctIndex: 0, options: ["губки, кишечнополостные", "моллюски, круглые черви", "насекомые и земноводные"], multi: false },
+        { id: 147, text: "Многократные деления зиготы приводят к образованию:", correctIndex: 0, options: ["бластулы", "нейрулы", "яйцеклеток"], multi: false },
+        { id: 148, text: "Сходство клеток растений и животных заключается в наличии:", correctIndex: 0, options: ["плазмолеммы, цитоплазмы и ядра", "вакуолей с клеточным соком", "клеточной стенки"], multi: false },
+        { id: 149, text: "Белок состоит из:", correctIndex: 1, options: ["мочевины", "аминокислот", "лактозы"], multi: false },
+        { id: 150, text: "В митохондриях находятся:", correctIndex: 0, options: ["молекулы ДНК", "лизосомы", "рибосомы"], multi: false }
+    ];
+
+    // ==================== ВСЯ ОСТАЛЬНАЯ ЛОГИКА ТЕСТА (как в предыдущих версиях) ====================
+    let soundEnabled = false;
+    let audioCorrect = null;
+    let audioWrong = null;
+    let audioClick = null;
+    
+    function initAudio() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                audioCorrect = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 880; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5); osc.stop(ctx.currentTime + 0.5); } };
+                audioWrong = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 440; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.6); osc.stop(ctx.currentTime + 0.6); } };
+                audioClick = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 660; gain.gain.value = 0.1; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.2); osc.stop(ctx.currentTime + 0.2); } };
+            } else {
+                audioCorrect = audioWrong = audioClick = { play: () => {} };
+            }
+        } catch(e) { console.log("Audio not supported"); }
+    }
+    
+    function playSound(type) {
+        if (!soundEnabled) return;
+        if (type === 'correct') audioCorrect?.play();
+        if (type === 'wrong') audioWrong?.play();
+        if (type === 'click') audioClick?.play();
+    }
+    
+    function isAnswerCorrect(selectedText, correctText) {
+        if (!selectedText || !correctText) return false;
+        const userNorm = selectedText.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        const correctNorm = correctText.toLowerCase().trim().replace(/[.,!?;:]/g, '');
+        if (userNorm === correctNorm) return true;
+        if (userNorm.includes(correctNorm) || correctNorm.includes(userNorm)) return true;
+        return false;
+    }
+
+    let currentMode = 'exam';
+    let currentQuestions = [];
+    let userAnswers = [];
+    let currentIndex = 0;
+    let selectedOptions = [];
+    let quizActive = false;
+    let timerInterval = null;
+    let timeSeconds = 20 * 60;
+    let currentExamMode = null;
+    let waitingForNext = false;
+    
+    let cheatBookmarks = JSON.parse(localStorage.getItem('hfb_bookmarks') || '[]');
+    let cheatViewed = JSON.parse(localStorage.getItem('hfb_viewed') || '[]');
+    let cheatSearchQuery = '';
+    let cheatCurrentId = 1;
+    let cheatFilteredIds = [];
+    
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const cheatScreen = document.getElementById('cheatScreen');
+    const userNameInput = document.getElementById('userNameInput');
+    const trainModeBtn = document.getElementById('trainModeBtn');
+    const examModeBtn = document.getElementById('examModeBtn');
+    const resetNameBtn = document.getElementById('resetLocalStorageBtn');
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const soundToggle = document.getElementById('soundToggleBtn');
+    const nextBtn = document.getElementById('nextQuestionBtn');
+    const restartBtn = document.getElementById('restartQuizBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
+    const shareBtn = document.getElementById('shareResultBtn');
+    const showMistakesBtn = document.getElementById('showMistakesBtn');
+    const mistakesListDiv = document.getElementById('mistakesList');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'combo-toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 800);
+    }
+    
+    function updateEnergyBar() {
+        const answered = userAnswers.filter(a => a !== undefined && a !== null && a.length > 0).length;
+        const percent = (answered / currentQuestions.length) * 100;
+        document.getElementById('energyFill').style.width = `${percent}%`;
+        document.getElementById('answeredCount').innerText = `✅ ${answered} отвечено`;
+    }
+    
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    function updateTimerDisplay() {
+        const timerDisplay = document.getElementById('timerDisplay');
+        timerDisplay.innerText = formatTime(timeSeconds);
+        if (timeSeconds <= 60) timerDisplay.classList.add('warning');
+        else timerDisplay.classList.remove('warning');
+    }
+    
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        timerInterval = setInterval(() => {
+            if (!quizActive) return;
+            if (timeSeconds <= 0) {
+                stopTimer();
+                if (quizActive) { alert('Время вышло! Тест завершается.'); finishQuiz(); }
+            } else {
+                timeSeconds--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+    
+    function checkAnswerForCurrentQuestion() {
+        if (selectedOptions.length === 0) return false;
+        const q = currentQuestions[currentIndex];
+        const selectedText = q.options[selectedOptions[0]];
+        return selectedText === q.options[q.correctIndex];
+    }
+    
+    function showHighlightAndExplanation() {
+        if (selectedOptions.length === 0) return;
+        const q = currentQuestions[currentIndex];
+        const isCorrect = checkAnswerForCurrentQuestion();
+        const optionElements = document.querySelectorAll('#optionsContainer .option');
+        optionElements.forEach((el, idx) => {
+            el.classList.remove('correct-highlight', 'wrong-highlight');
+            const isCorrectOption = (idx === q.correctIndex);
+            if (isCorrectOption) el.classList.add('correct-highlight');
+            if (selectedOptions.includes(idx) && !isCorrectOption) el.classList.add('wrong-highlight');
+        });
+        if (isCorrect) { playSound('correct'); showToast('✅ Верно!'); }
+        else { playSound('wrong'); showToast(`❌ Неверно. Правильно: ${q.options[q.correctIndex]}`); }
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentIndex >= currentQuestions.length) return;
+        const q = currentQuestions[currentIndex];
+        document.getElementById('questionText').innerText = q.text;
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            if (selectedOptions.includes(idx)) div.classList.add('selected');
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'question';
+            input.value = idx;
+            input.checked = selectedOptions.includes(idx);
+            const label = document.createElement('span');
+            label.className = 'option-label';
+            label.innerText = opt;
+            div.appendChild(input);
+            div.appendChild(label);
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                if (!quizActive) return;
+                if (waitingForNext) return;
+                selectedOptions = [idx];
+                renderCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+        document.getElementById('questionCounter').innerText = `Вопрос ${currentIndex+1} / ${currentQuestions.length}`;
+        updateEnergyBar();
+    }
+    
+    function nextQuestion() {
+        if (!quizActive) return;
+        if (currentExamMode === 'train') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            if (!waitingForNext) {
+                waitingForNext = true;
+                showHighlightAndExplanation();
+                userAnswers[currentIndex] = [...selectedOptions];
+                nextBtn.textContent = 'Следующий вопрос →';
+                return;
+            } else {
+                waitingForNext = false;
+                nextBtn.textContent = 'Далее →';
+                if (currentIndex + 1 < currentQuestions.length) {
+                    currentIndex++;
+                    selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                    renderCurrentQuestion();
+                } else { finishQuiz(); }
+                return;
+            }
+        }
+        if (currentExamMode === 'exam') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            playSound('click');
+            userAnswers[currentIndex] = [...selectedOptions];
+            if (currentIndex + 1 < currentQuestions.length) {
+                currentIndex++;
+                selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                renderCurrentQuestion();
+            } else { finishQuiz(); }
+        }
+    }
+    
+    function calculateScoreAndGrade(correct, maxScore) {
+        const totalPoints = correct * 5;
+        let grade = '';
+        if (totalPoints >= 85) grade = '5 (Отлично)';
+        else if (totalPoints >= 70) grade = '4 (Хорошо)';
+        else if (totalPoints >= 50) grade = '3 (Удовлетворительно)';
+        else grade = '2 (Неудовлетворительно)';
+        return { score: totalPoints, grade };
+    }
+    
+    function finishQuiz() {
+        quizActive = false;
+        stopTimer();
+        let correct = 0;
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) continue;
+            const q = currentQuestions[i];
+            const selectedText = q.options[userOptIndices[0]];
+            if (selectedText === q.options[q.correctIndex]) correct++;
+        }
+        const wrong = currentQuestions.length - correct;
+        const { score, grade } = calculateScoreAndGrade(correct, currentQuestions.length);
+        document.getElementById('correctCount').innerText = correct;
+        document.getElementById('wrongCount').innerText = wrong;
+        document.getElementById('centerScore').innerText = score;
+        let medal = '', motivation = '';
+        if (score >= 85) { medal = '🏆 Золотая медаль'; motivation = 'Превосходный результат! Вы отлично знаете материал.'; }
+        else if (score >= 70) { medal = '🥈 Серебряная медаль'; motivation = 'Хороший результат! Так держать.'; }
+        else if (score >= 50) { medal = '🥉 Бронзовая медаль'; motivation = 'Зачёт сдан. Рекомендуется повторить некоторые темы.'; }
+        else { medal = '📚 Нужно подтянуть знания'; motivation = 'Не расстраивайтесь! Пройдите тест ещё раз и улучшите результат.'; }
+        document.getElementById('gradeDisplay').innerHTML = `<div class="grade-badge">${grade}</div>`;
+        document.getElementById('medalArea').innerText = medal;
+        document.getElementById('motivationMessage').innerText = motivation;
+        let userName = localStorage.getItem('hfb_userName') || userNameInput.value.trim();
+        if (!userName) userName = 'Уважаемый студент';
+        document.getElementById('greetingName').innerText = `${userName}, ваш результат:`;
+        const donut = document.getElementById('donutChart');
+        const correctPercent = (correct / currentQuestions.length) * 360;
+        donut.style.background = `conic-gradient(var(--correct) 0deg ${correctPercent}deg, var(--wrong) ${correctPercent}deg 360deg)`;
+        window.mistakes = [];
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) {
+                window.mistakes.push({ question: currentQuestions[i].text, userAnswer: 'Нет ответа', correctAnswer: currentQuestions[i].options[currentQuestions[i].correctIndex] });
+                continue;
+            }
+            const q = currentQuestions[i];
+            const selectedText = q.options[userOptIndices[0]];
+            if (selectedText !== q.options[q.correctIndex]) {
+                window.mistakes.push({ question: q.text, userAnswer: selectedText, correctAnswer: q.options[q.correctIndex] });
+            }
+        }
+        startScreen.classList.add('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+        cheatScreen.classList.add('hidden');
+    }
+    
+    function initQuiz(mode) {
+        currentExamMode = mode;
+        waitingForNext = false;
+        const shuffled = [...FULL_QUESTIONS];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        currentQuestions = shuffled.slice(0, 20);
+        userAnswers = new Array(20).fill(null);
+        currentIndex = 0;
+        selectedOptions = [];
+        timeSeconds = 20 * 60;
+        quizActive = true;
+        updateTimerDisplay();
+        stopTimer();
+        startTimer();
+        renderCurrentQuestion();
+        nextBtn.textContent = 'Далее →';
+    }
+    
+    function startQuizWithMode(mode) {
+        let userName = userNameInput.value.trim();
+        if (!userName) {
+            userName = prompt('Пожалуйста, введите ваше имя:', 'Студент');
+            if (!userName) userName = 'Студент';
+            userNameInput.value = userName;
+        }
+        localStorage.setItem('hfb_userName', userName);
+        initQuiz(mode);
+        startScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    function saveCheatBookmarks() {
+        localStorage.setItem('hfb_bookmarks', JSON.stringify(cheatBookmarks));
+        renderCheatQuestionsList();
+        updateCheatStats();
+    }
+    
+    function saveCheatViewed() {
+        localStorage.setItem('hfb_viewed', JSON.stringify(cheatViewed));
+        updateCheatStats();
+    }
+    
+    function markCheatAsViewed(id) {
+        if (!cheatViewed.includes(id)) {
+            cheatViewed.push(id);
+            saveCheatViewed();
+        }
+    }
+    
+    function getCheatFilteredIds() {
+        let ids = FULL_QUESTIONS.map(q => q.id);
+        if (cheatSearchQuery.trim()) {
+            const query = cheatSearchQuery.toLowerCase();
+            ids = ids.filter(id => {
+                const q = FULL_QUESTIONS.find(qq => qq.id === id);
+                return q.text.toLowerCase().includes(query) || q.options.some(opt => opt.toLowerCase().includes(query));
+            });
+        }
+        return ids;
+    }
+    
+    function renderCheatQuestionsList() {
+        cheatFilteredIds = getCheatFilteredIds();
+        const container = document.getElementById('cheatQuestionsList');
+        if (cheatFilteredIds.length === 0) {
+            container.innerHTML = '<div style="padding: 20px; text-align: center;">🤔 Ничего не найдено</div>';
+            return;
+        }
+        container.innerHTML = '';
+        cheatFilteredIds.forEach(id => {
+            const q = FULL_QUESTIONS.find(qq => qq.id === id);
+            const isBookmarked = cheatBookmarks.includes(id);
+            const div = document.createElement('div');
+            div.className = `cheat-question-item ${cheatCurrentId === id ? 'active' : ''}`;
+            div.innerHTML = `
+                <div class="cheat-question-text">
+                    <span>${id}. ${q.text.substring(0, 60)}${q.text.length > 60 ? '…' : ''}</span>
+                    <span class="cheat-star ${isBookmarked ? 'active' : ''}" data-id="${id}">${isBookmarked ? '⭐' : '☆'}</span>
+                </div>
+            `;
+            div.addEventListener('click', (e) => {
+                if (e.target.classList.contains('cheat-star')) return;
+                cheatCurrentId = id;
+                markCheatAsViewed(id);
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            const starSpan = div.querySelector('.cheat-star');
+            starSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (cheatBookmarks.includes(id)) {
+                    cheatBookmarks = cheatBookmarks.filter(b => b !== id);
+                    showToast(`❌ Вопрос ${id} удалён из закладок`);
+                } else {
+                    cheatBookmarks.push(id);
+                    showToast(`⭐ Вопрос ${id} добавлен в закладки`);
+                }
+                saveCheatBookmarks();
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+    }
+    
+    function renderCheatCurrentQuestion() {
+        const q = FULL_QUESTIONS.find(qq => qq.id === cheatCurrentId);
+        if (!q) return;
+        document.getElementById('cheatQuestionText').innerHTML = `${q.id}. ${q.text}`;
+        const container = document.getElementById('cheatOptionsContainer');
+        container.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            const isCorrect = (idx === q.correctIndex);
+            const div = document.createElement('div');
+            div.className = `cheat-option ${isCorrect ? 'correct' : ''}`;
+            div.innerHTML = `
+                <span style="font-weight:700;">${String.fromCharCode(65 + idx)}.</span>
+                <span>${opt}</span>
+                ${isCorrect ? '<span class="cheat-badge">✓ Правильно</span>' : ''}
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function updateCheatStats() {
+        document.getElementById('cheatTotal').innerText = FULL_QUESTIONS.length;
+        document.getElementById('cheatBookmarkCount').innerText = cheatBookmarks.length;
+        document.getElementById('cheatViewedCount').innerText = cheatViewed.length;
+    }
+    
+    function initCheat() {
+        cheatFilteredIds = getCheatFilteredIds();
+        if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+            cheatCurrentId = cheatFilteredIds[0];
+        }
+        renderCheatQuestionsList();
+        renderCheatCurrentQuestion();
+        updateCheatStats();
+    }
+    
+    function goToMainMenu() {
+        stopTimer();
+        quizActive = false;
+        startScreen.classList.remove('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    function restartQuiz() {
+        if (currentExamMode) {
+            initQuiz(currentExamMode);
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+        } else { goToMainMenu(); }
+    }
+    
+    function shareResult() {
+        const correct = parseInt(document.getElementById('correctCount').innerText);
+        const total = currentQuestions.length;
+        const userName = localStorage.getItem('hfb_userName') || '';
+        const text = `${userName ? userName + ', ' : ''}результат зачёта: ${correct} из ${total}.`;
+        if (navigator.share) navigator.share({ title: 'Результат зачёта', text: text }).catch(() => alert(text));
+        else { alert('Результат: ' + text); navigator.clipboard?.writeText(text); }
+    }
+    
+    function toggleMistakes() {
+        if (mistakesListDiv.classList.contains('hidden')) {
+            if (window.mistakes && window.mistakes.length) {
+                mistakesListDiv.innerHTML = '<h3 style="margin-bottom: 12px;">📌 Ошибки</h3>';
+                window.mistakes.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'mistake-item';
+                    div.innerHTML = `<div class="mistake-question">❓ ${m.question}</div><div class="mistake-detail">✖ Ваш ответ: ${m.userAnswer}</div><div class="mistake-detail">✔ Правильно: ${m.correctAnswer}</div>`;
+                    mistakesListDiv.appendChild(div);
+                });
+            } else { mistakesListDiv.innerHTML = '<p>🎉 Отлично! Ошибок нет.</p>'; }
+            mistakesListDiv.classList.remove('hidden');
+            showMistakesBtn.innerText = '📖 Скрыть ошибки';
+        } else {
+            mistakesListDiv.classList.add('hidden');
+            showMistakesBtn.innerText = '📖 Показать ошибки';
+        }
+    }
+    
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        themeToggle.innerText = isDark ? '☀️ Светлая' : '🌙 Тёмная';
+        localStorage.setItem('hfb_theme', isDark ? 'dark' : 'light');
+    }
+    
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        soundToggle.innerText = soundEnabled ? '🔊 Звук вкл' : '🔇 Звук выкл';
+        showToast(soundEnabled ? 'Звук включён' : 'Звук выключен');
+        if (soundEnabled) playSound('click');
+    }
+    
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('hfb_theme');
+        if (savedTheme === 'dark') { document.body.classList.add('dark'); themeToggle.innerText = '☀️ Светлая'; }
+        else { themeToggle.innerText = '🌙 Тёмная'; }
+    }
+    
+    function loadUserName() {
+        const savedName = localStorage.getItem('hfb_userName');
+        if (savedName) userNameInput.value = savedName;
+    }
+    
+    function resetUserName() {
+        localStorage.removeItem('hfb_userName');
+        userNameInput.value = '';
+        showToast('Имя сброшено');
+    }
+    
+    function switchMode(mode) {
+        currentMode = mode;
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === mode) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        if (mode === 'exam') {
+            startScreen.classList.remove('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+            if (timerInterval) stopTimer();
+        } else {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.remove('hidden');
+            if (timerInterval) stopTimer();
+            initCheat();
+        }
+    }
+    
+    trainModeBtn.addEventListener('click', () => startQuizWithMode('train'));
+    examModeBtn.addEventListener('click', () => startQuizWithMode('exam'));
+    resetNameBtn.addEventListener('click', resetUserName);
+    themeToggle.addEventListener('click', toggleTheme);
+    soundToggle.addEventListener('click', toggleSound);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    mainMenuBtn.addEventListener('click', goToMainMenu);
+    shareBtn.addEventListener('click', shareResult);
+    showMistakesBtn.addEventListener('click', toggleMistakes);
+    
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+    });
+    
+    const cheatSearch = document.getElementById('cheatSearch');
+    if (cheatSearch) {
+        cheatSearch.addEventListener('input', (e) => {
+            cheatSearchQuery = e.target.value;
+            cheatFilteredIds = getCheatFilteredIds();
+            if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+                cheatCurrentId = cheatFilteredIds[0];
+            }
+            renderCheatQuestionsList();
+            renderCheatCurrentQuestion();
+        });
+    }
+    
+    initAudio();
+    loadTheme();
+    loadUserName();
+    switchMode('exam');
+</script>
+</body>
+</html>
