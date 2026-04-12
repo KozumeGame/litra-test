@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎮 TETRIS BRICK SHELL - Kozume Edition</title>
+    <style>
+        /* ============================================
+                   ГЛОБАЛЬНЫЕ СТИЛИ
+        ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0c0f1e 0%, #1a1f35 50%, #0f1425 100%);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        /* Главный контейнер игры */
+        .game-app {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Все экраны */
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ============================================
+                   ГЛАВНОЕ МЕНЮ
+        ============================================ */
+        .menu-screen {
+            background: rgba(15, 20, 40, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(100, 150, 255, 0.15),
+                inset 0 0 40px rgba(0, 20, 60, 0.3);
+            border: 1px solid rgba(80, 140, 255, 0.2);
+        }
+
+        .game-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-title h1 {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a8c0ff 0%, #3f7bff 50%, #c850c0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 40px rgba(100, 150, 255, 0.5);
+            letter-spacing: 6px;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .subtitle {
+            color: #6a80b0;
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: -5px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #1e2a4a 0%, #0f1830 100%);
+            border: 1px solid rgba(80, 140, 255, 0.4);
+            color: #b0c8ff;
+            padding: 16px 20px;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 8px 0 #060912, 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .menu-btn:hover {
+            background: linear-gradient(135deg, #2a3a6a 0%, #152050 100%);
+            border-color: rgba(120, 180, 255, 0.6);
+            color: #d0e0ff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 0 #060912, 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .menu-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #060912, 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-stats {
+            background: rgba(8, 12, 30, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(80, 140, 255, 0.25);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            color: #8a9fd0;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Прогресс бар ранга */
+        .rank-progress {
+            margin-top: 10px;
+        }
+
+        .rank-info {
+            display: flex;
+            justify-content: space-between;
+            color: #a0b5e0;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3f7bff, #c850c0);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            animation: progressGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* ============================================
+                   ИГРОВОЙ ЭКРАН (BRICK SHELL)
+        ============================================ */
+        .game-screen {
+            position: relative;
+        }
+
+        /* BRICK SHELL - Рамка консоли */
+        .brick-shell {
+            position: relative;
+            padding: 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Тема: Classic Grey */
+        .brick-shell.theme-classic {
+            background: linear-gradient(145deg, #4a4a5a 0%, #3a3a4a 100%);
+            border: 4px solid #5a5a7a;
+            box-shadow: 
+                0 10px 0 #2a2a3a,
+                0 15px 30px rgba(0, 0, 0, 0.5),
+                inset 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .brick-shell.theme-classic::before {
+            content: "BRICK GAME • 9999 IN 1";
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #5a5a7a;
+            color: #c0c0e0;
+            padding: 3px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        /* Внутренняя область игры */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Верхняя панель с информацией */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            color: #fff;
+        }
+
+        .score-display, .lines-display, .level-display {
+            text-align: center;
+        }
+
+        .display-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .display-value {
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Контейнер для поля и превью */
+        .play-area {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        /* Игровое поле */
+        .board-container {
+            position: relative;
+        }
+
+        canvas#board {
+            display: block;
+            border-radius: 10px;
+            background: #0a0d1a;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 0, 0, 0.8),
+                0 0 0 2px rgba(60, 120, 255, 0.2);
+            width: 300px;
+            height: 600px;
+        }
+
+        /* Превью следующей фигуры */
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .preview-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .preview-label {
+            color: #8a9fd0;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        canvas#preview {
+            display: block;
+            margin: 0 auto;
+            border-radius: 8px;
+            background: #0a0d1a;
+            width: 96px;
+            height: 96px;
+        }
+
+        /* РЕТРО КНОПКИ */
+        .retro-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .retro-btn {
+            background: linear-gradient(145deg, #3a3a4a, #2a2a3a);
+            border: 3px solid #5a5a7a;
+            border-radius: 12px;
+            color: #c0c0e0;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 15px 20px;
+            min-width: 70px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 
+                0 6px 0 #1a1a2a,
+                0 8px 12px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 4px rgba(255, 255, 255, 0.1);
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+        }
+
+        .retro-btn:active {
+            transform: translateY(4px);
+            box-shadow: 
+                0 2px 0 #1a1a2a,
+                0 4px 8px rgba(0, 0, 0, 0.4),
+                inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .retro-btn.special {
+            background: linear-gradient(145deg, #4a3a5a, #3a2a4a);
+            border-color: #7a5a9a;
+            color: #d0c0f0;
+        }
+
+        .game-status {
+            text-align: center;
+            margin-top: 10px;
+            color: #c0c0e0;
+            font-size: 14px;
+        }
+
+        /* ============================================
+                   ЭКРАН НАСТРОЕК
+        ============================================ */
+        .settings-screen, .themes-screen, .records-screen, .about-screen {
+            background: rgba(15, 20, 40, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(100, 150, 255, 0.15);
+            border: 1px solid rgba(80, 140, 255, 0.2);
+        }
+
+        .screen-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            color: #fff;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .screen-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #a8c0ff, #c850c0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .settings-group {
+            background: rgba(8, 12, 30, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(80, 140, 255, 0.2);
+        }
+
+        .settings-group h3 {
+            color: #a0b5e0;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            color: #c0d0f0;
+            font-size: 16px;
+        }
+
+        .setting-control select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(80, 140, 255, 0.3);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Переключатель (чекбокс) */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 13px;
+            border: 1px solid rgba(80, 140, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #3f7bff, #c850c0);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 3px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 25px;
+        }
+
+        /* ============================================
+                   ТАБЛИЦА РЕКОРДОВ
+        ============================================ */
+        .records-table {
+            background: rgba(8, 12, 30, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(80, 140, 255, 0.2);
+        }
+
+        .record-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #c0d0f0;
+            align-items: center;
+        }
+
+        .record-row.header {
+            color: #a0b5e0;
+            font-weight: bold;
+            border-bottom: 2px solid rgba(80, 140, 255, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .record-rank {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .record-name {
+            font-weight: 500;
+        }
+
+        .record-score {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #3f7bff;
+        }
+
+        .developer-record {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .dev-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px;
+            padding: 12px;
+            color: #ffd700;
+            align-items: center;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        /* ============================================
+                   ЭКРАН ТЕМ
+        ============================================ */
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .theme-card {
+            background: rgba(8, 12, 30, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid rgba(80, 140, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(120, 180, 255, 0.5);
+        }
+
+        .theme-card.active {
+            border-color: #3f7bff;
+            box-shadow: 0 0 20px rgba(63, 123, 255, 0.3);
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .theme-name {
+            color: #c0d0f0;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .theme-status {
+            font-size: 12px;
+            color: #6a80b0;
+        }
+
+        .theme-status.locked {
+            color: #ff6b6b;
+        }
+
+        .theme-status.unlocked {
+            color: #51cf66;
+        }
+
+        /* ============================================
+                   АНИМАЦИИ
+        ============================================ */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen.active {
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #3f7bff, #c850c0);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -50px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 500px) {
+            .game-app {
+                max-width: 100%;
+            }
+            
+            .retro-btn {
+                padding: 12px 15px;
+                font-size: 20px;
+                min-width: 60px;
+            }
+            
+            canvas#board {
+                width: 250px;
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-app">
+        <!-- ЭКРАН ГЛАВНОГО МЕНЮ -->
+        <div id="menuScreen" class="screen menu-screen active">
+            <div class="game-title">
+                <h1>TETRIS</h1>
+                <div class="subtitle">BRICK SHELL EDITION</div>
+            </div>
+            
+            <div class="menu-buttons">
+                <div class="menu-btn" data-screen="game">🎮 ИГРАТЬ</div>
+                <div class="menu-btn" data-screen="settings">⚙️ НАСТРОЙКИ</div>
+                <div class="menu-btn" data-screen="themes">🎨 ТЕМЫ</div>
+                <div class="menu-btn" data-screen="records">🏆 РЕКОРДЫ</div>
+                <div class="menu-btn" data-screen="about">ℹ️ ОБ ИГРЕ</div>
+            </div>
+            
+            <div class="player-stats">
+                <div class="stat-row">
+                    <span>Текущий ранг:</span>
+                    <span class="stat-value" id="currentRank">🔰 Новичок</span>
+                </div>
+                <div class="rank-progress">
+                    <div class="rank-info">
+                        <span id="currentRankName">Новичок</span>
+                        <span id="nextRankName">Ученик</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="rankProgress" style="width: 0%"></div>
+                    </div>
+                    <div class="rank-info">
+                        <span id="currentScore">0</span>
+                        <span id="nextRankScore">10,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН ИГРЫ -->
+        <div id="gameScreen" class="screen game-screen">
+            <div class="brick-shell theme-classic" id="brickShell">
+                <div class="game-area">
+                    <div class="game-header">
+                        <div class="score-display">
+                            <div class="display-label">СЧЕТ</div>
+                            <div class="display-value" id="gameScore">0</div>
+                        </div>
+                        <div class="lines-display">
+                            <div class="display-label">ЛИНИИ</div>
+                            <div class="display-value" id="gameLines">0</div>
+                        </div>
+                        <div class="level-display">
+                            <div class="display-label">УРОВЕНЬ</div>
+                            <div class="display-value" id="gameLevel">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="play-area">
+                        <div class="board-container">
+                            <canvas id="board" width="300" height="600"></canvas>
+                        </div>
+                        <div class="preview-area">
+                            <div class="preview-box">
+                                <div class="preview-label">СЛЕДУЮЩАЯ</div>
+                                <canvas id="preview" width="96" height="96"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- РЕТРО КНОПКИ -->
+                    <div class="retro-controls">
+                        <div class="control-row">
+                            <div class="retro-btn" data-action="left">←</div>
+                            <div class="retro-btn" data-action="right">→</div>
+                            <div class="retro-btn" data-action="down">↓</div>
+                            <div class="retro-btn" data-action="rotate">↻</div>
+                        </div>
+                        <div class="control-row">
+                            <div class="retro-btn special" data-action="a">A</div>
+                            <div class="retro-btn special" data-action="b">B</div>
+                            <div class="retro-btn special" data-action="c">C</div>
+                            <div class="retro-btn" data-action="start">START</div>
+                            <div class="retro-btn" data-action="menu">MENU</div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-status" id="gameStatus">
+                        НАЖМИТЕ START ДЛЯ НАЧАЛА
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН НАСТРОЕК -->
+        <div id="settingsScreen" class="screen settings-screen">
+            <div class="screen-header">
+                <button class="back-btn" data-screen="menu">←</button>
+                <h2>НАСТРОЙКИ</h2>
+            </div>
+            
+            <div class="settings-group">
+                <h3>🎮 УПРАВЛЕНИЕ</h3>
+                <div class="setting-item">
+                    <span class="setting-label">Стиль управления</span>
+                    <div class="setting-control">
+                        <select id="controlStyle">
+                            <option value="retro">Ретро (кнопки)</option>
+                            <option value="modern">Современный (свайпы)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Зеркальное управление</span>
+                    <div class="toggle-switch" id="mirrorControl"></div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Hard Drop</span>
+                    <div class="toggle-switch active" id="hardDropToggle"></div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>🎵 ЗВУК</h3>
+                <div class="setting-item">
+                    <span class="setting-label">Звуки игры</span>
+                    <div class="toggle-switch active" id="soundToggle"></div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Музыка</span>
+                    <div class="toggle-switch" id="musicToggle"></div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Вибрация</span>
+                    <div class="toggle-switch" id="vibrationToggle"></div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>✨ ЭФФЕКТЫ</h3>
+                <div class="setting-item">
+                    <span class="setting-label">Анимация кнопок</span>
+                    <div class="toggle-switch active" id="buttonAnimations"></div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Частицы</span>
+                    <div class="toggle-switch active" id="particlesToggle"></div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Свечение блоков</span>
+                    <div class="toggle-switch active" id="glowToggle"></div>
+                </div>
+            </div>
+            
+            <div class="menu-btn" id="secretLoginBtn">👤 ВОЙТИ</div>
+        </div>
+
+        <!-- ЭКРАН ТЕМ -->
+        <div id="themesScreen" class="screen themes-screen">
+            <div class="screen-header">
+                <button class="back-btn" data-screen="menu">←</button>
+                <h2>ТЕМЫ</h2>
+            </div>
+            
+            <div class="themes-grid" id="themesGrid">
+                <!-- Темы будут добавлены через JavaScript -->
+            </div>
+        </div>
+
+        <!-- ЭКРАН РЕКОРДОВ -->
+        <div id="recordsScreen" class="screen records-screen">
+            <div class="screen-header">
+                <button class="back-btn" data-screen="menu">←</button>
+                <h2>РЕКОРДЫ</h2>
+            </div>
+            
+            <div class="records-table">
+                <div class="record-row header">
+                    <div>#</div>
+                    <div>ИГРОК</div>
+                    <div>ОЧКИ</div>
+                </div>
+                <div id="recordsList"></div>
+                
+                <div class="developer-record">
+                    <div class="dev-row">
+                        <div>👑</div>
+                        <div>Kozume</div>
+                        <div>999,999</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 5px; color: #ffd700; font-size: 12px;">
+                        Создатель игры
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <div class="menu-btn" id="clearRecordsBtn">СБРОСИТЬ РЕКОРДЫ</div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН ОБ ИГРЕ -->
+        <div id="aboutScreen" class="screen about-screen">
+            <div class="screen-header">
+                <button class="back-btn" data-screen="menu">←</button>
+                <h2>ОБ ИГРЕ</h2>
+            </div>
+            
+            <div style="color: #c0d0f0; line-height: 1.6;">
+                <h3 style="color: #fff; margin-bottom: 15px;">TETRIS BRICK SHELL</h3>
+                <p style="margin-bottom: 15px;">
+                    Тетрис — легендарная головоломка, изобретённая Алексеем Пажитновым в 1984 году. 
+                    Цель игры — складывать падающие фигуры так, чтобы заполнять горизонтальные линии.
+                </p>
+                <p style="margin-bottom: 15px;">
+                    Эта версия вдохновлена портативными консолями Brick Game 9999 в 1, 
+                    популярными в 90-х годах.
+                </p>
+                
+                <h3 style="color: #fff; margin: 20px 0 15px;">УПРАВЛЕНИЕ</h3>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>← → ↓ - движение фигуры</li>
+                    <li>↻ или A - поворот</li>
+                    <li>B - ускорение падения</li>
+                    <li>C - пауза</li>
+                    <li>START - новая игра</li>
+                    <li>MENU - выход в меню</li>
+                </ul>
+                
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 15px;">
+                    <div style="font-size: 18px; color: #ffd700; margin-bottom: 10px;">СОЗДАТЕЛЬ</div>
+                    <div style="font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #ffd700, #ff8c00); -webkit-background-clip: text; background-clip: text; color: transparent;">Kozume</div>
+                    <div style="margin-top: 15px; font-size: 14px; opacity: 0.7;">Версия 2.0 • 2024</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ОКНО СЕКРЕТНОГО ВХОДА -->
+        <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: rgba(15, 20, 40, 0.95); padding: 30px; border-radius: 20px; border: 2px solid #ffd700; max-width: 350px; width: 90%;">
+                <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">👑 ВХОД РАЗРАБОТЧИКА</h3>
+                <input type="text" id="loginInput" placeholder="Введите логин" style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); border: 1px solid #ffd700; color: #fff; border-radius: 10px; font-size: 16px;">
+                <div style="display: flex; gap: 10px;">
+                    <button id="loginSubmit" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; border-radius: 10px; color: #000; font-weight: bold; cursor: pointer;">ВОЙТИ</button>
+                    <button id="loginCancel" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: none; border-radius: 10px; color: #fff; cursor: pointer;">ОТМЕНА</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        //               СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+        // ============================================
+        const AppState = {
+            currentScreen: 'menu',
+            gameRunning: false,
+            gamePaused: false,
+            gameOver: false,
+            settings: {
+                controlStyle: 'retro',
+                mirrorControl: false,
+                hardDrop: true,
+                sound: true,
+                music: false,
+                vibration: false,
+                buttonAnimations: true,
+                particles: true,
+                glow: true
+            },
+            themes: {
+                current: 'classic',
+                unlocked: ['classic', 'neon', 'sakura'],
+                all: [
+                    { id: 'classic', name: 'Классик', color: '#4a4a5a', unlocked: true },
+                    { id: 'neon', name: 'Неон', color: '#1e2a4a', unlocked: true },
+                    { id: 'sakura', name: 'Сакура', color: '#ffb7c5', unlocked: true },
+                    { id: 'japanese', name: 'Японская', color: '#c0392b', unlocked: false, requirement: '50,000 очков' },
+                    { id: 'carbon', name: 'Карбон', color: '#1a1a1a', unlocked: false, requirement: '100 игр' },
+                    { id: 'matrix', name: 'Матрица', color: '#00ff41', unlocked: false, requirement: 'Секретный код' },
+                    { id: 'golden', name: 'Золотая', color: '#ffd700', unlocked: false, requirement: '500,000 очков' },
+                    { id: 'ice', name: 'Ледяная', color: '#a8d8ea', unlocked: false, requirement: '250,000 очков' }
+                ]
+            },
+            records: [],
+            playerStats: {
+                totalScore: 0,
+                gamesPlayed: 0,
+                bestScore: 0,
+                rank: 'Новичок'
+            },
+            isDeveloper: false
+        };
+
+        // Загружаем сохранения
+        function loadSaveData() {
+            const saved = localStorage.getItem('tetrisBrickShell');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.assign(AppState.playerStats, data.playerStats || {});
+                AppState.records = data.records || [];
+                AppState.themes.unlocked = data.unlockedThemes || ['classic', 'neon', 'sakura'];
+                AppState.settings = { ...AppState.settings, ...data.settings };
+                AppState.isDeveloper = data.isDeveloper || false;
+            }
+            
+            // Генерируем тестовые рекорды если их нет
+            if (AppState.records.length === 0) {
+                AppState.records = [
+                    { name: 'PlayerOne', score: 2345678 },
+                    { name: 'TetrisGod', score: 1987654 },
+                    { name: 'BlockMaster', score: 1456789 },
+                    { name: 'Speedy', score: 1234567 },
+                    { name: 'SharpMind', score: 1123456 },
+                    { name: 'FastFingers', score: 987654 },
+                    { name: 'GameGenius', score: 876543 },
+                    { name: 'StarPlayer', score: 765432 },
+                    { name: 'HardDrop', score: 654321 },
+                    { name: 'RisingStar', score: 543210 }
+                ];
+            }
+        }
+
+        function saveGameData() {
+            const data = {
+                playerStats: AppState.playerStats,
+                records: AppState.records,
+                unlockedThemes: AppState.themes.unlocked,
+                settings: AppState.settings,
+                isDeveloper: AppState.isDeveloper
+            };
+            localStorage.setItem('tetrisBrickShell', JSON.stringify(data));
+        }
+
+        loadSaveData();
+
+        // ============================================
+        //               НАВИГАЦИЯ
+        // ============================================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId + 'Screen').classList.add('active');
+            AppState.currentScreen = screenId;
+            
+            if (screenId === 'menu') {
+                updateMainMenuStats();
+            } else if (screenId === 'records') {
+                renderRecords();
+            } else if (screenId === 'themes') {
+                renderThemes();
+            }
+        }
+
+        function updateMainMenuStats() {
+            const ranks = [
+                { name: '🔰 Новичок', min: 0, max: 10000 },
+                { name: '📚 Ученик', min: 10000, max: 30000 },
+                { name: '⚔️ Боец', min: 30000, max: 70000 },
+                { name: '🛡️ Эксперт', min: 70000, max: 150000 },
+                { name: '👑 Мастер', min: 150000, max: 300000 },
+                { name: '🏛️ Архитектор', min: 300000, max: 600000 },
+                { name: '🎭 Виртуоз', min: 600000, max: 1000000 },
+                { name: '⭐ THE LEGEND', min: 1000000, max: Infinity }
+            ];
+            
+            const score = AppState.playerStats.totalScore;
+            let currentRank = ranks[0];
+            let nextRank = ranks[1];
+            
+            for (let i = 0; i < ranks.length; i++) {
+                if (score >= ranks[i].min && score < ranks[i].max) {
+                    currentRank = ranks[i];
+                    nextRank = ranks[i + 1] || ranks[i];
+                    break;
+                }
+            }
+            
+            document.getElementById('currentRank').textContent = currentRank.name;
+            document.getElementById('currentRankName').textContent = currentRank.name.split(' ')[1] || currentRank.name;
+            document.getElementById('nextRankName').textContent = nextRank.name.split(' ')[1] || nextRank.name;
+            document.getElementById('currentScore').textContent = score.toLocaleString();
+            document.getElementById('nextRankScore').textContent = nextRank.min.toLocaleString();
+            
+            const progress = ((score - currentRank.min) / (nextRank.min - currentRank.min)) * 100;
+            document.getElementById('rankProgress').style.width = Math.min(progress, 100) + '%';
+        }
+
+        function renderRecords() {
+            const sorted = [...AppState.records].sort((a, b) => b.score - a.score).slice(0, 10);
+            const html = sorted.map((record, i) => `
+                <div class="record-row">
+                    <div class="record-rank">${i + 1}</div>
+                    <div class="record-name">${record.name}</div>
+                    <div class="record-score">${record.score.toLocaleString()}</div>
+                </div>
+            `).join('');
+            document.getElementById('recordsList').innerHTML = html;
+        }
+
+        function renderThemes() {
+            const html = AppState.themes.all.map(theme => `
+                <div class="theme-card ${AppState.themes.current === theme.id ? 'active' : ''}" data-theme="${theme.id}">
+                    <div class="theme-preview" style="background: ${theme.color};"></div>
+                    <div class="theme-name">${theme.name}</div>
+                    <div class="theme-status ${theme.unlocked || AppState.isDeveloper ? 'unlocked' : 'locked'}">
+                        ${theme.unlocked || AppState.isDeveloper ? '✓ Открыта' : `🔒 ${theme.requirement}`}
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('themesGrid').innerHTML = html;
+            
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const themeId = card.dataset.theme;
+                    const theme = AppState.themes.all.find(t => t.id === themeId);
+                    if (theme.unlocked || AppState.isDeveloper) {
+                        AppState.themes.current = themeId;
+                        renderThemes();
+                        showNotification(`Тема "${theme.name}" применена!`);
+                        saveGameData();
+                    } else {
+                        showNotification(`Тема заблокирована! ${theme.requirement}`, 'error');
+                    }
+                });
+            });
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.background = type === 'error' ? 'linear-gradient(135deg, #ff6b6b, #c92a2a)' : 'linear-gradient(135deg, #3f7bff, #c850c0)';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // ============================================
+        //               ОБРАБОТЧИКИ СОБЫТИЙ
+        // ============================================
+        document.querySelectorAll('[data-screen]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const screen = btn.dataset.screen;
+                if (screen) showScreen(screen);
+            });
+        });
+
+        document.querySelectorAll('.back-btn').forEach(btn => {
+            btn.addEventListener('click', () => showScreen('menu'));
+        });
+
+        // Переключатели в настройках
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Секретный вход
+        document.getElementById('secretLoginBtn').addEventListener('click', () => {
+            document.getElementById('loginModal').style.display = 'flex';
+        });
+
+        document.getElementById('loginSubmit').addEventListener('click', () => {
+            const login = document.getElementById('loginInput').value;
+            if (login === '0xKozume') {
+                AppState.isDeveloper = true;
+                AppState.themes.all.forEach(t => t.unlocked = true);
+                saveGameData();
+                showNotification('👑 Добро пожаловать, Создатель! Все темы открыты!');
+                document.getElementById('loginModal').style.display = 'none';
+                renderThemes();
+            } else {
+                showNotification('Неверный логин!', 'error');
+            }
+        });
+
+        document.getElementById('loginCancel').addEventListener('click', () => {
+            document.getElementById('loginModal').style.display = 'none';
+        });
+
+        document.getElementById('clearRecordsBtn').addEventListener('click', () => {
+            if (AppState.isDeveloper) {
+                AppState.records = [];
+                renderRecords();
+                saveGameData();
+                showNotification('Рекорды сброшены!');
+            } else {
+                showNotification('Только разработчик может сбросить рекорды!', 'error');
+            }
+        });
+
+        // Ретро кнопки
+        document.querySelectorAll('.retro-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!AppState.gameRunning) {
+                    if (btn.dataset.action === 'start') {
+                        showNotification('Игра готова к запуску! Нажмите START для начала');
+                    }
+                    return;
+                }
+                
+                const action = btn.dataset.action;
+                console.log('Кнопка нажата:', action);
+                // Здесь будет логика игры
+                
+                if (AppState.settings.buttonAnimations) {
+                    btn.style.transform = 'translateY(4px)';
+                    setTimeout(() => btn.style.transform = '', 100);
+                }
+            });
+        });
+
+        // Инициализация
+        updateMainMenuStats();
+        renderThemes();
+        
+        console.log('🎮 TETRIS BRICK SHELL загружен!');
+        console.log('👑 Секретный логин: 0xKozume');
+    </script>
+</body>
+</html>
