@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🎮 TETRIS BRICK SHELL 8.0 - Kozume</title>
+    <title>🎮 TETRIS BRICK SHELL 9.0 - Kozume</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Segoe UI', 'Arial', sans-serif; padding: 15px; transition: background 0.3s; }
@@ -17,7 +17,7 @@
         body.theme-forest { background: #0a1a0a; }
         body.theme-candy { background: #2a0a2a; }
         body.theme-volcano { background: #2a0a0a; }
-        .game-app { position: relative; width: 100%; max-width: 750px; margin: 0 auto; }
+        .game-app { position: relative; width: 100%; max-width: 800px; margin: 0 auto; }
         .screen { display: none; opacity: 0; transition: opacity 0.3s; }
         .screen.active { display: block; opacity: 1; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -55,7 +55,17 @@
         body.theme-volcano .menu-btn { background: linear-gradient(135deg, #5a1a0a 0%, #300f05 100%); border: 1px solid rgba(255,100,0,0.4); color: #ffc8b0; }
         .menu-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #060912, 0 4px 12px rgba(0,0,0,0.3); }
         
-        .mini-screen { background: #0a0d1a; border-radius: 16px; padding: 15px; border: 2px solid rgba(80,140,255,0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.5); height: 100%; min-height: 240px; display: flex; align-items: center; justify-content: center; }
+        .mini-screen { background: #0a0d1a; border-radius: 16px; padding: 15px; border: 2px solid rgba(80,140,255,0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.5); height: 100%; min-height: 240px; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
+        body.theme-classic .mini-screen { background: #0a0d1a; }
+        body.theme-neon .mini-screen { background: #0f0f2a; }
+        body.theme-sakura .mini-screen { background: #2a1520; }
+        body.theme-matrix .mini-screen { background: #000; }
+        body.theme-midnight .mini-screen { background: #0a0e27; }
+        body.theme-sunset .mini-screen { background: #2a1506; }
+        body.theme-ocean .mini-screen { background: #0a1a2a; }
+        body.theme-forest .mini-screen { background: #0a1a0a; }
+        body.theme-candy .mini-screen { background: #2a0a2a; }
+        body.theme-volcano .mini-screen { background: #2a0a0a; }
         #miniCanvas { width: 100%; max-width: 180px; height: auto; border-radius: 8px; }
         .player-info { grid-column: 1 / -1; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(80,140,255,0.2); }
         .rank-progress { margin-top: 8px; }
@@ -64,7 +74,7 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, #3f7bff, #c850c0); border-radius: 4px; transition: width 0.5s; }
 
         /* ЭКРАН ВЫБОРА РЕЖИМА */
-        .mode-select-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); transition: background 0.3s; }
+        .mode-select-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); }
         body.theme-classic .mode-select-screen { background: rgba(15, 20, 40, 0.9); }
         body.theme-neon .mode-select-screen { background: rgba(30, 20, 50, 0.9); }
         body.theme-sakura .mode-select-screen { background: rgba(50, 20, 30, 0.9); }
@@ -82,16 +92,11 @@
         body.theme-classic .mode-card:hover { border-color: #3f7bff; background: rgba(30, 40, 70, 0.9); }
         .mode-card h3 { font-size: 22px; margin-bottom: 5px; color: #fff; }
         .mode-card p { color: #a0b5e0; font-size: 14px; }
-        .mode-card.classic h3 { color: #3f7bff; }
-        .mode-card.sprint h3 { color: #51cf66; }
-        .mode-card.marathon h3 { color: #ffd700; }
-        .mode-card.zen h3 { color: #c850c0; }
-        .mode-card.hardcore h3 { color: #ff6b6b; }
 
         /* ИГРОВОЙ ЭКРАН */
         .game-screen { position: relative; }
         .brick-shell { position: relative; padding: 20px; border-radius: 22px; transition: all 0.3s; }
-        .brick-shell.theme-classic { background: linear-gradient(145deg, #4a4a5a 0%, #3a3a4a 100%); border: 4px solid #5a5a7a; box-shadow: 0 10px 0 #2a2a3a, 0 15px 30px rgba(0,0,0,0.5); }
+        .brick-shell.theme-classic { background: linear-gradient(145deg, #4a4a5a 0%, #3a3a4a 100%); border: 4px solid #5a5a7a; box-shadow: 0 10px 0 #2a2a3a; }
         .brick-shell.theme-neon { background: linear-gradient(145deg, #1a1a3a 0%, #0f0f2a 100%); border: 4px solid #3f7bff; box-shadow: 0 10px 0 #0a0a1a, 0 0 30px rgba(63,123,255,0.3); }
         .brick-shell.theme-sakura { background: linear-gradient(145deg, #ffb7c5 0%, #e8a0b0 100%); border: 4px solid #ff9eb5; box-shadow: 0 10px 0 #c08090; }
         .brick-shell.theme-japanese { background: linear-gradient(145deg, #c0392b 0%, #962d22 100%); border: 4px solid #f1c40f; box-shadow: 0 10px 0 #641e16; }
@@ -105,16 +110,17 @@
         .brick-shell.theme-pearl { background: linear-gradient(145deg, #fdfefe 0%, #eaf2f8 100%); border: 4px solid #d5dbdb; box-shadow: 0 10px 0 #aeb6bf; }
         .brick-shell .game-area { background: rgba(0,0,0,0.15); border-radius: 12px; padding: 8px; }
 
-        .game-screen canvas#board { background: #0a0d1a; }
-        body.theme-neon .game-screen canvas#board { background: #0f0f2a; }
-        body.theme-sakura .game-screen canvas#board { background: #2a1520; }
-        body.theme-matrix .game-screen canvas#board { background: #000; }
-        body.theme-midnight .game-screen canvas#board { background: #0a0e27; }
-        body.theme-sunset .game-screen canvas#board { background: #2a1506; }
-        body.theme-ocean .game-screen canvas#board { background: #0a1a2a; }
-        body.theme-forest .game-screen canvas#board { background: #0a1a0a; }
-        body.theme-candy .game-screen canvas#board { background: #2a0a2a; }
-        body.theme-volcano .game-screen canvas#board { background: #2a0a0a; }
+        canvas#board { display: block; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 0 2px rgba(60,120,255,0.2); width: 300px; height: 600px; }
+        body.theme-classic canvas#board { background: #0a0d1a; }
+        body.theme-neon canvas#board { background: #0f0f2a; }
+        body.theme-sakura canvas#board { background: #2a1520; }
+        body.theme-matrix canvas#board { background: #000; }
+        body.theme-midnight canvas#board { background: #0a0e27; }
+        body.theme-sunset canvas#board { background: #2a1506; }
+        body.theme-ocean canvas#board { background: #0a1a2a; }
+        body.theme-forest canvas#board { background: #0a1a0a; }
+        body.theme-candy canvas#board { background: #2a0a2a; }
+        body.theme-volcano canvas#board { background: #2a0a0a; }
 
         .game-screen.modern-mode .brick-shell { background: transparent; border: none; box-shadow: none; padding: 0; }
         .game-screen.modern-mode .retro-controls { display: none; }
@@ -122,15 +128,27 @@
         .game-screen.modern-mode .modern-start-btn { display: block; }
         .modern-menu-btn { display: none; position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px 18px; border-radius: 25px; font-size: 15px; cursor: pointer; backdrop-filter: blur(5px); }
         .game-screen.modern-mode .modern-menu-btn { display: block; }
+        
+        .game-over-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 30px; border-radius: 20px; text-align: center; z-index: 20; border: 2px solid #3f7bff; display: none; }
+        .game-over-panel h2 { color: #fff; font-size: 32px; margin-bottom: 20px; }
+        .game-over-panel .score { color: #ffd700; font-size: 24px; margin-bottom: 25px; }
+        .game-over-panel .play-again-btn { background: linear-gradient(135deg, #3f7bff, #c850c0); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin: 5px; }
+        .game-over-panel .menu-btn { background: rgba(255,255,255,0.1); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; cursor: pointer; margin: 5px; }
+        
+        .combo-indicator { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); font-size: 48px; font-weight: bold; color: #ffd700; text-shadow: 0 0 20px #ff8c00; opacity: 0; transition: opacity 0.2s; z-index: 15; }
+        .combo-indicator.show { opacity: 1; }
+        .b2b-indicator { position: absolute; top: 50px; right: 20px; font-size: 20px; font-weight: bold; color: #ff6b6b; text-shadow: 0 0 15px #ff0000; opacity: 0; transition: opacity 0.2s; z-index: 15; }
+        .b2b-indicator.show { opacity: 1; }
+
         .game-area { display: flex; flex-direction: column; gap: 10px; }
         .game-header { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.25); border-radius: 12px; color: #fff; }
         .display-label { font-size: 9px; text-transform: uppercase; opacity: 0.7; }
         .display-value { font-size: 20px; font-weight: bold; font-family: 'Courier New', monospace; }
         .play-area { display: flex; gap: 10px; justify-content: center; }
-        canvas#board { display: block; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 0 2px rgba(60,120,255,0.2); width: 300px; height: 600px; }
-        canvas#preview, canvas#holdCanvas { display: block; margin: 0 auto; border-radius: 10px; background: #0a0d1a; width: 70px; height: 70px; }
+        canvas#preview, canvas#holdCanvas, .next-piece-canvas { display: block; margin: 0 auto; border-radius: 10px; background: #0a0d1a; width: 60px; height: 60px; }
         .preview-box { background: rgba(0,0,0,0.25); border-radius: 12px; padding: 8px; text-align: center; }
         .preview-label { color: #a0b5e0; font-size: 10px; margin-bottom: 5px; }
+        .next-pieces-container { display: flex; flex-direction: column; gap: 5px; }
         
         .retro-controls { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
         .control-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
@@ -138,6 +156,11 @@
         .brick-shell.theme-classic .retro-btn { background: linear-gradient(145deg, #3a3a4a, #2a2a3a); border: 3px solid #5a5a7a; color: #d0d0f0; box-shadow: 0 5px 0 #1a1a2a; }
         .brick-shell.theme-neon .retro-btn { background: linear-gradient(145deg, #2a2a5a, #1a1a4a); border: 3px solid #5a5aff; color: #c0c0ff; box-shadow: 0 5px 0 #0a0a3a; }
         .brick-shell.theme-sakura .retro-btn { background: linear-gradient(145deg, #5a3a4a, #4a2a3a); border: 3px solid #ff7a9a; color: #ffc0d0; box-shadow: 0 5px 0 #3a1a2a; }
+        .brick-shell.theme-japanese .retro-btn { background: linear-gradient(145deg, #8b3a3a, #6b2a2a); border: 3px solid #f1c40f; color: #ffeaa0; box-shadow: 0 5px 0 #4a1a1a; }
+        .brick-shell.theme-carbon .retro-btn { background: linear-gradient(145deg, #2a2a2a, #1a1a1a); border: 3px solid #444; color: #ccc; box-shadow: 0 5px 0 #0a0a0a; }
+        .brick-shell.theme-golden .retro-btn { background: linear-gradient(145deg, #8b7500, #6b5500); border: 3px solid #ffd700; color: #fff8d0; box-shadow: 0 5px 0 #4a3500; }
+        .brick-shell.theme-ice .retro-btn { background: linear-gradient(145deg, #5a8a9a, #4a7a8a); border: 3px solid #a0e0ff; color: #e0f8ff; box-shadow: 0 5px 0 #2a5a6a; }
+        .brick-shell.theme-matrix .retro-btn { background: linear-gradient(145deg, #0a2a0a, #051a05); border: 3px solid #00ff41; color: #90ff90; box-shadow: 0 5px 0 #003300; }
         .brick-shell.theme-emerald .retro-btn { background: linear-gradient(145deg, #1e8449, #145a32); border: 3px solid #2ecc71; color: #a8e6cf; box-shadow: 0 5px 0 #0e331e; }
         .brick-shell.theme-ruby .retro-btn { background: linear-gradient(145deg, #922b21, #6b1f18); border: 3px solid #e74c3c; color: #f5b7b1; box-shadow: 0 5px 0 #45130e; }
         .brick-shell.theme-obsidian .retro-btn { background: linear-gradient(145deg, #1a252f, #0e1419); border: 3px solid #5d6d7e; color: #aeb6bf; box-shadow: 0 5px 0 #06080a; }
@@ -147,20 +170,10 @@
 
         .game-status { text-align: center; margin-top: 8px; color: #d0d0f0; font-size: 12px; font-weight: 500; }
 
-        /* ЭКРАН ДОСТИЖЕНИЙ */
-        .achievements-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); transition: background 0.3s; }
+        /* ДОСТИЖЕНИЯ */
+        .achievements-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); }
         body.theme-classic .achievements-screen { background: rgba(15, 20, 40, 0.9); }
-        body.theme-neon .achievements-screen { background: rgba(30, 20, 50, 0.9); }
-        body.theme-sakura .achievements-screen { background: rgba(50, 20, 30, 0.9); }
-        body.theme-matrix .achievements-screen { background: rgba(0, 10, 0, 0.9); }
-        body.theme-midnight .achievements-screen { background: rgba(10, 15, 40, 0.9); }
-        body.theme-sunset .achievements-screen { background: rgba(50, 20, 10, 0.9); }
-        body.theme-ocean .achievements-screen { background: rgba(10, 25, 45, 0.9); }
-        body.theme-forest .achievements-screen { background: rgba(10, 30, 10, 0.9); }
-        body.theme-candy .achievements-screen { background: rgba(40, 10, 40, 0.9); }
-        body.theme-volcano .achievements-screen { background: rgba(50, 15, 10, 0.9); }
-        
-        .achievements-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .achievements-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-height: 500px; overflow-y: auto; }
         .achievement-item { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 14px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); }
         .achievement-item.unlocked { border-color: #51cf66; background: rgba(81, 207, 102, 0.1); }
         .achievement-icon { font-size: 30px; min-width: 45px; text-align: center; }
@@ -170,17 +183,8 @@
         .achievement-progress { font-size: 14px; font-weight: bold; color: #ffd700; min-width: 60px; text-align: right; }
 
         /* ЭКРАНЫ */
-        .settings-screen, .themes-screen, .records-screen, .about-screen, .profile-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); color: #fff; transition: background 0.3s; }
+        .settings-screen, .themes-screen, .records-screen, .about-screen, .profile-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); color: #fff; }
         body.theme-classic .settings-screen, body.theme-classic .themes-screen, body.theme-classic .records-screen, body.theme-classic .about-screen, body.theme-classic .profile-screen { background: rgba(15, 20, 40, 0.9); }
-        body.theme-neon .settings-screen { background: rgba(30, 20, 50, 0.9); }
-        body.theme-sakura .settings-screen { background: rgba(50, 20, 30, 0.9); }
-        body.theme-matrix .settings-screen { background: rgba(0, 10, 0, 0.9); }
-        body.theme-midnight .settings-screen { background: rgba(10, 15, 40, 0.9); }
-        body.theme-sunset .settings-screen { background: rgba(50, 20, 10, 0.9); }
-        body.theme-ocean .settings-screen { background: rgba(10, 25, 45, 0.9); }
-        body.theme-forest .settings-screen { background: rgba(10, 30, 10, 0.9); }
-        body.theme-candy .settings-screen { background: rgba(40, 10, 40, 0.9); }
-        body.theme-volcano .settings-screen { background: rgba(50, 15, 10, 0.9); }
         
         .screen-header { display: flex; align-items: center; margin-bottom: 20px; }
         .back-btn { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 24px; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
@@ -194,6 +198,8 @@
         .toggle-switch.active { background: linear-gradient(135deg, #3f7bff, #c850c0); }
         .toggle-switch::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; top: 2px; left: 3px; transition: all 0.3s; }
         .toggle-switch.active::after { left: 23px; }
+        .danger-btn { background: linear-gradient(135deg, #ff6b6b, #c92a2a); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
+        
         .tabs-container { display: flex; gap: 5px; margin-bottom: 18px; border-bottom: 1px solid rgba(80,140,255,0.2); padding-bottom: 10px; }
         .tab-btn { flex: 1; padding: 8px; background: transparent; border: none; color: #8a9fd0; font-size: 13px; cursor: pointer; border-radius: 8px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .tab-btn.active { background: rgba(80,140,255,0.25); color: #fff; }
@@ -216,6 +222,8 @@
         .developer-record { margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(255,215,0,0.3); }
         .dev-row { display: grid; grid-template-columns: 45px 1fr 90px; padding: 10px 8px; color: #ffd700; background: rgba(255,215,0,0.1); border-radius: 12px; }
         
+        .particle { position: absolute; pointer-events: none; z-index: 100; border-radius: 50%; }
+        
         .notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #3f7bff, #c850c0); color: white; padding: 12px 20px; border-radius: 40px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; animation: slideDown 0.3s; font-size: 14px; }
         @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -50px); } to { opacity: 1; transform: translate(-50%, 0); } }
         
@@ -228,8 +236,8 @@
         .modal-btn.primary { background: linear-gradient(135deg, #3f7bff, #c850c0); color: #fff; }
         .modal-btn.secondary { background: rgba(255,255,255,0.12); color: #fff; }
         
-        @media (max-width: 650px) { .menu-container { grid-template-columns: 1fr; } .retro-btn { padding: 8px 10px; font-size: 16px; min-width: 50px; } canvas#board { width: 260px; height: 520px; } }
-        @media (max-width: 450px) { canvas#board { width: 220px; height: 440px; } .play-area { flex-direction: column; align-items: center; } }
+        @media (max-width: 700px) { .menu-container { grid-template-columns: 1fr; } .retro-btn { padding: 8px 10px; font-size: 16px; min-width: 50px; } canvas#board { width: 260px; height: 520px; } }
+        @media (max-width: 500px) { canvas#board { width: 220px; height: 440px; } .play-area { flex-direction: column; align-items: center; } }
     </style>
 </head>
 <body class="theme-classic">
@@ -237,7 +245,7 @@
         <!-- ГЛАВНОЕ МЕНЮ -->
         <div id="menuScreen" class="screen menu-screen active">
             <div class="menu-container">
-                <div class="game-title"><h1>TETRIS</h1><div class="subtitle">BRICK SHELL 8.0</div></div>
+                <div class="game-title"><h1>TETRIS</h1><div class="subtitle">BRICK SHELL 9.0</div></div>
                 <div class="menu-left">
                     <div class="menu-btn" data-screen="modeSelect">🎮 ИГРАТЬ</div>
                     <div class="menu-btn" data-screen="profile">👤 ПРОФИЛЬ</div>
@@ -265,31 +273,13 @@
 
         <!-- ЭКРАН ВЫБОРА РЕЖИМА -->
         <div id="modeSelectScreen" class="screen mode-select-screen">
-            <div class="screen-header">
-                <button class="back-btn" data-screen="menu">←</button>
-                <h2>ВЫБОР РЕЖИМА</h2>
-            </div>
+            <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>ВЫБОР РЕЖИМА</h2></div>
             <div class="mode-cards">
-                <div class="mode-card classic" data-mode="classic">
-                    <h3>🎯 КЛАССИК</h3>
-                    <p>Бесконечная игра с нарастающей скоростью</p>
-                </div>
-                <div class="mode-card sprint" data-mode="sprint">
-                    <h3>⏱️ СПРИНТ</h3>
-                    <p>Очисти 40 линий как можно быстрее</p>
-                </div>
-                <div class="mode-card marathon" data-mode="marathon">
-                    <h3>🏃 МАРАФОН</h3>
-                    <p>Испытание на выносливость — 150 линий</p>
-                </div>
-                <div class="mode-card zen" data-mode="zen">
-                    <h3>🧘 ДЗЕН</h3>
-                    <p>Без очков и уровней, просто игра</p>
-                </div>
-                <div class="mode-card hardcore" data-mode="hardcore">
-                    <h3>💀 ХАРДКОР</h3>
-                    <p>Скорость x2, без паузы, без сохранений</p>
-                </div>
+                <div class="mode-card classic" data-mode="classic"><h3>🎯 КЛАССИК</h3><p>Бесконечная игра с нарастающей скоростью</p></div>
+                <div class="mode-card sprint" data-mode="sprint"><h3>⏱️ СПРИНТ</h3><p>Очисти 40 линий как можно быстрее</p></div>
+                <div class="mode-card marathon" data-mode="marathon"><h3>🏃 МАРАФОН</h3><p>Испытание на выносливость — 150 линий</p></div>
+                <div class="mode-card zen" data-mode="zen"><h3>🧘 ДЗЕН</h3><p>Без очков и уровней, просто игра</p></div>
+                <div class="mode-card hardcore" data-mode="hardcore"><h3>💀 ХАРДКОР</h3><p>Скорость x2, без паузы, без сохранений</p></div>
             </div>
         </div>
 
@@ -297,6 +287,14 @@
         <div id="gameScreen" class="screen game-screen">
             <button class="modern-menu-btn" id="modernMenuBtn">≡ МЕНЮ</button>
             <button class="modern-start-btn" id="modernStartBtn">▶ СТАРТ</button>
+            <div class="combo-indicator" id="comboIndicator">x2</div>
+            <div class="b2b-indicator" id="b2bIndicator">🔥 B2B x1.5</div>
+            <div class="game-over-panel" id="gameOverPanel">
+                <h2 id="gameOverTitle">GAME OVER</h2>
+                <div class="score" id="finalScore">0</div>
+                <button class="play-again-btn" id="playAgainBtn">🔄 ИГРАТЬ СНОВА</button>
+                <button class="menu-btn" id="gameOverMenuBtn">🏠 В МЕНЮ</button>
+            </div>
             <div class="brick-shell theme-classic" id="brickShell">
                 <div class="game-area">
                     <div class="game-header">
@@ -307,8 +305,8 @@
                     <div class="play-area">
                         <canvas id="board" width="300" height="600"></canvas>
                         <div class="preview-area">
-                            <div class="preview-box"><div class="preview-label">HOLD</div><canvas id="holdCanvas" width="70" height="70"></canvas></div>
-                            <div class="preview-box"><div class="preview-label">СЛЕД</div><canvas id="preview" width="70" height="70"></canvas></div>
+                            <div class="preview-box"><div class="preview-label">HOLD</div><canvas id="holdCanvas" width="60" height="60"></canvas></div>
+                            <div class="preview-box"><div class="preview-label">ДАЛЕЕ</div><div class="next-pieces-container" id="nextPiecesContainer"></div></div>
                         </div>
                     </div>
                     <div class="retro-controls" id="retroControls">
@@ -346,6 +344,7 @@
                 <div class="setting-item"><span class="setting-label">Частицы</span><div class="toggle-switch active" id="particlesToggle"></div></div>
                 <div class="setting-item"><span class="setting-label">Свечение блоков</span><div class="toggle-switch active" id="glowToggle"></div></div>
             </div>
+            <button class="danger-btn" id="resetDataBtn">🗑️ СБРОСИТЬ ВСЕ ДАННЫЕ</button>
         </div>
 
         <!-- ТЕМЫ -->
@@ -381,14 +380,13 @@
         <div id="aboutScreen" class="screen about-screen">
             <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>ОБ ИГРЕ</h2></div>
             <div style="color:#d0dfff;line-height:1.6;">
-                <h3 style="color:#fff;margin-bottom:15px;">TETRIS BRICK SHELL 8.0</h3>
+                <h3 style="color:#fff;margin-bottom:15px;">TETRIS BRICK SHELL 9.0</h3>
                 <p style="margin-bottom:15px;">Тетрис — легендарная головоломка Алексея Пажитнова (1984).</p>
-                <h3 style="color:#fff;margin:20px 0 15px;">УПРАВЛЕНИЕ</h3>
-                <ul style="margin-left:20px;margin-bottom:20px;"><li>← → ↓ - движение</li><li>↻ / A - поворот</li><li>H - Hold</li><li>B - Hard Drop</li></ul>
+                <p>🔥 Новое в 9.0: T-Spin, Back-to-Back, анимация линий, 3 следующие фигуры, расширенная статистика!</p>
                 <div style="text-align:center;margin-top:30px;padding:20px;background:rgba(0,0,0,0.2);border-radius:15px;">
                     <div style="font-size:18px;color:#ffd700;margin-bottom:10px;">СОЗДАТЕЛЬ</div>
                     <div style="font-size:26px;font-weight:bold;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;background-clip:text;color:transparent;">Kozume</div>
-                    <div style="margin-top:15px;font-size:14px;opacity:0.7;">Версия 8.0 • 2024</div>
+                    <div style="margin-top:15px;font-size:14px;opacity:0.7;">Версия 9.0 • 2024</div>
                 </div>
             </div>
         </div>
@@ -397,6 +395,7 @@
         <div class="modal" id="loginModal"><div class="modal-content"><div class="modal-title">🔐 ВХОД</div><input id="loginUsername" class="modal-input" placeholder="Логин"><input id="loginPassword" type="password" class="modal-input" placeholder="Пароль"><div class="modal-buttons"><button class="modal-btn primary" id="loginSubmitBtn">ВОЙТИ</button><button class="modal-btn secondary" id="loginCancelBtn">ОТМЕНА</button></div></div></div>
         <div class="modal" id="registerModal"><div class="modal-content"><div class="modal-title">📝 РЕГИСТРАЦИЯ</div><input id="regUsername" class="modal-input" placeholder="Логин"><input id="regPassword" type="password" class="modal-input" placeholder="Пароль"><input id="regConfirmPassword" type="password" class="modal-input" placeholder="Подтвердите пароль"><div class="modal-buttons"><button class="modal-btn primary" id="registerSubmitBtn">СОЗДАТЬ</button><button class="modal-btn secondary" id="registerCancelBtn">ОТМЕНА</button></div></div></div>
         <div class="modal" id="exitConfirmModal"><div class="modal-content"><div class="modal-title">🚪 ВЫХОД</div><p style="color:#d0dfff;text-align:center;margin-bottom:20px;">Выйти в главное меню?</p><div class="modal-buttons"><button class="modal-btn primary" id="exitConfirmBtn">ДА</button><button class="modal-btn secondary" id="exitCancelBtn">НЕТ</button></div></div></div>
+        <div class="modal" id="resetConfirmModal"><div class="modal-content"><div class="modal-title">⚠️ СБРОС ДАННЫХ</div><p style="color:#d0dfff;text-align:center;margin-bottom:20px;">Все сохранения будут удалены. Продолжить?</p><div class="modal-buttons"><button class="modal-btn primary" id="resetConfirmBtn">ДА</button><button class="modal-btn secondary" id="resetCancelBtn">НЕТ</button></div></div></div>
     </div>
 
     <script>
@@ -408,10 +407,10 @@
             gameMode: 'classic', targetLines: 0, sprintTarget: 40, marathonTarget: 150, zenMode: false, hardcoreMode: false,
             settings: { controlStyle: 'retro', mirrorControl: false, hardDrop: true, ghost: true, sound: true, music: false, vibration: true, buttonAnimations: true, particles: true, glow: true },
             themes: { game: { current: 'classic' }, shell: { current: 'classic' }, blocks: { current: 'neon' } },
-            gameThemes: [{ id: 'classic', name: 'Классик', bg: '#0c0f1e', unlocked: true },{ id: 'neon', name: 'Неон', bg: '#0f0f2a', unlocked: true },{ id: 'sakura', name: 'Сакура', bg: '#2a1520', unlocked: true },{ id: 'matrix', name: 'Матрица', bg: '#000', unlocked: false, req: { achievement: 'tetris_1' } },{ id: 'midnight', name: 'Полночь', bg: '#0a0e27', unlocked: false, req: { level: 5 } },{ id: 'sunset', name: 'Закат', bg: '#2a1506', unlocked: false, req: { level: 8 } },{ id: 'ocean', name: 'Океан', bg: '#0a1a2a', unlocked: false, req: { level: 5 } },{ id: 'forest', name: 'Лес', bg: '#0a1a0a', unlocked: false, req: { lines: 100 } },{ id: 'candy', name: 'Конфета', bg: '#2a0a2a', unlocked: false, req: { tetris: 5 } },{ id: 'volcano', name: 'Вулкан', bg: '#2a0a0a', unlocked: false, req: { score: 50000 } }],
-            shellThemes: [{ id: 'classic', name: 'Классик', color: '#4a4a5a', unlocked: true },{ id: 'neon', name: 'Неон', color: '#1e2a4a', unlocked: true },{ id: 'sakura', name: 'Сакура', color: '#ffb7c5', unlocked: true },{ id: 'japanese', name: 'Японская', color: '#c0392b', unlocked: false, req: { achievement: 'level_5' } },{ id: 'carbon', name: 'Карбон', color: '#1a1a1a', unlocked: false, req: { games: 30 } },{ id: 'golden', name: 'Золотая', color: '#ffd700', unlocked: false, req: { rank: 'Мастер' } },{ id: 'ice', name: 'Ледяная', color: '#a8d8ea', unlocked: false, req: { lines: 200 } },{ id: 'matrix', name: 'Матрица', color: '#00ff41', unlocked: false, req: { achievement: 'tetris_10' } },{ id: 'emerald', name: 'Изумруд', color: '#2ecc71', unlocked: false, req: { games: 20 } },{ id: 'ruby', name: 'Рубин', color: '#e74c3c', unlocked: false, req: { rank: 'Мастер' } },{ id: 'obsidian', name: 'Обсидиан', color: '#2c3e50', unlocked: false, req: { mode: 'hardcore' } },{ id: 'pearl', name: 'Жемчуг', color: '#fdfefe', unlocked: false, req: { achievements: 5 } }],
-            blockSkins: [{ id: 'neon', name: 'Неон', colors: ['#00f0f0','#f0e040','#c050f0','#60f030','#f05050','#f0a030','#4060f0'], unlocked: true },{ id: 'retro', name: 'Ретро', colors: ['#00ffff','#ffff00','#800080','#00ff00','#ff0000','#ffa500','#0000ff'], unlocked: true },{ id: 'crystal', name: 'Кристалл', colors: ['#00e5ff','#e0f7fa','#b388ff','#69f0ae','#ff4081','#ffab40','#448aff'], unlocked: false, req: { level: 5 } },{ id: 'metal', name: 'Металл', colors: ['#808080','#a0a0a0','#606060','#c0c0c0','#909090','#b0b0b0','#707070'], unlocked: false, req: { games: 15 } },{ id: 'lava', name: 'Лава', colors: ['#ff4500','#ff6347','#ff7f50','#ff8c00','#ffa500','#ff4500','#dc143c'], unlocked: false, req: { score: 30000 } },{ id: 'ice', name: 'Лёд', colors: ['#00bfff','#87ceeb','#add8e6','#b0e0e6','#afeeee','#e0ffff','#f0f8ff'], unlocked: false, req: { lines: 150 } },{ id: 'rainbow', name: 'Радуга', colors: ['#ff0000','#ff7f00','#ffff00','#00ff00','#0000ff','#4b0082','#9400d3'], unlocked: false, req: { achievements: 10 } },{ id: 'pixel', name: 'Пиксель', colors: ['#00ff00','#ffff00','#ff00ff','#00ffff','#ff0000','#0000ff','#ffffff'], unlocked: false, req: { hold: 20 } },{ id: 'glass', name: 'Стекло', colors: ['#a8e6cf','#dcedc1','#ffd3b6','#ffaaa5','#ff8b94','#b5e7a0','#d5aaff'], unlocked: false, req: { level: 10 } },{ id: 'chrome', name: 'Хром', colors: ['#c0c0c0','#d0d0d0','#e0e0e0','#f0f0f0','#a0a0a0','#b0b0b0','#909090'], unlocked: false, req: { mode: 'marathon' } }],
-            records: [], playerStats: { totalScore: 0, gamesPlayed: 0, bestScore: 0, totalLines: 0, tetrisCount: 0, maxLevel: 0, holdCount: 0 },
+            gameThemes: [{ id: 'classic', name: 'Классик', bg: '#0c0f1e', unlocked: true },{ id: 'neon', name: 'Неон', bg: '#0f0f2a', unlocked: true },{ id: 'sakura', name: 'Сакура', bg: '#2a1520', unlocked: true },{ id: 'matrix', name: 'Матрица', bg: '#000', unlocked: false },{ id: 'midnight', name: 'Полночь', bg: '#0a0e27', unlocked: false },{ id: 'sunset', name: 'Закат', bg: '#2a1506', unlocked: false },{ id: 'ocean', name: 'Океан', bg: '#0a1a2a', unlocked: false },{ id: 'forest', name: 'Лес', bg: '#0a1a0a', unlocked: false },{ id: 'candy', name: 'Конфета', bg: '#2a0a2a', unlocked: false },{ id: 'volcano', name: 'Вулкан', bg: '#2a0a0a', unlocked: false }],
+            shellThemes: [{ id: 'classic', name: 'Классик', color: '#4a4a5a', unlocked: true },{ id: 'neon', name: 'Неон', color: '#1e2a4a', unlocked: true },{ id: 'sakura', name: 'Сакура', color: '#ffb7c5', unlocked: true },{ id: 'japanese', name: 'Японская', color: '#c0392b', unlocked: false },{ id: 'carbon', name: 'Карбон', color: '#1a1a1a', unlocked: false },{ id: 'golden', name: 'Золотая', color: '#ffd700', unlocked: false },{ id: 'ice', name: 'Ледяная', color: '#a8d8ea', unlocked: false },{ id: 'matrix', name: 'Матрица', color: '#00ff41', unlocked: false },{ id: 'emerald', name: 'Изумруд', color: '#2ecc71', unlocked: false },{ id: 'ruby', name: 'Рубин', color: '#e74c3c', unlocked: false },{ id: 'obsidian', name: 'Обсидиан', color: '#2c3e50', unlocked: false },{ id: 'pearl', name: 'Жемчуг', color: '#fdfefe', unlocked: false }],
+            blockSkins: [{ id: 'neon', name: 'Неон', colors: ['#00f0f0','#f0e040','#c050f0','#60f030','#f05050','#f0a030','#4060f0'], unlocked: true },{ id: 'retro', name: 'Ретро', colors: ['#00ffff','#ffff00','#800080','#00ff00','#ff0000','#ffa500','#0000ff'], unlocked: true },{ id: 'crystal', name: 'Кристалл', colors: ['#00e5ff','#e0f7fa','#b388ff','#69f0ae','#ff4081','#ffab40','#448aff'], unlocked: false },{ id: 'metal', name: 'Металл', colors: ['#808080','#a0a0a0','#606060','#c0c0c0','#909090','#b0b0b0','#707070'], unlocked: false },{ id: 'lava', name: 'Лава', colors: ['#ff4500','#ff6347','#ff7f50','#ff8c00','#ffa500','#ff4500','#dc143c'], unlocked: false },{ id: 'ice', name: 'Лёд', colors: ['#00bfff','#87ceeb','#add8e6','#b0e0e6','#afeeee','#e0ffff','#f0f8ff'], unlocked: false },{ id: 'rainbow', name: 'Радуга', colors: ['#ff0000','#ff7f00','#ffff00','#00ff00','#0000ff','#4b0082','#9400d3'], unlocked: false },{ id: 'pixel', name: 'Пиксель', colors: ['#00ff00','#ffff00','#ff00ff','#00ffff','#ff0000','#0000ff','#ffffff'], unlocked: false },{ id: 'glass', name: 'Стекло', colors: ['#a8e6cf','#dcedc1','#ffd3b6','#ffaaa5','#ff8b94','#b5e7a0','#d5aaff'], unlocked: false },{ id: 'chrome', name: 'Хром', colors: ['#c0c0c0','#d0d0d0','#e0e0e0','#f0f0f0','#a0a0a0','#b0b0b0','#909090'], unlocked: false }],
+            records: [], playerStats: { totalScore: 0, gamesPlayed: 0, bestScore: 0, totalLines: 0, tetrisCount: 0, maxLevel: 0, holdCount: 0, pieceCounts: { I:0, O:0, T:0, L:0, J:0, S:0, Z:0 }, bestCombo: 0, totalTime: 0 },
             achievements: [
                 { id: 'first_line', name: '🥇 Первая кровь', desc: 'Очистить первую линию', unlocked: false, progress: 0, target: 1 },
                 { id: 'tetris_1', name: '💪 Tetris', desc: 'Сделать Tetris (4 линии)', unlocked: false, progress: 0, target: 1 },
@@ -427,60 +426,141 @@
                 { id: 'combo_3', name: '🔄 Комбо', desc: '3 линии подряд', unlocked: false, progress: 0, target: 1 },
                 { id: 'grinder', name: '📊 Гриндер', desc: '1000 линий всего', unlocked: false, progress: 0, target: 1000 },
                 { id: 'sniper', name: '🎯 Снайпер', desc: '10 Hard Drop подряд', unlocked: false, progress: 0, target: 10 },
-                { id: 'skin_collector', name: '⭐ Коллекционер скинов', desc: 'Открыть все скины', unlocked: false, progress: 0, target: 10 }
+                { id: 'skin_collector', name: '⭐ Коллекционер скинов', desc: 'Открыть все скины', unlocked: false, progress: 0, target: 10 },
+                { id: 'tspin_1', name: '🌀 T-Spin', desc: 'Сделать T-Spin', unlocked: false, progress: 0, target: 1 },
+                { id: 'tspin_5', name: '🌪️ T-Spin Master', desc: '5 T-Spin', unlocked: false, progress: 0, target: 5 }
             ],
-            currentUser: null, isDeveloper: false, users: {}, comboCount: 0, hardDropStreak: 0
+            currentUser: null, isDeveloper: false, users: {}, comboCount: 0, hardDropStreak: 0, lastWasHardDrop: false, lastMoveWasRotate: false,
+            b2b: false, b2bMultiplier: 1, tspinCount: 0, lastClearCount: 0
         };
 
         // ============================================
         //               ТЕТРИС
         // ============================================
-        const COLS = 10, ROWS = 20, BLOCK_SIZE = 30, PREVIEW_SIZE = 18;
+        const COLS = 10, ROWS = 20, BLOCK_SIZE = 30, PREVIEW_SIZE = 16;
         let COLORS = ['#0a0d1a', '#00f0f0', '#f0e040', '#c050f0', '#60f030', '#f05050', '#f0a030', '#4060f0'];
-        const PIECES = [{ matrix: [[1,1,1,1]], colorIndex: 1 },{ matrix: [[1,1],[1,1]], colorIndex: 2 },{ matrix: [[0,1,0],[1,1,1]], colorIndex: 3 },{ matrix: [[0,1,1],[1,1,0]], colorIndex: 4 },{ matrix: [[1,1,0],[0,1,1]], colorIndex: 5 },{ matrix: [[1,0,0],[1,1,1]], colorIndex: 6 },{ matrix: [[0,0,1],[1,1,1]], colorIndex: 7 }];
-        let board = [], currentPiece = null, nextPiece = null, holdPiece = null, holdUsed = false;
+        const PIECES = [
+            { matrix: [[1,1,1,1]], colorIndex: 1, type: 'I' },{ matrix: [[1,1],[1,1]], colorIndex: 2, type: 'O' },
+            { matrix: [[0,1,0],[1,1,1]], colorIndex: 3, type: 'T' },{ matrix: [[0,1,1],[1,1,0]], colorIndex: 4, type: 'S' },
+            { matrix: [[1,1,0],[0,1,1]], colorIndex: 5, type: 'Z' },{ matrix: [[1,0,0],[1,1,1]], colorIndex: 6, type: 'L' },
+            { matrix: [[0,0,1],[1,1,1]], colorIndex: 7, type: 'J' }
+        ];
+        let board = [], currentPiece = null, nextPieces = [], holdPiece = null, holdUsed = false;
         let score = 0, lines = 0, level = 0, intervalTime = 500, startTime = 0;
         const boardCanvas = document.getElementById('board'), boardCtx = boardCanvas.getContext('2d');
-        const previewCanvas = document.getElementById('preview'), previewCtx = previewCanvas.getContext('2d');
         const holdCanvas = document.getElementById('holdCanvas'), holdCtx = holdCanvas.getContext('2d');
         const miniCanvas = document.getElementById('miniCanvas'), miniCtx = miniCanvas.getContext('2d');
+        const nextContainer = document.getElementById('nextPiecesContainer');
+        const pieceNames = ['I', 'O', 'T', 'S', 'Z', 'L', 'J'];
 
         let audioCtx = null;
         function initAudio() { if (!audioCtx && AppState.settings.sound) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } }
-        function playSound(type) { if (!AppState.settings.sound || !audioCtx) return; try { const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); if (type === 'move') { osc.frequency.value = 200; gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05); osc.start(); osc.stop(now + 0.05); } else if (type === 'rotate') { osc.frequency.value = 400; gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08); osc.start(); osc.stop(now + 0.08); } else if (type === 'drop') { osc.frequency.value = 150; gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(); osc.stop(now + 0.1); } else if (type === 'clear') { osc.frequency.value = 500; gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(); osc.stop(now + 0.15); } else if (type === 'tetris') { osc.frequency.value = 800; gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3); } } catch(e) {} }
+        function playSound(type) { if (!AppState.settings.sound || !audioCtx) return; try { const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); if (type === 'move') { osc.frequency.value = 200; gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05); osc.start(); osc.stop(now + 0.05); } else if (type === 'rotate') { osc.frequency.value = 400; gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08); osc.start(); osc.stop(now + 0.08); } else if (type === 'drop') { osc.frequency.value = 150; gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(); osc.stop(now + 0.1); } else if (type === 'clear') { osc.frequency.value = 500; gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(); osc.stop(now + 0.15); } else if (type === 'tetris') { osc.frequency.value = 800; gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3); } else if (type === 'tspin') { osc.frequency.value = 600; gain.gain.setValueAtTime(0.15, now); osc.frequency.exponentialRampToValueAtTime(400, now + 0.2); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(); osc.stop(now + 0.2); } else if (type === 'levelup') { osc.frequency.value = 1000; gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3); } } catch(e) {} }
         function vibrate(dur) { if (AppState.settings.vibration && navigator.vibrate) navigator.vibrate(dur); }
 
+        class Particle { constructor(x, y, color) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 8; this.vy = (Math.random() - 0.5) * 8 - 3; this.color = color; this.life = 1; this.size = Math.random() * 8 + 4; } update() { this.x += this.vx; this.y += this.vy; this.vy += 0.2; this.life -= 0.02; } draw(ctx) { ctx.globalAlpha = this.life; ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.size, this.size); } }
+        let particles = [];
+
         function initBoard() { board = Array(ROWS).fill().map(() => Array(COLS).fill(0)); }
-        function createRandomPiece() { const p = PIECES[Math.floor(Math.random() * PIECES.length)]; return { matrix: p.matrix.map(r => [...r]), colorIndex: p.colorIndex, x: Math.floor((COLS - p.matrix[0].length) / 2), y: 0 }; }
-        function spawnNewPiece() { if (!nextPiece) nextPiece = createRandomPiece(); currentPiece = { matrix: nextPiece.matrix.map(r => [...r]), colorIndex: nextPiece.colorIndex, x: Math.floor((COLS - nextPiece.matrix[0].length) / 2), y: 0 }; nextPiece = createRandomPiece(); holdUsed = false; if (collision(board, currentPiece)) { gameOver(); return false; } return true; }
+        function createRandomPiece() { const idx = Math.floor(Math.random() * PIECES.length); const p = PIECES[idx]; AppState.playerStats.pieceCounts[p.type]++; return { matrix: p.matrix.map(r => [...r]), colorIndex: p.colorIndex, type: p.type, x: Math.floor((COLS - p.matrix[0].length) / 2), y: 0 }; }
+        function refillQueue() { while (nextPieces.length < 4) nextPieces.push(createRandomPiece()); }
+        function spawnNewPiece() { 
+            if (nextPieces.length === 0) refillQueue(); 
+            currentPiece = nextPieces.shift(); refillQueue(); 
+            currentPiece.x = Math.floor((COLS - currentPiece.matrix[0].length) / 2); currentPiece.y = 0; holdUsed = false; 
+            if (collision(board, currentPiece)) { gameOver(); return false; } 
+            drawAll(); return true; 
+        }
         function collision(b, p) { for (let r = 0; r < p.matrix.length; r++) for (let c = 0; c < p.matrix[0].length; c++) if (p.matrix[r][c]) { const br = p.y + r, bc = p.x + c; if (br < 0 || br >= ROWS || bc < 0 || bc >= COLS || (br >= 0 && b[br][bc] !== 0)) return true; } return false; }
-        function freeze() { for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) { const br = currentPiece.y + r, bc = currentPiece.x + c; if (br >= 0 && br < ROWS && bc >= 0 && bc < COLS) board[br][bc] = currentPiece.colorIndex; } playSound('drop'); vibrate(10); clearFullRows(); spawnNewPiece(); }
-        function clearFullRows() { let cl = 0; for (let r = ROWS - 1; r >= 0; r--) if (board[r].every(c => c !== 0)) { board.splice(r, 1); board.unshift(Array(COLS).fill(0)); r++; cl++; } if (cl > 0) { lines += cl; AppState.playerStats.totalLines += cl; AppState.comboCount++; if (cl === 4) { AppState.playerStats.tetrisCount++; AppState.hardDropStreak = 0; playSound('tetris'); vibrate(50); } else { playSound('clear'); vibrate(20); } if (!AppState.zenMode) { score += [0, 100, 300, 700, 1500][cl] * (level + 1); } updateGameUI(); checkAchievements(); if (!AppState.zenMode) { const nl = Math.floor(lines / 10); if (nl > level) { level = nl; AppState.playerStats.maxLevel = Math.max(AppState.playerStats.maxLevel, level); intervalTime = AppState.hardcoreMode ? Math.max(50, 250 - level * 20) : Math.max(100, 500 - level * 40); resetGameLoop(); } } if (AppState.gameMode === 'sprint' && lines >= AppState.sprintTarget) gameOver(true); else if (AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget) gameOver(true); } }
-        function moveDown() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return false; currentPiece.y++; if (collision(board, currentPiece)) { currentPiece.y--; freeze(); drawAll(); return true; } drawAll(); return false; }
+        
+        function checkTSpin() {
+            if (currentPiece.type !== 'T') return false;
+            if (!AppState.lastMoveWasRotate) return false;
+            let corners = 0;
+            const cornersPos = [[0,0], [0,2], [2,0], [2,2]];
+            for (let [dr, dc] of cornersPos) {
+                const r = currentPiece.y + dr, c = currentPiece.x + dc;
+                if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== 0) corners++;
+            }
+            return corners >= 3 ? (corners === 3 ? 'mini' : 'normal') : false;
+        }
+
+        function calculateScore(linesCleared, isTSpin = false, tspinType = null) {
+            let base = 0;
+            if (isTSpin) base = tspinType === 'mini' ? 400 : (linesCleared === 2 ? 800 : 1600);
+            else base = [0, 100, 300, 700, 1500][linesCleared];
+            if ((linesCleared === 4 || isTSpin) && linesCleared > 0) {
+                if (AppState.b2b) { AppState.b2bMultiplier = Math.min(AppState.b2bMultiplier * 1.5, 4); }
+                else { AppState.b2b = true; AppState.b2bMultiplier = 1; }
+                base *= AppState.b2bMultiplier;
+                document.getElementById('b2bIndicator').textContent = `🔥 B2B x${AppState.b2bMultiplier.toFixed(1)}`;
+                document.getElementById('b2bIndicator').classList.add('show');
+                setTimeout(() => document.getElementById('b2bIndicator').classList.remove('show'), 1000);
+            } else if (linesCleared > 0) { AppState.b2b = false; AppState.b2bMultiplier = 1; }
+            return base * (level + 1);
+        }
+
+        async function clearFullRowsAnimated() {
+            const rowsToClear = [];
+            for (let r = 0; r < ROWS; r++) if (board[r].every(c => c !== 0)) rowsToClear.push(r);
+            if (rowsToClear.length === 0) return 0;
+            if (AppState.settings.particles) {
+                rowsToClear.forEach(r => { for (let c = 0; c < COLS; c++) if (board[r][c]) { const color = COLORS[board[r][c]]; for (let i = 0; i < 5; i++) particles.push(new Particle(c * BLOCK_SIZE + 15, r * BLOCK_SIZE + 15, color)); } });
+            }
+            for (let i = 0; i < 2; i++) {
+                rowsToClear.forEach(r => board[r].fill(0)); drawAll(); await sleep(60);
+                rowsToClear.forEach(r => { for (let c = 0; c < COLS; c++) board[r][c] = 1; }); drawAll(); await sleep(60);
+            }
+            rowsToClear.forEach(r => { board.splice(r, 1); board.unshift(Array(COLS).fill(0)); });
+            drawAll();
+            return rowsToClear.length;
+        }
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        function freeze() {
+            for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) { const br = currentPiece.y + r, bc = currentPiece.x + c; if (br >= 0 && br < ROWS && bc >= 0 && bc < COLS) board[br][bc] = currentPiece.colorIndex; }
+            playSound('drop'); vibrate(10);
+            if (!AppState.lastWasHardDrop) AppState.hardDropStreak = 0;
+            AppState.lastWasHardDrop = false;
+            clearFullRowsAnimated().then(cl => {
+                if (cl > 0) {
+                    lines += cl; AppState.playerStats.totalLines += cl; AppState.comboCount++; AppState.playerStats.bestCombo = Math.max(AppState.playerStats.bestCombo, AppState.comboCount);
+                    document.getElementById('comboIndicator').textContent = `x${AppState.comboCount + 1}`;
+                    document.getElementById('comboIndicator').classList.add('show');
+                    setTimeout(() => document.getElementById('comboIndicator').classList.remove('show'), 800);
+                    const isTSpin = checkTSpin(); let tspinType = null; if (isTSpin) { tspinType = isTSpin; AppState.tspinCount++; playSound('tspin'); }
+                    if (cl === 4) { AppState.playerStats.tetrisCount++; playSound('tetris'); vibrate(50); } else { playSound('clear'); vibrate(20); }
+                    if (!AppState.zenMode) { score += calculateScore(cl, !!isTSpin, tspinType); }
+                    updateGameUI();
+                    if (!AppState.zenMode) { const nl = Math.floor(lines / 10); if (nl > level) { level = nl; AppState.playerStats.maxLevel = Math.max(AppState.playerStats.maxLevel, level); intervalTime = AppState.hardcoreMode ? Math.max(50, 250 - level * 20) : Math.max(100, 500 - level * 40); resetGameLoop(); playSound('levelup'); showNotification(`🎉 Уровень ${level}!`); } }
+                    if (AppState.gameMode === 'sprint' && lines >= AppState.sprintTarget) gameOver(true);
+                    else if (AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget) gameOver(true);
+                } else { AppState.comboCount = 0; AppState.lastClearCount = 0; }
+                checkAchievements(); unlockThemesByProgress(); spawnNewPiece();
+            });
+        }
+        
+        function moveDown() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return false; currentPiece.y++; if (collision(board, currentPiece)) { currentPiece.y--; freeze(); return true; } drawAll(); return false; }
         function moveHorizontal(dx) { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; if (AppState.settings.mirrorControl) dx = -dx; currentPiece.x += dx; if (collision(board, currentPiece)) currentPiece.x -= dx; else { playSound('move'); vibrate(5); drawAll(); } }
-        function rotatePiece() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; const m = currentPiece.matrix, rot = m[0].map((_, i) => m.map(r => r[i]).reverse()), orig = currentPiece.matrix; currentPiece.matrix = rot; if (collision(board, currentPiece)) { currentPiece.x--; if (!collision(board, currentPiece)) { playSound('rotate'); vibrate(8); drawAll(); return; } currentPiece.x += 2; if (!collision(board, currentPiece)) { playSound('rotate'); vibrate(8); drawAll(); return; } currentPiece.x--; currentPiece.matrix = orig; } else { playSound('rotate'); vibrate(8); drawAll(); } }
-        function hardDrop() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; AppState.hardDropStreak++; while (!collision(board, currentPiece)) currentPiece.y++; currentPiece.y--; freeze(); drawAll(); }
-        function holdCurrent() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused || holdUsed) return; if (!holdPiece) { holdPiece = { matrix: currentPiece.matrix.map(r => [...r]), colorIndex: currentPiece.colorIndex }; spawnNewPiece(); } else { const temp = { matrix: currentPiece.matrix.map(r => [...r]), colorIndex: currentPiece.colorIndex }; currentPiece = { matrix: holdPiece.matrix.map(r => [...r]), colorIndex: holdPiece.colorIndex, x: Math.floor((COLS - holdPiece.matrix[0].length) / 2), y: 0 }; holdPiece = temp; if (collision(board, currentPiece)) { currentPiece = { matrix: temp.matrix.map(r => [...r]), colorIndex: temp.colorIndex, x: Math.floor((COLS - temp.matrix[0].length) / 2), y: 0 }; return; } } holdUsed = true; AppState.playerStats.holdCount++; playSound('rotate'); drawAll(); }
+        function rotatePiece() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; AppState.lastMoveWasRotate = true; const m = currentPiece.matrix, rot = m[0].map((_, i) => m.map(r => r[i]).reverse()), orig = currentPiece.matrix; currentPiece.matrix = rot; if (collision(board, currentPiece)) { currentPiece.x--; if (!collision(board, currentPiece)) { playSound('rotate'); vibrate(8); drawAll(); return; } currentPiece.x += 2; if (!collision(board, currentPiece)) { playSound('rotate'); vibrate(8); drawAll(); return; } currentPiece.x--; currentPiece.matrix = orig; } else { playSound('rotate'); vibrate(8); drawAll(); } }
+        function hardDrop() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; AppState.lastWasHardDrop = true; AppState.hardDropStreak++; while (!collision(board, currentPiece)) currentPiece.y++; currentPiece.y--; freeze(); drawAll(); }
+        function holdCurrent() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused || holdUsed) return; if (!holdPiece) { holdPiece = { matrix: currentPiece.matrix.map(r => [...r]), colorIndex: currentPiece.colorIndex, type: currentPiece.type }; spawnNewPiece(); } else { const temp = { matrix: currentPiece.matrix.map(r => [...r]), colorIndex: currentPiece.colorIndex, type: currentPiece.type }; currentPiece = { matrix: holdPiece.matrix.map(r => [...r]), colorIndex: holdPiece.colorIndex, type: holdPiece.type, x: Math.floor((COLS - holdPiece.matrix[0].length) / 2), y: 0 }; holdPiece = temp; if (collision(board, currentPiece)) { currentPiece = { matrix: temp.matrix.map(r => [...r]), colorIndex: temp.colorIndex, type: temp.type, x: Math.floor((COLS - temp.matrix[0].length) / 2), y: 0 }; return; } } holdUsed = true; AppState.playerStats.holdCount++; playSound('rotate'); drawAll(); }
         function drawGhost() { if (!AppState.settings.ghost || !currentPiece) return; let ghostY = currentPiece.y; while (!collision(board, { ...currentPiece, y: ghostY + 1 })) ghostY++; if (ghostY > currentPiece.y) { boardCtx.globalAlpha = 0.25; for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) { boardCtx.fillStyle = COLORS[currentPiece.colorIndex]; boardCtx.fillRect((currentPiece.x + c) * BLOCK_SIZE, ghostY * BLOCK_SIZE + r * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1); } boardCtx.globalAlpha = 1; } }
         function drawBlock(ctx, x, y, ci, sz = BLOCK_SIZE) { const c = COLORS[ci]; ctx.fillStyle = c; ctx.fillRect(x * sz, y * sz, sz - 1, sz - 1); if (AppState.settings.glow) { ctx.shadowColor = c; ctx.shadowBlur = 12; ctx.fillRect(x * sz, y * sz, sz - 1, sz - 1); ctx.shadowBlur = 0; } ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(x * sz + 2, y * sz + 2, sz - 5, 4); }
-        function drawBoard() { boardCtx.clearRect(0, 0, 300, 600); for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (board[r][c]) drawBlock(boardCtx, c, r, board[r][c]); drawGhost(); if (currentPiece) for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) drawBlock(boardCtx, currentPiece.x + c, currentPiece.y + r, currentPiece.colorIndex); }
-        function drawPreview() { previewCtx.clearRect(0, 0, 70, 70); previewCtx.fillStyle = '#0a0d1a'; previewCtx.fillRect(0, 0, 70, 70); if (nextPiece) { const m = nextPiece.matrix, ox = (4 - m[0].length) * PREVIEW_SIZE / 2, oy = (4 - m.length) * PREVIEW_SIZE / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) drawBlock(previewCtx, ox/PREVIEW_SIZE + c, oy/PREVIEW_SIZE + r, nextPiece.colorIndex, PREVIEW_SIZE); } }
-        function drawHold() { holdCtx.clearRect(0, 0, 70, 70); holdCtx.fillStyle = '#0a0d1a'; holdCtx.fillRect(0, 0, 70, 70); if (holdPiece) { const m = holdPiece.matrix, ox = (4 - m[0].length) * PREVIEW_SIZE / 2, oy = (4 - m.length) * PREVIEW_SIZE / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) drawBlock(holdCtx, ox/PREVIEW_SIZE + c, oy/PREVIEW_SIZE + r, holdPiece.colorIndex, PREVIEW_SIZE); } }
-        function drawAll() { drawBoard(); drawPreview(); drawHold(); }
+        function drawBoard() { boardCtx.clearRect(0, 0, 300, 600); for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (board[r][c]) drawBlock(boardCtx, c, r, board[r][c]); drawGhost(); if (currentPiece) for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) drawBlock(boardCtx, currentPiece.x + c, currentPiece.y + r, currentPiece.colorIndex); particles = particles.filter(p => { p.update(); if (p.life > 0) { p.draw(boardCtx); return true; } return false; }); }
+        function drawHold() { holdCtx.clearRect(0, 0, 60, 60); holdCtx.fillStyle = '#0a0d1a'; holdCtx.fillRect(0, 0, 60, 60); if (holdPiece) { const m = holdPiece.matrix, ox = (4 - m[0].length) * PREVIEW_SIZE / 2, oy = (4 - m.length) * PREVIEW_SIZE / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) drawBlock(holdCtx, ox/PREVIEW_SIZE + c, oy/PREVIEW_SIZE + r, holdPiece.colorIndex, PREVIEW_SIZE); } }
+        function drawNextPieces() { nextContainer.innerHTML = ''; for (let i = 0; i < 3; i++) { if (nextPieces[i]) { const canvas = document.createElement('canvas'); canvas.width = 60; canvas.height = 60; canvas.className = 'next-piece-canvas'; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#0a0d1a'; ctx.fillRect(0, 0, 60, 60); const p = nextPieces[i], m = p.matrix, ox = (4 - m[0].length) * PREVIEW_SIZE / 2, oy = (4 - m.length) * PREVIEW_SIZE / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) drawBlock(ctx, ox/PREVIEW_SIZE + c, oy/PREVIEW_SIZE + r, p.colorIndex, PREVIEW_SIZE); nextContainer.appendChild(canvas); } } }
+        function drawAll() { drawBoard(); drawHold(); drawNextPieces(); }
         function updateGameUI() { document.getElementById('gameScore').textContent = AppState.zenMode ? '∞' : score; document.getElementById('gameLines').textContent = lines; document.getElementById('gameLevel').textContent = AppState.zenMode ? '∞' : level; }
-        function gameTick() { if (AppState.gameRunning && !AppState.gamePaused) moveDown(); }
+        function gameTick() { if (AppState.gameRunning && !AppState.gamePaused) { AppState.lastMoveWasRotate = false; moveDown(); } }
         function resetGameLoop() { if (AppState.gameLoop) clearInterval(AppState.gameLoop); if (AppState.gameRunning) AppState.gameLoop = setInterval(gameTick, intervalTime); }
         
         function startNewGame(mode) {
-            AppState.gameMode = mode;
-            AppState.zenMode = mode === 'zen';
-            AppState.hardcoreMode = mode === 'hardcore';
-            initBoard(); score = 0; lines = 0; level = AppState.hardcoreMode ? 5 : 0; 
-            intervalTime = AppState.hardcoreMode ? 250 : 500; holdPiece = null; holdUsed = false;
-            AppState.comboCount = 0; AppState.hardDropStreak = 0;
-            nextPiece = createRandomPiece(); spawnNewPiece(); 
-            AppState.gameRunning = true; AppState.gamePaused = false; AppState.gameOver = false; 
-            startTime = Date.now();
+            AppState.gameMode = mode; AppState.zenMode = mode === 'zen'; AppState.hardcoreMode = mode === 'hardcore';
+            initBoard(); score = 0; lines = 0; level = AppState.hardcoreMode ? 5 : 0; intervalTime = AppState.hardcoreMode ? 250 : 500;
+            holdPiece = null; holdUsed = false; nextPieces = []; refillQueue(); spawnNewPiece(); 
+            AppState.gameRunning = true; AppState.gamePaused = false; AppState.gameOver = false; startTime = Date.now();
+            AppState.comboCount = 0; AppState.hardDropStreak = 0; AppState.b2b = false; AppState.b2bMultiplier = 1; AppState.lastClearCount = 0;
             document.getElementById('gameStatus').textContent = 'ИГРА ИДЕТ...'; 
             updateGameUI(); drawAll(); resetGameLoop(); 
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
@@ -491,38 +571,50 @@
         
         function gameOver(win = false) { 
             AppState.gameRunning = false; AppState.gameOver = true; clearInterval(AppState.gameLoop); AppState.gameLoop = null; 
-            const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
+            const timeElapsed = Math.floor((Date.now() - startTime) / 1000); AppState.playerStats.totalTime += timeElapsed;
             document.getElementById('gameStatus').textContent = win ? `ПОБЕДА! ${timeElapsed}с` : 'GAME OVER'; 
+            document.getElementById('gameOverTitle').textContent = win ? 'ПОБЕДА!' : 'GAME OVER';
+            document.getElementById('finalScore').textContent = AppState.zenMode ? 'Дзен-режим' : `${score} очков`;
+            document.getElementById('gameOverPanel').style.display = 'block';
             if (!AppState.zenMode && score > 0) { 
                 AppState.playerStats.totalScore += score; AppState.playerStats.gamesPlayed++; 
                 if (score > AppState.playerStats.bestScore) AppState.playerStats.bestScore = score; 
-                if (AppState.currentUser) { const u = AppState.users[AppState.currentUser]; u.totalScore += score; u.gamesPlayed++; if (score > u.bestScore) u.bestScore = score; AppState.records.push({ name: u.username, score }); AppState.records.sort((a,b) => b.score - a.score); AppState.records = AppState.records.slice(0, 20); } 
+                if (AppState.currentUser) { 
+                    const u = AppState.users[AppState.currentUser]; u.totalScore += score; u.gamesPlayed++; 
+                    if (score > u.bestScore) u.bestScore = score; 
+                    const existing = AppState.records.find(r => r.name === u.username);
+                    if (existing) { if (score > existing.score) existing.score = score; } 
+                    else { AppState.records.push({ name: u.username, score }); }
+                    AppState.records.sort((a,b) => b.score - a.score); AppState.records = AppState.records.slice(0, 20); 
+                } 
             } else if (AppState.zenMode) { AppState.playerStats.gamesPlayed++; if (AppState.currentUser) AppState.users[AppState.currentUser].gamesPlayed++; }
             checkAchievements(); unlockThemesByProgress(); saveAllData(); updateMainMenuStats(); updateProfileDisplay(); 
         }
         
         function checkAchievements() {
-            const a = AppState.achievements;
+            const a = AppState.achievements; const ps = AppState.playerStats;
             if (!a[0].unlocked && lines >= 1) { a[0].unlocked = true; showNotification('🏆 Первая кровь!'); }
-            if (!a[1].unlocked && AppState.playerStats.tetrisCount >= 1) { a[1].unlocked = true; showNotification('🏆 Tetris!'); }
-            if (!a[2].unlocked && AppState.playerStats.tetrisCount >= 10) { a[2].unlocked = true; showNotification('🏆 Tetris Master!'); }
+            if (!a[1].unlocked && ps.tetrisCount >= 1) { a[1].unlocked = true; showNotification('🏆 Tetris!'); }
+            if (!a[2].unlocked && ps.tetrisCount >= 10) { a[2].unlocked = true; showNotification('🏆 Tetris Master!'); }
             if (!a[3].unlocked && score >= 50000) { a[3].unlocked = true; showNotification('🏆 Скоростной!'); }
-            if (!a[4].unlocked && AppState.playerStats.maxLevel >= 10) { a[4].unlocked = true; showNotification('🏆 Бывалый!'); }
-            if (!a[5].unlocked && AppState.playerStats.totalScore >= 1000000) { a[5].unlocked = true; showNotification('🏆 Легенда!'); }
+            if (!a[4].unlocked && ps.maxLevel >= 10) { a[4].unlocked = true; showNotification('🏆 Бывалый!'); }
+            if (!a[5].unlocked && ps.totalScore >= 1000000) { a[5].unlocked = true; showNotification('🏆 Легенда!'); }
             if (!a[8].unlocked && AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget) { a[8].unlocked = true; showNotification('🏆 Марафонец!'); }
             if (!a[9].unlocked && AppState.gameMode === 'sprint' && lines >= AppState.sprintTarget) { a[9].unlocked = true; showNotification('🏆 Спринтер!'); }
             if (!a[10].unlocked && score >= 100000) { a[10].unlocked = true; showNotification('🏆 Сотня!'); }
-            if (!a[11].unlocked && AppState.comboCount >= 3) { a[11].unlocked = true; showNotification('🏆 Комбо!'); }
-            if (!a[12].unlocked && AppState.playerStats.totalLines >= 1000) { a[12].unlocked = true; showNotification('🏆 Гриндер!'); }
+            if (!a[11].unlocked && ps.bestCombo >= 3) { a[11].unlocked = true; showNotification('🏆 Комбо!'); }
+            if (!a[12].unlocked && ps.totalLines >= 1000) { a[12].unlocked = true; showNotification('🏆 Гриндер!'); }
             if (!a[13].unlocked && AppState.hardDropStreak >= 10) { a[13].unlocked = true; showNotification('🏆 Снайпер!'); }
+            if (!a[15].unlocked && AppState.tspinCount >= 1) { a[15].unlocked = true; showNotification('🏆 T-Spin!'); }
+            if (!a[16].unlocked && AppState.tspinCount >= 5) { a[16].unlocked = true; showNotification('🏆 T-Spin Master!'); }
             updateAchievementsProgress();
         }
         
         function unlockThemesByProgress() {
             const ps = AppState.playerStats;
-            AppState.gameThemes.forEach(t => { if (!t.unlocked && t.req) { if (t.req.level && ps.maxLevel >= t.req.level) t.unlocked = true; else if (t.req.lines && ps.totalLines >= t.req.lines) t.unlocked = true; else if (t.req.tetris && ps.tetrisCount >= t.req.tetris) t.unlocked = true; else if (t.req.score && ps.bestScore >= t.req.score) t.unlocked = true; } });
-            AppState.shellThemes.forEach(t => { if (!t.unlocked && t.req) { if (t.req.games && ps.gamesPlayed >= t.req.games) t.unlocked = true; else if (t.req.mode === 'hardcore' && AppState.gameMode === 'hardcore' && lines >= 20) t.unlocked = true; } });
-            AppState.blockSkins.forEach(s => { if (!s.unlocked && s.req) { if (s.req.level && ps.maxLevel >= s.req.level) s.unlocked = true; else if (s.req.games && ps.gamesPlayed >= s.req.games) s.unlocked = true; else if (s.req.score && ps.bestScore >= s.req.score) s.unlocked = true; else if (s.req.lines && ps.totalLines >= s.req.lines) s.unlocked = true; else if (s.req.hold && ps.holdCount >= s.req.hold) s.unlocked = true; else if (s.req.mode === 'marathon' && AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget) s.unlocked = true; } });
+            AppState.gameThemes.forEach(t => { if (!t.unlocked) { if (ps.maxLevel >= 5 && t.id === 'midnight') t.unlocked = true; else if (ps.maxLevel >= 8 && t.id === 'sunset') t.unlocked = true; else if (ps.maxLevel >= 5 && t.id === 'ocean') t.unlocked = true; else if (ps.totalLines >= 100 && t.id === 'forest') t.unlocked = true; else if (ps.tetrisCount >= 5 && t.id === 'candy') t.unlocked = true; else if (ps.bestScore >= 50000 && t.id === 'volcano') t.unlocked = true; else if (ps.tetrisCount >= 1 && t.id === 'matrix') t.unlocked = true; } });
+            AppState.shellThemes.forEach(t => { if (!t.unlocked) { if (ps.gamesPlayed >= 20 && t.id === 'emerald') t.unlocked = true; else if (ps.totalScore >= 150000 && t.id === 'ruby') t.unlocked = true; else if (AppState.gameMode === 'hardcore' && lines >= 20 && t.id === 'obsidian') t.unlocked = true; else if (AppState.achievements.filter(a => a.unlocked).length >= 5 && t.id === 'pearl') t.unlocked = true; else if (ps.gamesPlayed >= 10 && t.id === 'japanese') t.unlocked = true; else if (ps.gamesPlayed >= 30 && t.id === 'carbon') t.unlocked = true; else if (ps.totalScore >= 150000 && t.id === 'golden') t.unlocked = true; else if (ps.totalLines >= 200 && t.id === 'ice') t.unlocked = true; else if (ps.tetrisCount >= 10 && t.id === 'matrix') t.unlocked = true; } });
+            AppState.blockSkins.forEach(s => { if (!s.unlocked) { if (ps.maxLevel >= 5 && s.id === 'crystal') s.unlocked = true; else if (ps.gamesPlayed >= 15 && s.id === 'metal') s.unlocked = true; else if (ps.bestScore >= 30000 && s.id === 'lava') s.unlocked = true; else if (ps.totalLines >= 150 && s.id === 'ice') s.unlocked = true; else if (AppState.achievements.filter(a => a.unlocked).length >= 10 && s.id === 'rainbow') s.unlocked = true; else if (ps.holdCount >= 20 && s.id === 'pixel') s.unlocked = true; else if (ps.maxLevel >= 10 && s.id === 'glass') s.unlocked = true; else if (AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget && s.id === 'chrome') s.unlocked = true; } });
             const unlockedCount = AppState.gameThemes.filter(t => t.unlocked).length + AppState.shellThemes.filter(t => t.unlocked).length + AppState.blockSkins.filter(s => s.unlocked).length;
             if (!AppState.achievements[6].unlocked && unlockedCount >= 5) { AppState.achievements[6].unlocked = true; showNotification('🏆 Коллекционер!'); }
             if (!AppState.achievements[7].unlocked && unlockedCount >= 31) { AppState.achievements[7].unlocked = true; showNotification('🏆 Радуга!'); }
@@ -533,19 +625,20 @@
             const a = AppState.achievements; const ps = AppState.playerStats;
             a[2].progress = Math.min(ps.tetrisCount, 10); a[3].progress = Math.min(score, 50000); a[4].progress = Math.min(ps.maxLevel, 10);
             a[5].progress = Math.min(ps.totalScore, 1000000); a[10].progress = Math.min(score, 100000); a[12].progress = Math.min(ps.totalLines, 1000);
-            a[13].progress = Math.min(AppState.hardDropStreak, 10);
+            a[13].progress = Math.min(AppState.hardDropStreak, 10); a[15].progress = Math.min(AppState.tspinCount, 1); a[16].progress = Math.min(AppState.tspinCount, 5);
             const unlockedCount = AppState.gameThemes.filter(t => t.unlocked).length + AppState.shellThemes.filter(t => t.unlocked).length + AppState.blockSkins.filter(s => s.unlocked).length;
             a[6].progress = Math.min(unlockedCount, 5); a[7].progress = Math.min(unlockedCount, 31); a[14].progress = Math.min(AppState.blockSkins.filter(s => s.unlocked).length, 10);
         }
 
-        function exitToMenu() { if (AppState.gameRunning) { AppState.gameRunning = false; clearInterval(AppState.gameLoop); } showScreen('menu'); }
+        function exitToMenu() { if (AppState.gameRunning) { AppState.gameRunning = false; clearInterval(AppState.gameLoop); } document.getElementById('gameOverPanel').style.display = 'none'; showScreen('menu'); }
+        function restartGame() { document.getElementById('gameOverPanel').style.display = 'none'; startNewGame(AppState.gameMode); }
 
         // UI
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id + 'Screen').classList.add('active'); AppState.currentScreen = id; if (id === 'menu') { updateMainMenuStats(); } else if (id === 'game') { updateGameScreenMode(); } else if (id === 'records') renderRecords(); else if (id === 'themes') renderAllThemes(); else if (id === 'profile') updateProfileDisplay(); else if (id === 'achievements') renderAchievements(); }
         function applyGameTheme() { document.body.className = 'theme-' + AppState.themes.game.current; }
         function updateGameScreenMode() { applyGameTheme(); const gs = document.getElementById('gameScreen'); if (AppState.settings.controlStyle === 'modern') { gs.classList.add('modern-mode'); document.getElementById('retroControls').style.display = 'none'; } else { gs.classList.remove('modern-mode'); document.getElementById('retroControls').style.display = 'flex'; } document.getElementById('brickShell').className = 'brick-shell theme-' + AppState.themes.shell.current; }
         function updateMainMenuStats() { const ranks = [{ name: '🔰 Новичок', min: 0, max: 10000 },{ name: '📚 Ученик', min: 10000, max: 30000 },{ name: '⚔️ Боец', min: 30000, max: 70000 },{ name: '🛡️ Эксперт', min: 70000, max: 150000 },{ name: '👑 Мастер', min: 150000, max: 300000 },{ name: '🏛️ Архитектор', min: 300000, max: 600000 },{ name: '🎭 Виртуоз', min: 600000, max: 1000000 },{ name: '⭐ THE LEGEND', min: 1000000, max: Infinity }]; const ts = AppState.playerStats.totalScore; let cr = ranks[0], nr = ranks[1]; for (let i = 0; i < ranks.length; i++) if (ts >= ranks[i].min && ts < ranks[i].max) { cr = ranks[i]; nr = ranks[i + 1] || ranks[i]; break; } document.getElementById('currentRankDisplay').textContent = cr.name; document.getElementById('currentRankName').textContent = cr.name.split(' ')[1] || cr.name; document.getElementById('nextRankName').textContent = nr.name.split(' ')[1] || nr.name; document.getElementById('currentScore').textContent = ts.toLocaleString(); document.getElementById('nextRankScore').textContent = nr.min.toLocaleString(); document.getElementById('rankProgress').style.width = Math.min(((ts - cr.min) / (nr.min - cr.min)) * 100, 100) + '%'; document.getElementById('welcomeMessage').textContent = AppState.currentUser ? `👤 ${AppState.currentUser}` : '👤 Гость'; }
-        function updateProfileDisplay() { const pc = document.getElementById('profileContent'); const ts = AppState.playerStats.totalScore, gp = AppState.playerStats.gamesPlayed, bs = AppState.playerStats.bestScore; if (AppState.currentUser) { const u = AppState.users[AppState.currentUser]; pc.innerHTML = `<div class="profile-info"><div class="profile-avatar">${u.username === '0xKozume' ? '👑' : '🎮'}</div><div class="profile-name">${u.username}</div><div class="profile-stats"><div class="stat-row"><span>Всего очков:</span><span>${u.totalScore.toLocaleString()}</span></div><div class="stat-row"><span>Сыграно игр:</span><span>${u.gamesPlayed}</span></div><div class="stat-row"><span>Лучший счет:</span><span>${u.bestScore.toLocaleString()}</span></div></div><div class="menu-btn" id="logoutBtn">🚪 ВЫЙТИ</div></div>`; document.getElementById('logoutBtn').addEventListener('click', logout); } else { pc.innerHTML = `<div class="profile-info"><div class="profile-avatar">👤</div><div class="profile-name">Гость</div><div class="profile-stats"><div class="stat-row"><span>Всего очков:</span><span>${ts.toLocaleString()}</span></div><div class="stat-row"><span>Сыграно игр:</span><span>${gp}</span></div><div class="stat-row"><span>Лучший счет:</span><span>${bs.toLocaleString()}</span></div></div><div class="menu-btn" id="loginBtn">🔐 ВОЙТИ</div><div class="menu-btn" id="registerBtn" style="margin-top:10px;">📝 РЕГИСТРАЦИЯ</div></div>`; document.getElementById('loginBtn').addEventListener('click', ()=>document.getElementById('loginModal').style.display='flex'); document.getElementById('registerBtn').addEventListener('click', ()=>document.getElementById('registerModal').style.display='flex'); } }
+        function updateProfileDisplay() { const pc = document.getElementById('profileContent'); const ps = AppState.playerStats; const ts = ps.totalScore, gp = ps.gamesPlayed, bs = ps.bestScore; const formatTime = (s) => { const h = Math.floor(s/3600), m = Math.floor((s%3600)/60); return `${h}ч ${m}м`; }; if (AppState.currentUser) { const u = AppState.users[AppState.currentUser]; pc.innerHTML = `<div class="profile-info"><div class="profile-avatar">${u.username === '0xKozume' ? '👑' : '🎮'}</div><div class="profile-name">${u.username}</div><div class="profile-stats"><div class="stat-row"><span>Всего очков:</span><span>${u.totalScore.toLocaleString()}</span></div><div class="stat-row"><span>Сыграно игр:</span><span>${u.gamesPlayed}</span></div><div class="stat-row"><span>Лучший счет:</span><span>${u.bestScore.toLocaleString()}</span></div><div class="stat-row"><span>Всего линий:</span><span>${ps.totalLines}</span></div><div class="stat-row"><span>Tetris:</span><span>${ps.tetrisCount}</span></div><div class="stat-row"><span>Лучшее комбо:</span><span>${ps.bestCombo}</span></div><div class="stat-row"><span>Время в игре:</span><span>${formatTime(ps.totalTime)}</span></div></div><div class="menu-btn" id="logoutBtn">🚪 ВЫЙТИ</div></div>`; document.getElementById('logoutBtn').addEventListener('click', logout); } else { pc.innerHTML = `<div class="profile-info"><div class="profile-avatar">👤</div><div class="profile-name">Гость</div><div class="profile-stats"><div class="stat-row"><span>Всего очков:</span><span>${ts.toLocaleString()}</span></div><div class="stat-row"><span>Сыграно игр:</span><span>${gp}</span></div><div class="stat-row"><span>Лучший счет:</span><span>${bs.toLocaleString()}</span></div><div class="stat-row"><span>Всего линий:</span><span>${ps.totalLines}</span></div><div class="stat-row"><span>Tetris:</span><span>${ps.tetrisCount}</span></div><div class="stat-row"><span>Лучшее комбо:</span><span>${ps.bestCombo}</span></div><div class="stat-row"><span>Время в игре:</span><span>${formatTime(ps.totalTime)}</span></div></div><div class="menu-btn" id="loginBtn">🔐 ВОЙТИ</div><div class="menu-btn" id="registerBtn" style="margin-top:10px;">📝 РЕГИСТРАЦИЯ</div></div>`; document.getElementById('loginBtn').addEventListener('click', ()=>document.getElementById('loginModal').style.display='flex'); document.getElementById('registerBtn').addEventListener('click', ()=>document.getElementById('registerModal').style.display='flex'); } }
         function renderRecords() { const sorted = [...AppState.records].sort((a,b)=>b.score-a.score).slice(0,10); document.getElementById('recordsList').innerHTML = sorted.map((r,i)=>`<div class="record-row"><div class="record-rank">${i+1}</div><div>${r.name}</div><div class="record-score">${r.score.toLocaleString()}</div></div>`).join(''); }
         function renderAchievements() { updateAchievementsProgress(); document.getElementById('achievementsList').innerHTML = AppState.achievements.map(a => `<div class="achievement-item ${a.unlocked ? 'unlocked' : ''}"><div class="achievement-icon">${a.unlocked ? '✅' : '🔒'}</div><div class="achievement-info"><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.desc}</div></div><div class="achievement-progress">${a.unlocked ? '✓' : (a.progress || 0) + '/' + a.target}</div></div>`).join(''); }
         function renderAllThemes() {
@@ -559,11 +652,12 @@
 
         // МИНИ-ДЕМО
         let miniPiece = PIECES[Math.floor(Math.random() * PIECES.length)], miniOpacity = 1, miniFadeDir = -0.015, miniLastChange = Date.now();
-        function startMiniDemo() { function animate() { if (AppState.currentScreen === 'menu') { miniCtx.clearRect(0, 0, 180, 180); miniCtx.fillStyle = '#0a0d1a'; miniCtx.fillRect(0, 0, 180, 180); if (Date.now() - miniLastChange > 5000) { miniFadeDir = -0.015; miniLastChange = Date.now(); } miniOpacity += miniFadeDir; if (miniOpacity <= 0.1) { miniPiece = PIECES[Math.floor(Math.random() * PIECES.length)]; miniFadeDir = 0.015; } if (miniOpacity >= 1) miniFadeDir = -0.015; miniCtx.globalAlpha = miniOpacity; const m = miniPiece.matrix, sz = 25, ox = (7 - m[0].length) * sz / 2, oy = (7 - m.length) * sz / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) { miniCtx.fillStyle = COLORS[miniPiece.colorIndex]; miniCtx.shadowColor = COLORS[miniPiece.colorIndex]; miniCtx.shadowBlur = 10; miniCtx.fillRect(ox + c * sz, oy + r * sz, sz - 1, sz - 1); miniCtx.shadowBlur = 0; miniCtx.fillStyle = 'rgba(255,255,255,0.3)'; miniCtx.fillRect(ox + c * sz + 3, oy + r * sz + 3, sz - 7, 5); } miniCtx.globalAlpha = 1; } requestAnimationFrame(animate); } animate(); }
+        function startMiniDemo() { function animate() { if (AppState.currentScreen === 'menu') { miniCtx.clearRect(0, 0, 180, 180); const bgColor = getComputedStyle(document.querySelector('.mini-screen')).backgroundColor; miniCtx.fillStyle = bgColor; miniCtx.fillRect(0, 0, 180, 180); if (Date.now() - miniLastChange > 5000) { miniFadeDir = -0.015; miniLastChange = Date.now(); } miniOpacity += miniFadeDir; if (miniOpacity <= 0.1) { miniPiece = PIECES[Math.floor(Math.random() * PIECES.length)]; miniFadeDir = 0.015; } if (miniOpacity >= 1) miniFadeDir = -0.015; miniCtx.globalAlpha = miniOpacity; const m = miniPiece.matrix, sz = 25, ox = (7 - m[0].length) * sz / 2, oy = (7 - m.length) * sz / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) { miniCtx.fillStyle = COLORS[miniPiece.colorIndex]; miniCtx.shadowColor = COLORS[miniPiece.colorIndex]; miniCtx.shadowBlur = 10; miniCtx.fillRect(ox + c * sz, oy + r * sz, sz - 1, sz - 1); miniCtx.shadowBlur = 0; miniCtx.fillStyle = 'rgba(255,255,255,0.3)'; miniCtx.fillRect(ox + c * sz + 3, oy + r * sz + 3, sz - 7, 5); } miniCtx.globalAlpha = 1; } requestAnimationFrame(animate); } animate(); }
 
         // ДАННЫЕ
-        function loadAllData() { const s = localStorage.getItem('tetrisV8'); if (s) { const d = JSON.parse(s); AppState.playerStats = d.playerStats || AppState.playerStats; AppState.records = d.records || []; AppState.users = d.users || {}; AppState.settings = { ...AppState.settings, ...d.settings }; AppState.themes = { ...AppState.themes, ...d.themes }; AppState.achievements = d.achievements || AppState.achievements; AppState.currentUser = d.currentUser || null; AppState.isDeveloper = d.isDeveloper || false; if (d.unlockedThemes) { AppState.gameThemes.forEach(t => { if (d.unlockedThemes.includes(t.id)) t.unlocked = true; }); AppState.shellThemes.forEach(t => { if (d.unlockedThemes.includes(t.id)) t.unlocked = true; }); AppState.blockSkins.forEach(s => { if (d.unlockedThemes.includes(s.id)) s.unlocked = true; }); } } if (AppState.records.length === 0) AppState.records = [{ name: 'NeoMatrix', score: 3456789 },{ name: 'Fatishka', score: 2987654 },{ name: 'BlockMaster', score: 2456789 },{ name: 'Speedy', score: 1234567 },{ name: 'SharpMind', score: 1123456 },{ name: 'FastFingers', score: 987654 },{ name: 'GameGenius', score: 876543 },{ name: 'StarPlayer', score: 765432 },{ name: 'HardDrop', score: 654321 },{ name: 'RisingStar', score: 543210 }]; applyGameTheme(); if (AppState.themes.blocks.current) { const s = AppState.blockSkins.find(x=>x.id===AppState.themes.blocks.current); if (s) COLORS = ['#0a0d1a', ...s.colors]; } }
-        function saveAllData() { localStorage.setItem('tetrisV8', JSON.stringify({ playerStats: AppState.playerStats, records: AppState.records, users: AppState.users, settings: AppState.settings, themes: AppState.themes, achievements: AppState.achievements, currentUser: AppState.currentUser, isDeveloper: AppState.isDeveloper, unlockedThemes: [...AppState.gameThemes.filter(t=>t.unlocked).map(t=>t.id), ...AppState.shellThemes.filter(t=>t.unlocked).map(t=>t.id), ...AppState.blockSkins.filter(s=>s.unlocked).map(s=>s.id)] })); }
+        function loadAllData() { const s = localStorage.getItem('tetrisV9'); if (s) { try { const d = JSON.parse(s); AppState.playerStats = d.playerStats || AppState.playerStats; AppState.records = d.records || []; AppState.users = d.users || {}; AppState.settings = { ...AppState.settings, ...d.settings }; AppState.themes = { ...AppState.themes, ...d.themes }; AppState.achievements = d.achievements || AppState.achievements; AppState.currentUser = d.currentUser || null; AppState.isDeveloper = d.isDeveloper || false; if (d.unlockedThemes) { AppState.gameThemes.forEach(t => { if (d.unlockedThemes.includes(t.id)) t.unlocked = true; }); AppState.shellThemes.forEach(t => { if (d.unlockedThemes.includes(t.id)) t.unlocked = true; }); AppState.blockSkins.forEach(s => { if (d.unlockedThemes.includes(s.id)) s.unlocked = true; }); } } catch(e) { console.error('Ошибка загрузки:', e); } } if (AppState.records.length === 0) AppState.records = [{ name: 'NeoMatrix', score: 3456789 },{ name: 'Fatishka', score: 2987654 },{ name: 'BlockMaster', score: 2456789 },{ name: 'Speedy', score: 1234567 },{ name: 'SharpMind', score: 1123456 },{ name: 'FastFingers', score: 987654 },{ name: 'GameGenius', score: 876543 },{ name: 'StarPlayer', score: 765432 },{ name: 'HardDrop', score: 654321 },{ name: 'RisingStar', score: 543210 }]; applyGameTheme(); if (AppState.themes.blocks.current) { const s = AppState.blockSkins.find(x=>x.id===AppState.themes.blocks.current); if (s) COLORS = ['#0a0d1a', ...s.colors]; } }
+        function saveAllData() { localStorage.setItem('tetrisV9', JSON.stringify({ playerStats: AppState.playerStats, records: AppState.records, users: AppState.users, settings: AppState.settings, themes: AppState.themes, achievements: AppState.achievements, currentUser: AppState.currentUser, isDeveloper: AppState.isDeveloper, unlockedThemes: [...AppState.gameThemes.filter(t=>t.unlocked).map(t=>t.id), ...AppState.shellThemes.filter(t=>t.unlocked).map(t=>t.id), ...AppState.blockSkins.filter(s=>s.unlocked).map(s=>s.id)] })); }
+        function resetAllData() { localStorage.removeItem('tetrisV9'); location.reload(); }
         function login(u, p) { if (u === '0xKozume' && p === 'dev123') { AppState.currentUser = u; AppState.isDeveloper = true; if (!AppState.users[u]) AppState.users[u] = { username: u, password: p, totalScore: 0, gamesPlayed: 0, bestScore: 0 }; AppState.gameThemes.forEach(t => t.unlocked = true); AppState.shellThemes.forEach(t => t.unlocked = true); AppState.blockSkins.forEach(s => s.unlocked = true); saveAllData(); showNotification('👑 Создатель! Всё открыто!'); return true; } const user = AppState.users[u]; if (user && user.password === p) { AppState.currentUser = u; AppState.isDeveloper = false; saveAllData(); showNotification(`С возвращением, ${u}!`); return true; } return false; }
         function register(u, p) { if (AppState.users[u]) return false; AppState.users[u] = { username: u, password: p, totalScore: 0, gamesPlayed: 0, bestScore: 0 }; saveAllData(); return true; }
         function logout() { AppState.currentUser = null; AppState.isDeveloper = false; saveAllData(); updateMainMenuStats(); updateProfileDisplay(); showNotification('Вы вышли'); }
@@ -582,13 +676,18 @@
             document.querySelectorAll('.retro-btn').forEach(b => b.addEventListener('click', function() { const a = this.dataset.action; if (a === 'start') { if (!AppState.gameRunning || AppState.gameOver) { if (AppState.gameMode) startNewGame(AppState.gameMode); else showNotification('Выберите режим!', 'error'); } } else if (a === 'menu') { if (AppState.gameRunning) document.getElementById('exitConfirmModal').style.display = 'flex'; else exitToMenu(); } else if (a === 'hold') holdCurrent(); else if (AppState.gameRunning && !AppState.gamePaused) { if (a === 'left') moveHorizontal(-1); else if (a === 'right') moveHorizontal(1); else if (a === 'down') moveDown(); else if (a === 'rotate' || a === 'a') rotatePiece(); else if (a === 'b' && AppState.settings.hardDrop) hardDrop(); } if (AppState.settings.buttonAnimations) { this.style.transform = 'translateY(3px)'; setTimeout(() => this.style.transform = '', 100); } }));
             document.getElementById('modernMenuBtn').addEventListener('click', () => { if (AppState.gameRunning) document.getElementById('exitConfirmModal').style.display = 'flex'; else exitToMenu(); });
             document.getElementById('modernStartBtn').addEventListener('click', () => { if (!AppState.gameRunning || AppState.gameOver) { if (AppState.gameMode) startNewGame(AppState.gameMode); else showNotification('Выберите режим!', 'error'); } });
+            document.getElementById('playAgainBtn').addEventListener('click', restartGame);
+            document.getElementById('gameOverMenuBtn').addEventListener('click', exitToMenu);
+            document.getElementById('resetDataBtn').addEventListener('click', () => document.getElementById('resetConfirmModal').style.display = 'flex');
+            document.getElementById('resetConfirmBtn').addEventListener('click', resetAllData);
+            document.getElementById('resetCancelBtn').addEventListener('click', () => document.getElementById('resetConfirmModal').style.display = 'none');
             document.getElementById('loginSubmitBtn').addEventListener('click', () => { if (login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value)) { document.getElementById('loginModal').style.display = 'none'; updateMainMenuStats(); updateProfileDisplay(); renderAllThemes(); } else showNotification('Неверный логин или пароль!', 'error'); });
             document.getElementById('registerSubmitBtn').addEventListener('click', () => { const u = document.getElementById('regUsername').value, p = document.getElementById('regPassword').value, c = document.getElementById('regConfirmPassword').value; if (!u || !p) return showNotification('Заполните поля!', 'error'); if (p !== c) return showNotification('Пароли не совпадают!', 'error'); if (register(u, p)) { document.getElementById('registerModal').style.display = 'none'; showNotification('Регистрация успешна! Войдите.'); } else showNotification('Пользователь уже существует!', 'error'); });
             document.querySelectorAll('#loginCancelBtn, #registerCancelBtn, #exitCancelBtn').forEach(b => b.addEventListener('click', () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none')));
             document.getElementById('exitConfirmBtn').addEventListener('click', () => { document.getElementById('exitConfirmModal').style.display = 'none'; exitToMenu(); });
-            document.addEventListener('keydown', e => { if (AppState.currentScreen !== 'game' || !AppState.gameRunning || AppState.gamePaused) return; e.preventDefault(); switch(e.key) { case 'ArrowLeft': moveHorizontal(-1); break; case 'ArrowRight': moveHorizontal(1); break; case 'ArrowDown': moveDown(); break; case 'ArrowUp': rotatePiece(); break; case ' ': hardDrop(); break; case 'Shift': holdCurrent(); break; case 'p': case 'P': togglePause(); break; case 'Escape': document.getElementById('exitConfirmModal').style.display = 'flex'; break; } });
+            document.addEventListener('keydown', e => { if (AppState.currentScreen !== 'game' || !AppState.gameRunning || AppState.gamePaused) return; e.preventDefault(); switch(e.key) { case 'ArrowLeft': moveHorizontal(-1); break; case 'ArrowRight': moveHorizontal(1); break; case 'ArrowDown': moveDown(); break; case 'ArrowUp': rotatePiece(); break; case ' ': hardDrop(); break; case 'Shift': holdCurrent(); break; case 'p': case 'P': togglePause(); break; case 'r': case 'R': if (AppState.gameRunning) { if (confirm('Начать заново?')) startNewGame(AppState.gameMode); } break; case 'Escape': document.getElementById('exitConfirmModal').style.display = 'flex'; break; } });
             let tsX = 0, tsY = 0; boardCanvas.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; }); boardCanvas.addEventListener('touchend', e => { if (AppState.settings.controlStyle !== 'modern' || !AppState.gameRunning || AppState.gamePaused) return; const dx = e.changedTouches[0].clientX - tsX, dy = e.changedTouches[0].clientY - tsY; if (Math.abs(dx) > Math.abs(dy)) { if (dx > 30) moveHorizontal(1); else if (dx < -30) moveHorizontal(-1); } else { if (dy > 50) hardDrop(); else if (dy < -30) rotatePiece(); } });
-            applyGameTheme();
+            applyGameTheme(); initAudio();
         });
     </script>
 </body>
