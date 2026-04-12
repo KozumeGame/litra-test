@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🎮 TETRIS BRICK SHELL 10.0 - Kozume</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Segoe UI', 'Arial', sans-serif; padding: 15px; transition: background 0.3s; }
+        body.theme-classic { background: #0c0f1e; }
+        body.theme-neon { background: #0f0f2a; }
+        body.theme-sakura { background: #2a1520; }
+        body.theme-matrix { background: #000; }
+        body.theme-midnight { background: #0a0e27; }
+        body.theme-sunset { background: #2a1506; }
+        body.theme-ocean { background: #0a1a2a; }
+        body.theme-forest { background: #0a1a0a; }
+        body.theme-candy { background: #2a0a2a; }
+        body.theme-volcano { background: #2a0a0a; }
+        body.theme-moon { background: #0f0f2f; }
+        body.theme-halloween { background: #1a0a0a; }
+        body.theme-christmas { background: #0a1a1a; }
+        body.theme-cyberpunk { background: #0a0a2a; }
+        body.theme-golden { background: #1a1a0a; }
+        
+        .game-app { position: relative; width: 100%; max-width: 800px; margin: 0 auto; }
+        .screen { display: none; opacity: 0; transition: opacity 0.3s; }
+        .screen.active { display: block; opacity: 1; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .coin-bar { position: fixed; top: 10px; right: 20px; background: linear-gradient(135deg, #ffd700, #ff8c00); padding: 8px 16px; border-radius: 30px; font-weight: bold; color: #1a1a2a; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 100; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .coin-bar span { font-size: 20px; }
+        
+        .menu-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); transition: background 0.3s; }
+        body.theme-classic .menu-screen { background: rgba(15, 20, 40, 0.9); }
+        
+        .menu-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .menu-left { display: flex; flex-direction: column; gap: 10px; }
+        .menu-right { display: flex; flex-direction: column; }
+        .game-title { grid-column: 1 / -1; text-align: center; margin-bottom: 15px; }
+        .game-title h1 { font-size: 38px; font-weight: 800; background: linear-gradient(135deg, #a8c0ff 0%, #3f7bff 50%, #c850c0 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 40px rgba(100,150,255,0.5); letter-spacing: 5px; }
+        .subtitle { color: #8a9fd0; font-size: 13px; letter-spacing: 4px; text-transform: uppercase; }
+        
+        .menu-btn { padding: 13px 16px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 5px 0 #060912, 0 4px 12px rgba(0,0,0,0.3); text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .menu-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #060912, 0 4px 12px rgba(0,0,0,0.3); }
+        
+        .mini-screen { background: #0a0d1a; border-radius: 16px; padding: 15px; border: 2px solid rgba(80,140,255,0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.5); height: 100%; min-height: 240px; display: flex; align-items: center; justify-content: center; }
+        #miniCanvas { width: 100%; max-width: 180px; height: auto; border-radius: 8px; }
+        .player-info { grid-column: 1 / -1; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(80,140,255,0.2); }
+        .rank-progress { margin-top: 8px; }
+        .rank-info { display: flex; justify-content: space-between; color: #a0b5e0; font-size: 11px; margin-bottom: 5px; }
+        .progress-bar { height: 7px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3f7bff, #c850c0); border-radius: 4px; transition: width 0.5s; }
+
+        .mode-select-screen, .settings-screen, .themes-screen, .records-screen, .about-screen, .profile-screen, .shop-screen, .inventory-screen { backdrop-filter: blur(20px); border-radius: 30px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid rgba(80,140,255,0.2); color: #fff; }
+        body.theme-classic .mode-select-screen, body.theme-classic .settings-screen, body.theme-classic .themes-screen, body.theme-classic .records-screen, body.theme-classic .about-screen, body.theme-classic .profile-screen, body.theme-classic .shop-screen, body.theme-classic .inventory-screen { background: rgba(15, 20, 40, 0.9); }
+        
+        .mode-cards { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .mode-card { padding: 18px; border-radius: 16px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; background: rgba(20, 30, 50, 0.8); border-color: rgba(80,140,255,0.2); }
+        .mode-card:hover { border-color: #3f7bff; background: rgba(30, 40, 70, 0.9); }
+        .mode-card h3 { font-size: 22px; margin-bottom: 5px; color: #fff; }
+        .mode-card p { color: #a0b5e0; font-size: 14px; }
+
+        .screen-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .back-btn { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 24px; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
+        .screen-header h2 { font-size: 24px; font-weight: 600; background: linear-gradient(135deg, #a8c0ff, #c850c0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .shop-categories { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .shop-cat-btn { padding: 10px 20px; background: rgba(255,255,255,0.1); border: none; border-radius: 30px; color: #fff; cursor: pointer; transition: all 0.3s; }
+        .shop-cat-btn.active { background: linear-gradient(135deg, #3f7bff, #c850c0); }
+        .shop-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; max-height: 500px; overflow-y: auto; }
+        .shop-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .shop-item-info h4 { color: #fff; margin-bottom: 5px; }
+        .shop-item-info p { color: #a0b5e0; font-size: 12px; }
+        .shop-item-price { color: #ffd700; font-weight: bold; }
+        .shop-item button { background: linear-gradient(135deg, #3f7bff, #c850c0); border: none; padding: 8px 16px; border-radius: 20px; color: white; cursor: pointer; }
+        .shop-item button.disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .inventory-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .inventory-item { background: rgba(0,0,0,0.3); border-radius: 16px; padding: 15px; text-align: center; }
+        .inventory-item button { margin-top: 10px; background: rgba(255,255,255,0.2); border: none; padding: 5px 10px; border-radius: 15px; color: white; cursor: pointer; }
+        
+        .settings-group { background: rgba(8,12,30,0.6); border-radius: 16px; padding: 18px; margin-bottom: 18px; border: 1px solid rgba(80,140,255,0.2); }
+        .settings-group h3 { color: #a0b5e0; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .setting-label { color: #d0dfff; font-size: 14px; }
+        .toggle-switch { position: relative; width: 48px; height: 26px; background: rgba(0,0,0,0.4); border-radius: 13px; border: 1px solid rgba(80,140,255,0.3); cursor: pointer; transition: all 0.3s; }
+        .toggle-switch.active { background: linear-gradient(135deg, #3f7bff, #c850c0); }
+        .toggle-switch::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; top: 2px; left: 3px; transition: all 0.3s; }
+        .toggle-switch.active::after { left: 23px; }
+        .danger-btn { background: linear-gradient(135deg, #ff6b6b, #c92a2a); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
+        
+        .tabs-container { display: flex; gap: 5px; margin-bottom: 18px; border-bottom: 1px solid rgba(80,140,255,0.2); padding-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 8px; background: transparent; border: none; color: #8a9fd0; font-size: 13px; cursor: pointer; border-radius: 8px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .tab-btn.active { background: rgba(80,140,255,0.25); color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .themes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .theme-card { background: rgba(8,12,30,0.7); border-radius: 12px; padding: 12px; border: 2px solid rgba(80,140,255,0.2); cursor: pointer; transition: all 0.3s; text-align: center; }
+        .theme-card.active { border-color: #3f7bff; box-shadow: 0 0 15px rgba(63,123,255,0.3); }
+        .theme-preview { width: 100%; height: 60px; border-radius: 8px; margin-bottom: 8px; }
+        .theme-name { color: #e0e8ff; font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+        .theme-status { font-size: 11px; }
+        .theme-status.unlocked { color: #51cf66; }
+        .theme-status.locked { color: #ff6b6b; }
+        
+        .records-table { background: rgba(8,12,30,0.6); border-radius: 16px; padding: 15px; border: 1px solid rgba(80,140,255,0.2); }
+        .record-row { display: grid; grid-template-columns: 45px 1fr 90px; padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); color: #d0dfff; font-size: 14px; }
+        .record-row.header { color: #a0b5e0; font-weight: bold; border-bottom: 2px solid rgba(80,140,255,0.4); margin-bottom: 8px; }
+        .record-rank { font-weight: bold; color: #ffd700; }
+        .record-score { text-align: right; font-family: 'Courier New', monospace; font-weight: bold; color: #3f7bff; }
+        .developer-record { margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(255,215,0,0.3); }
+        .dev-row { display: grid; grid-template-columns: 45px 1fr 90px; padding: 10px 8px; color: #ffd700; background: rgba(255,215,0,0.1); border-radius: 12px; }
+        
+        .achievements-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-height: 500px; overflow-y: auto; }
+        .achievement-item { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 14px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); }
+        .achievement-item.unlocked { border-color: #51cf66; background: rgba(81, 207, 102, 0.1); }
+        
+        .game-screen { position: relative; }
+        .brick-shell { position: relative; padding: 20px; border-radius: 22px; transition: all 0.3s; }
+        .brick-shell.theme-classic { background: linear-gradient(145deg, #4a4a5a 0%, #3a3a4a 100%); border: 4px solid #5a5a7a; box-shadow: 0 10px 0 #2a2a3a; }
+        canvas#board { display: block; border-radius: 12px; width: 300px; height: 600px; background: #0a0d1a; }
+        .game-screen.modern-mode .brick-shell { background: transparent; border: none; box-shadow: none; padding: 0; }
+        .game-screen.modern-mode .retro-controls { display: none; }
+        .modern-start-btn { display: none; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; background: linear-gradient(135deg, #3f7bff, #c850c0); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .game-screen.modern-mode .modern-start-btn { display: block; }
+        .modern-menu-btn { display: none; position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(0,0,0,0.6); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px 18px; border-radius: 25px; cursor: pointer; }
+        .game-screen.modern-mode .modern-menu-btn { display: block; }
+        
+        .game-over-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 30px; border-radius: 20px; text-align: center; z-index: 20; border: 2px solid #3f7bff; display: none; }
+        .combo-indicator { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); font-size: 48px; font-weight: bold; color: #ffd700; text-shadow: 0 0 20px #ff8c00; opacity: 0; transition: opacity 0.2s; z-index: 15; }
+        .combo-indicator.show { opacity: 1; }
+        .b2b-indicator { position: absolute; top: 50px; right: 20px; font-size: 20px; font-weight: bold; color: #ff6b6b; text-shadow: 0 0 15px #ff0000; opacity: 0; transition: opacity 0.2s; z-index: 15; }
+        .b2b-indicator.show { opacity: 1; }
+        
+        .game-area { display: flex; flex-direction: column; gap: 10px; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.25); border-radius: 12px; color: #fff; }
+        .display-label { font-size: 9px; text-transform: uppercase; opacity: 0.7; }
+        .display-value { font-size: 20px; font-weight: bold; font-family: 'Courier New', monospace; }
+        .play-area { display: flex; gap: 10px; justify-content: center; }
+        canvas#preview, canvas#holdCanvas, .next-piece-canvas { display: block; margin: 0 auto; border-radius: 10px; background: #0a0d1a; width: 60px; height: 60px; }
+        .preview-box { background: rgba(0,0,0,0.25); border-radius: 12px; padding: 8px; text-align: center; }
+        .preview-label { color: #a0b5e0; font-size: 10px; margin-bottom: 5px; }
+        .next-pieces-container { display: flex; flex-direction: column; gap: 5px; }
+        
+        .retro-controls { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .control-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .retro-btn { font-size: 18px; font-weight: bold; padding: 10px 14px; min-width: 55px; text-align: center; cursor: pointer; border-radius: 12px; transition: all 0.1s; font-family: 'Courier New', monospace; background: linear-gradient(145deg, #3a3a4a, #2a2a3a); border: 3px solid #5a5a7a; color: #d0d0f0; box-shadow: 0 5px 0 #1a1a2a; }
+        .retro-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1a1a2a; }
+        .game-status { text-align: center; margin-top: 8px; color: #d0d0f0; font-size: 12px; font-weight: 500; }
+        
+        .notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #3f7bff, #c850c0); color: white; padding: 12px 20px; border-radius: 40px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; animation: slideDown 0.3s; font-size: 14px; }
+        @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -50px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: rgba(15,20,40,0.98); padding: 25px; border-radius: 24px; border: 2px solid #3f7bff; max-width: 340px; width: 90%; }
+        .modal-title { color: #fff; margin-bottom: 20px; text-align: center; font-size: 20px; }
+        .modal-input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid rgba(80,140,255,0.3); color: #fff; border-radius: 12px; font-size: 15px; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .modal-btn.primary { background: linear-gradient(135deg, #3f7bff, #c850c0); color: #fff; }
+        .modal-btn.secondary { background: rgba(255,255,255,0.12); color: #fff; }
+        
+        .coin-popup { position: fixed; animation: floatUp 1s ease-out forwards; pointer-events: none; z-index: 1001; font-size: 20px; font-weight: bold; color: #ffd700; text-shadow: 0 0 5px #ff8c00; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-80px); } }
+        
+        @media (max-width: 700px) { .menu-container { grid-template-columns: 1fr; } .retro-btn { padding: 8px 10px; font-size: 16px; min-width: 50px; } canvas#board { width: 260px; height: 520px; } }
+        @media (max-width: 500px) { canvas#board { width: 220px; height: 440px; } .play-area { flex-direction: column; align-items: center; } }
+        
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .profile-avatar { font-size: 60px; text-align: center; margin-bottom: 15px; }
+        .profile-name { font-size: 24px; text-align: center; margin-bottom: 20px; font-weight: bold; }
+        .profile-stats { margin-bottom: 20px; }
+    </style>
+</head>
+<body class="theme-classic">
+    <div class="coin-bar" id="coinBar">💰 <span id="coinAmount">0</span> 🪙</div>
+    <div class="game-app">
+    <!-- ГЛАВНОЕ МЕНЮ -->
+    <div id="menuScreen" class="screen menu-screen active">
+        <div class="menu-container">
+            <div class="game-title"><h1>TETRIS</h1><div class="subtitle">BRICK SHELL 10.0</div></div>
+            <div class="menu-left">
+                <div class="menu-btn" data-screen="modeSelect">🎮 ИГРАТЬ</div>
+                <div class="menu-btn" data-screen="profile">👤 ПРОФИЛЬ</div>
+                <div class="menu-btn" data-screen="shop">🛒 МАГАЗИН</div>
+                <div class="menu-btn" data-screen="inventory">📦 ИНВЕНТАРЬ</div>
+                <div class="menu-btn" data-screen="settings">⚙️ НАСТРОЙКИ</div>
+                <div class="menu-btn" data-screen="themes">🎨 ТЕМЫ</div>
+                <div class="menu-btn" data-screen="achievements">🏆 ДОСТИЖЕНИЯ</div>
+                <div class="menu-btn" data-screen="records">🏅 РЕКОРДЫ</div>
+                <div class="menu-btn" data-screen="about">ℹ️ ОБ ИГРЕ</div>
+            </div>
+            <div class="menu-right">
+                <div class="mini-screen"><canvas id="miniCanvas" width="180" height="180"></canvas></div>
+            </div>
+            <div class="player-info">
+                <div style="display: flex; justify-content: space-between; color: #d0dfff; font-size: 13px; margin-bottom: 8px;">
+                    <span id="welcomeMessage">👤 Гость</span><span id="currentRankDisplay">🔰 Новичок</span>
+                </div>
+                <div class="rank-progress">
+                    <div class="rank-info"><span id="currentRankName">Новичок</span><span id="nextRankName">Ученик</span></div>
+                    <div class="progress-bar"><div class="progress-fill" id="rankProgress" style="width:0%"></div></div>
+                    <div class="rank-info"><span id="currentScore">0</span><span id="nextRankScore">10,000</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ВЫБОРА РЕЖИМА -->
+    <div id="modeSelectScreen" class="screen mode-select-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>ВЫБОР РЕЖИМА</h2></div>
+        <div class="mode-cards">
+            <div class="mode-card" data-mode="classic"><h3>🎯 КЛАССИК</h3><p>Бесконечная игра с нарастающей скоростью</p></div>
+            <div class="mode-card" data-mode="sprint"><h3>⏱️ СПРИНТ</h3><p>Очисти 40 линий как можно быстрее</p></div>
+            <div class="mode-card" data-mode="marathon"><h3>🏃 МАРАФОН</h3><p>Испытание на выносливость — 150 линий</p></div>
+            <div class="mode-card" data-mode="zen"><h3>🧘 ДЗЕН</h3><p>Без очков и уровней, просто игра</p></div>
+            <div class="mode-card" data-mode="hardcore"><h3>💀 ХАРДКОР</h3><p>Скорость x2, без паузы, без сохранений</p></div>
+        </div>
+    </div>
+
+    <!-- ИГРОВОЙ ЭКРАН -->
+    <div id="gameScreen" class="screen game-screen">
+        <button class="modern-menu-btn" id="modernMenuBtn">≡ МЕНЮ</button>
+        <button class="modern-start-btn" id="modernStartBtn">▶ СТАРТ</button>
+        <div class="combo-indicator" id="comboIndicator">x2</div>
+        <div class="b2b-indicator" id="b2bIndicator">🔥 B2B x1.5</div>
+        <div class="game-over-panel" id="gameOverPanel">
+            <h2 id="gameOverTitle">GAME OVER</h2>
+            <div class="score" id="finalScore">0</div>
+            <div class="score" id="coinsEarned" style="font-size:18px;color:#ffd700;"></div>
+            <button class="play-again-btn" id="playAgainBtn">🔄 ИГРАТЬ СНОВА</button>
+            <button class="menu-btn" id="gameOverMenuBtn">🏠 В МЕНЮ</button>
+        </div>
+        <div class="brick-shell theme-classic" id="brickShell">
+            <div class="game-area">
+                <div class="game-header">
+                    <div><div class="display-label">СЧЕТ</div><div class="display-value" id="gameScore">0</div></div>
+                    <div><div class="display-label">ЛИНИИ</div><div class="display-value" id="gameLines">0</div></div>
+                    <div><div class="display-label">УРОВЕНЬ</div><div class="display-value" id="gameLevel">0</div></div>
+                </div>
+                <div class="play-area">
+                    <canvas id="board" width="300" height="600"></canvas>
+                    <div class="preview-area">
+                        <div class="preview-box"><div class="preview-label">HOLD</div><canvas id="holdCanvas" width="60" height="60"></canvas></div>
+                        <div class="preview-box"><div class="preview-label">ДАЛЕЕ</div><div class="next-pieces-container" id="nextPiecesContainer"></div></div>
+                    </div>
+                </div>
+                <div class="retro-controls" id="retroControls">
+                    <div class="control-row">
+                        <div class="retro-btn" data-action="left">←</div><div class="retro-btn" data-action="right">→</div><div class="retro-btn" data-action="down">↓</div><div class="retro-btn" data-action="rotate">↻</div>
+                    </div>
+                    <div class="control-row">
+                        <div class="retro-btn special" data-action="hold">H</div><div class="retro-btn special" data-action="a">A</div><div class="retro-btn special" data-action="b">B</div><div class="retro-btn" data-action="start">START</div><div class="retro-btn" data-action="menu">MENU</div>
+                    </div>
+                </div>
+                <div class="game-status" id="gameStatus">ВЫБЕРИТЕ РЕЖИМ</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div id="profileScreen" class="screen profile-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>ПРОФИЛЬ</h2></div>
+        <div id="profileContent"></div>
+    </div>
+
+    <!-- МАГАЗИН -->
+    <div id="shopScreen" class="screen shop-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>🛒 МАГАЗИН</h2></div>
+        <div class="shop-categories" id="shopCategories"></div>
+        <div class="shop-items" id="shopItems"></div>
+    </div>
+
+    <!-- ИНВЕНТАРЬ -->
+    <div id="inventoryScreen" class="screen inventory-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>📦 ИНВЕНТАРЬ</h2></div>
+        <div class="inventory-items" id="inventoryItems"></div>
+    </div>
+
+    <!-- НАСТРОЙКИ -->
+    <div id="settingsScreen" class="screen settings-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>НАСТРОЙКИ</h2></div>
+        <div class="settings-group"><h3>🎮 УПРАВЛЕНИЕ</h3>
+            <div class="setting-item"><span class="setting-label">Стиль управления</span><select id="controlStyleSelect"><option value="retro">Ретро (кнопки)</option><option value="modern">Современный (свайпы)</option></select></div>
+            <div class="setting-item"><span class="setting-label">Зеркальное управление</span><div class="toggle-switch" id="mirrorControlToggle"></div></div>
+            <div class="setting-item"><span class="setting-label">Hard Drop</span><div class="toggle-switch active" id="hardDropToggle"></div></div>
+            <div class="setting-item"><span class="setting-label">Режим призрака</span><div class="toggle-switch active" id="ghostToggle"></div></div>
+        </div>
+        <div class="settings-group"><h3>🎵 ЗВУК</h3>
+            <div class="setting-item"><span class="setting-label">Звуки игры</span><div class="toggle-switch active" id="soundToggle"></div></div>
+            <div class="setting-item"><span class="setting-label">Музыка</span><div class="toggle-switch" id="musicToggle"></div></div>
+            <div class="setting-item"><span class="setting-label">Вибрация</span><div class="toggle-switch active" id="vibrationToggle"></div></div>
+        </div>
+        <div class="settings-group"><h3>✨ ЭФФЕКТЫ</h3>
+            <div class="setting-item"><span class="setting-label">Анимация кнопок</span><div class="toggle-switch active" id="buttonAnimationsToggle"></div></div>
+            <div class="setting-item"><span class="setting-label">Частицы</span><div class="toggle-switch active" id="particlesToggle"></div></div>
+            <div class="setting-item"><span class="setting-label">Свечение блоков</span><div class="toggle-switch active" id="glowToggle"></div></div>
+        </div>
+        <button class="danger-btn" id="resetDataBtn">🗑️ СБРОСИТЬ ВСЕ ДАННЫЕ</button>
+    </div>
+
+    <!-- ТЕМЫ -->
+    <div id="themesScreen" class="screen themes-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>ТЕМЫ</h2></div>
+        <div class="tabs-container">
+            <button class="tab-btn active" data-theme-tab="game">🎮 ИГРА</button>
+            <button class="tab-btn" data-theme-tab="shell">📟 КОНСОЛЬ</button>
+            <button class="tab-btn" data-theme-tab="blocks">🧱 БЛОКИ</button>
+        </div>
+        <div class="tab-content active" id="gameThemesTab"><div class="themes-grid" id="gameThemesGrid"></div></div>
+        <div class="tab-content" id="shellThemesTab"><div class="themes-grid" id="shellThemesGrid"></div></div>
+        <div class="tab-content" id="blockThemesTab"><div class="themes-grid" id="blockThemesGrid"></div></div>
+    </div>
+
+    <!-- ДОСТИЖЕНИЯ -->
+    <div id="achievementsScreen" class="screen achievements-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>ДОСТИЖЕНИЯ</h2></div>
+        <div class="achievements-list" id="achievementsList"></div>
+    </div>
+
+    <!-- РЕКОРДЫ -->
+    <div id="recordsScreen" class="screen records-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>РЕКОРДЫ</h2></div>
+        <div class="records-table">
+            <div class="record-row header"><div>#</div><div>ИГРОК</div><div>ОЧКИ</div></div>
+            <div id="recordsList"></div>
+            <div class="developer-record"><div class="dev-row"><div>👑</div><div>Kozume</div><div>999,999</div></div><div style="text-align:center;margin-top:5px;color:#ffd700;font-size:11px;">Создатель</div></div>
+        </div>
+    </div>
+
+    <!-- ОБ ИГРЕ -->
+    <div id="aboutScreen" class="screen about-screen">
+        <div class="screen-header"><button class="back-btn" data-screen="menu">←</button><h2>ОБ ИГРЕ</h2></div>
+        <div style="color:#d0dfff;line-height:1.6;">
+            <h3 style="color:#fff;margin-bottom:15px;">TETRIS BRICK SHELL 10.0</h3>
+            <p style="margin-bottom:15px;">Тетрис — легендарная головоломка Алексея Пажитнова (1984).</p>
+            <p>🔥 Новое в 10.0: Магазин, монеты, 5 новых тем, 3 новых скина, улучшенный T-Spin, Perfect Clear бонус!</p>
+            <div style="text-align:center;margin-top:30px;padding:20px;background:rgba(0,0,0,0.2);border-radius:15px;">
+                <div style="font-size:18px;color:#ffd700;margin-bottom:10px;">СОЗДАТЕЛЬ</div>
+                <div style="font-size:26px;font-weight:bold;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;background-clip:text;color:transparent;">Kozume</div>
+                <div style="margin-top:15px;font-size:14px;opacity:0.7;">Версия 10.0 • 2024</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКИ -->
+    <div class="modal" id="loginModal"><div class="modal-content"><div class="modal-title">🔐 ВХОД</div><input id="loginUsername" class="modal-input" placeholder="Логин"><input id="loginPassword" type="password" class="modal-input" placeholder="Пароль"><div class="modal-buttons"><button class="modal-btn primary" id="loginSubmitBtn">ВОЙТИ</button><button class="modal-btn secondary" id="loginCancelBtn">ОТМЕНА</button></div></div></div>
+    <div class="modal" id="registerModal"><div class="modal-content"><div class="modal-title">📝 РЕГИСТРАЦИЯ</div><input id="regUsername" class="modal-input" placeholder="Логин"><input id="regPassword" type="password" class="modal-input" placeholder="Пароль"><input id="regConfirmPassword" type="password" class="modal-input" placeholder="Подтвердите пароль"><div class="modal-buttons"><button class="modal-btn primary" id="registerSubmitBtn">СОЗДАТЬ</button><button class="modal-btn secondary" id="registerCancelBtn">ОТМЕНА</button></div></div></div>
+    <div class="modal" id="exitConfirmModal"><div class="modal-content"><div class="modal-title">🚪 ВЫХОД</div><p style="color:#d0dfff;text-align:center;margin-bottom:20px;">Выйти в главное меню?</p><div class="modal-buttons"><button class="modal-btn primary" id="exitConfirmBtn">ДА</button><button class="modal-btn secondary" id="exitCancelBtn">НЕТ</button></div></div></div>
+    <div class="modal" id="resetConfirmModal"><div class="modal-content"><div class="modal-title">⚠️ СБРОС ДАННЫХ</div><p style="color:#d0dfff;text-align:center;margin-bottom:20px;">Все сохранения будут удалены. Продолжить?</p><div class="modal-buttons"><button class="modal-btn primary" id="resetConfirmBtn">ДА</button><button class="modal-btn secondary" id="resetCancelBtn">НЕТ</button></div></div></div>
+</div>
+
+<script>
+    // ============================================
+    //               СОСТОЯНИЕ
+    // ============================================
+    let coins = 100;
+    let inventory = {
+        gameThemes: ['classic', 'neon', 'sakura'],
+        shellThemes: ['classic', 'neon', 'sakura'],
+        blockSkins: ['neon', 'retro'],
+        effects: ['explosion']
+    };
+
+    const shopItems = {
+        gameThemes: [
+            { id: 'moon', name: '🌙 Лунная', price: 150, bg: '#0f0f2f', desc: 'Тёмно-синяя с серебром' },
+            { id: 'halloween', name: '🎃 Хэллоуин', price: 200, bg: '#1a0a0a', desc: 'Оранжево-чёрная' },
+            { id: 'christmas', name: '🎄 Рождество', price: 200, bg: '#0a1a1a', desc: 'Красно-зелёная' },
+            { id: 'cyberpunk', name: '🤖 Киберпанк', price: 300, bg: '#0a0a2a', desc: 'Неоново-фиолетовая' },
+            { id: 'golden', name: '👑 Золотая', price: 500, bg: '#1a1a0a', desc: 'Блестящая золотая' }
+        ],
+        blockSkins: [
+            { id: 'fire', name: '🔥 Огненный', price: 300, colors: ['#ff4500','#ff6347','#ff7f50','#ff8c00','#ffa500','#ff4500','#dc143c'], desc: 'Пульсирует как лава' },
+            { id: 'water', name: '💧 Водный', price: 250, colors: ['#00bfff','#87ceeb','#add8e6','#b0e0e6','#afeeee','#e0ffff','#f0f8ff'], desc: 'Голубой градиент' },
+            { id: 'star', name: '🌟 Звёздный', price: 350, colors: ['#ffe4b5','#ffdead','#f0e68c','#fffacd','#ffd700','#ffec8b','#fff8dc'], desc: 'Мерцающие звёзды' }
+        ]
+    };
+
+    const AppState = {
+        currentScreen: 'menu', gameRunning: false, gamePaused: false, gameOver: false, gameLoop: null,
+        gameMode: 'classic', sprintTarget: 40, marathonTarget: 150, zenMode: false, hardcoreMode: false,
+        settings: { controlStyle: 'retro', mirrorControl: false, hardDrop: true, ghost: true, sound: true, music: false, vibration: true, buttonAnimations: true, particles: true, glow: true },
+        themes: { game: { current: 'classic' }, shell: { current: 'classic' }, blocks: { current: 'neon' } },
+        gameThemes: [
+            { id: 'classic', name: 'Классик', bg: '#0c0f1e', unlocked: true },
+            { id: 'neon', name: 'Неон', bg: '#0f0f2a', unlocked: true },
+            { id: 'sakura', name: 'Сакура', bg: '#2a1520', unlocked: true },
+            { id: 'matrix', name: 'Матрица', bg: '#000', unlocked: false },
+            { id: 'midnight', name: 'Полночь', bg: '#0a0e27', unlocked: false },
+            { id: 'sunset', name: 'Закат', bg: '#2a1506', unlocked: false },
+            { id: 'ocean', name: 'Океан', bg: '#0a1a2a', unlocked: false },
+            { id: 'forest', name: 'Лес', bg: '#0a1a0a', unlocked: false },
+            { id: 'candy', name: 'Конфета', bg: '#2a0a2a', unlocked: false },
+            { id: 'volcano', name: 'Вулкан', bg: '#2a0a0a', unlocked: false },
+            { id: 'moon', name: 'Лунная', bg: '#0f0f2f', unlocked: false },
+            { id: 'halloween', name: 'Хэллоуин', bg: '#1a0a0a', unlocked: false },
+            { id: 'christmas', name: 'Рождество', bg: '#0a1a1a', unlocked: false },
+            { id: 'cyberpunk', name: 'Киберпанк', bg: '#0a0a2a', unlocked: false },
+            { id: 'golden', name: 'Золотая', bg: '#1a1a0a', unlocked: false }
+        ],
+        shellThemes: [
+            { id: 'classic', name: 'Классик', color: '#4a4a5a', unlocked: true },
+            { id: 'neon', name: 'Неон', color: '#1e2a4a', unlocked: true },
+            { id: 'sakura', name: 'Сакура', color: '#ffb7c5', unlocked: true },
+            { id: 'japanese', name: 'Японская', color: '#c0392b', unlocked: false },
+            { id: 'carbon', name: 'Карбон', color: '#1a1a1a', unlocked: false },
+            { id: 'golden', name: 'Золотая', color: '#ffd700', unlocked: false },
+            { id: 'ice', name: 'Ледяная', color: '#a8d8ea', unlocked: false },
+            { id: 'matrix', name: 'Матрица', color: '#00ff41', unlocked: false },
+            { id: 'emerald', name: 'Изумруд', color: '#2ecc71', unlocked: false },
+            { id: 'ruby', name: 'Рубин', color: '#e74c3c', unlocked: false },
+            { id: 'obsidian', name: 'Обсидиан', color: '#2c3e50', unlocked: false },
+            { id: 'pearl', name: 'Жемчуг', color: '#fdfefe', unlocked: false }
+        ],
+        blockSkins: [
+            { id: 'neon', name: 'Неон', colors: ['#00f0f0','#f0e040','#c050f0','#60f030','#f05050','#f0a030','#4060f0'], unlocked: true },
+            { id: 'retro', name: 'Ретро', colors: ['#00ffff','#ffff00','#800080','#00ff00','#ff0000','#ffa500','#0000ff'], unlocked: true },
+            { id: 'crystal', name: 'Кристалл', colors: ['#00e5ff','#e0f7fa','#b388ff','#69f0ae','#ff4081','#ffab40','#448aff'], unlocked: false },
+            { id: 'metal', name: 'Металл', colors: ['#808080','#a0a0a0','#606060','#c0c0c0','#909090','#b0b0b0','#707070'], unlocked: false },
+            { id: 'lava', name: 'Лава', colors: ['#ff4500','#ff6347','#ff7f50','#ff8c00','#ffa500','#ff4500','#dc143c'], unlocked: false },
+            { id: 'ice', name: 'Лёд', colors: ['#00bfff','#87ceeb','#add8e6','#b0e0e6','#afeeee','#e0ffff','#f0f8ff'], unlocked: false },
+            { id: 'rainbow', name: 'Радуга', colors: ['#ff0000','#ff7f00','#ffff00','#00ff00','#0000ff','#4b0082','#9400d3'], unlocked: false },
+            { id: 'pixel', name: 'Пиксель', colors: ['#00ff00','#ffff00','#ff00ff','#00ffff','#ff0000','#0000ff','#ffffff'], unlocked: false },
+            { id: 'glass', name: 'Стекло', colors: ['#a8e6cf','#dcedc1','#ffd3b6','#ffaaa5','#ff8b94','#b5e7a0','#d5aaff'], unlocked: false },
+            { id: 'chrome', name: 'Хром', colors: ['#c0c0c0','#d0d0d0','#e0e0e0','#f0f0f0','#a0a0a0','#b0b0b0','#909090'], unlocked: false },
+            { id: 'fire', name: 'Огненный', colors: ['#ff4500','#ff6347','#ff7f50','#ff8c00','#ffa500','#ff4500','#dc143c'], unlocked: false },
+            { id: 'water', name: 'Водный', colors: ['#00bfff','#87ceeb','#add8e6','#b0e0e6','#afeeee','#e0ffff','#f0f8ff'], unlocked: false },
+            { id: 'star', name: 'Звёздный', colors: ['#ffe4b5','#ffdead','#f0e68c','#fffacd','#ffd700','#ffec8b','#fff8dc'], unlocked: false }
+        ],
+        records: [],
+        playerStats: { totalScore: 0, gamesPlayed: 0, bestScore: 0, totalLines: 0, tetrisCount: 0, maxLevel: 0, holdCount: 0, pieceCounts: { I:0, O:0, T:0, L:0, J:0, S:0, Z:0 }, bestCombo: 0, totalTime: 0, tspinCount: 0, perfectClears: 0 },
+        achievements: [
+            { id: 'first_line', name: '🥇 Первая кровь', desc: 'Очистить первую линию', unlocked: false, progress: 0, target: 1, reward: 50 },
+            { id: 'tetris_1', name: '💪 Tetris', desc: 'Сделать Tetris (4 линии)', unlocked: false, progress: 0, target: 1, reward: 100 },
+            { id: 'tetris_10', name: '🏆 Tetris Master', desc: '10 Tetris всего', unlocked: false, progress: 0, target: 10, reward: 500 },
+            { id: 'score_50k', name: '⚡ Скоростной', desc: 'Набрать 50,000 за игру', unlocked: false, progress: 0, target: 50000, reward: 200 },
+            { id: 'level_10', name: '📈 Бывалый', desc: 'Достичь 10 уровня', unlocked: false, progress: 0, target: 10, reward: 300 },
+            { id: 'legend_rank', name: '👑 Легенда', desc: 'Достичь ранга THE LEGEND', unlocked: false, progress: 0, target: 1000000, reward: 1000 },
+            { id: 'collector_5', name: '🎨 Коллекционер', desc: 'Открыть 5 тем', unlocked: false, progress: 0, target: 5, reward: 200 },
+            { id: 'rainbow', name: '🌈 Радуга', desc: 'Открыть все темы', unlocked: false, progress: 0, target: 31, reward: 1000 },
+            { id: 'marathon_win', name: '🎮 Марафонец', desc: 'Пройти марафон', unlocked: false, progress: 0, target: 1, reward: 500 },
+            { id: 'sprint_win', name: '⏱️ Спринтер', desc: 'Пройти спринт', unlocked: false, progress: 0, target: 1, reward: 200 },
+            { id: 'score_100k', name: '💯 Сотня', desc: '100,000 очков за игру', unlocked: false, progress: 0, target: 100000, reward: 500 },
+            { id: 'combo_3', name: '🔄 Комбо', desc: '3 линии подряд', unlocked: false, progress: 0, target: 1, reward: 100 },
+            { id: 'grinder', name: '📊 Гриндер', desc: '1000 линий всего', unlocked: false, progress: 0, target: 1000, reward: 1000 },
+            { id: 'sniper', name: '🎯 Снайпер', desc: '10 Hard Drop подряд', unlocked: false, progress: 0, target: 10, reward: 200 },
+            { id: 'skin_collector', name: '⭐ Коллекционер скинов', desc: 'Открыть все скины', unlocked: false, progress: 0, target: 13, reward: 1000 },
+            { id: 'tspin_1', name: '🌀 T-Spin', desc: 'Сделать T-Spin', unlocked: false, progress: 0, target: 1, reward: 150 },
+            { id: 'tspin_5', name: '🌪️ T-Spin Master', desc: '5 T-Spin', unlocked: false, progress: 0, target: 5, reward: 500 },
+            { id: 'perfect_clear', name: '💎 Perfect Clear', desc: 'Сделать Perfect Clear', unlocked: false, progress: 0, target: 1, reward: 500 }
+        ],
+        currentUser: null, isDeveloper: false, users: {}, comboCount: 0, hardDropStreak: 0, lastWasHardDrop: false, lastMoveWasRotate: false,
+        b2b: false, b2bMultiplier: 1, tspinCount: 0, lastClearCount: 0, currentCoinsEarned: 0
+    };
+// ============================================
+//               ТЕТРИС (ОСНОВНАЯ ЛОГИКА)
+// ============================================
+const COLS = 10, ROWS = 20, BLOCK_SIZE = 30, PREVIEW_SIZE = 16;
+let COLORS = ['#0a0d1a', '#00f0f0', '#f0e040', '#c050f0', '#60f030', '#f05050', '#f0a030', '#4060f0'];
+const PIECES = [
+    { matrix: [[1,1,1,1]], colorIndex: 1, type: 'I' },{ matrix: [[1,1],[1,1]], colorIndex: 2, type: 'O' },
+    { matrix: [[0,1,0],[1,1,1]], colorIndex: 3, type: 'T' },{ matrix: [[0,1,1],[1,1,0]], colorIndex: 4, type: 'S' },
+    { matrix: [[1,1,0],[0,1,1]], colorIndex: 5, type: 'Z' },{ matrix: [[1,0,0],[1,1,1]], colorIndex: 6, type: 'L' },
+    { matrix: [[0,0,1],[1,1,1]], colorIndex: 7, type: 'J' }
+];
+let board = [], currentPiece = null, nextPieces = [], holdPiece = null, holdUsed = false;
+let score = 0, lines = 0, level = 0, intervalTime = 500, startTime = 0;
+const boardCanvas = document.getElementById('board'), boardCtx = boardCanvas.getContext('2d');
+const holdCanvas = document.getElementById('holdCanvas'), holdCtx = holdCanvas.getContext('2d');
+const miniCanvas = document.getElementById('miniCanvas'), miniCtx = miniCanvas.getContext('2d');
+const nextContainer = document.getElementById('nextPiecesContainer');
+
+let audioCtx = null;
+function initAudio() { if (!audioCtx && AppState.settings.sound) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } }
+function playSound(type) { if (!AppState.settings.sound || !audioCtx) return; try { const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); if (type === 'move') { osc.frequency.value = 200; gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05); osc.start(); osc.stop(now + 0.05); } else if (type === 'rotate') { osc.frequency.value = 400; gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08); osc.start(); osc.stop(now + 0.08); } else if (type === 'drop') { osc.frequency.value = 150; gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(); osc.stop(now + 0.1); } else if (type === 'clear') { osc.frequency.value = 500; gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(); osc.stop(now + 0.15); } else if (type === 'tetris') { osc.frequency.value = 800; gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3); } else if (type === 'tspin') { osc.frequency.value = 600; gain.gain.setValueAtTime(0.15, now); osc.frequency.exponentialRampToValueAtTime(400, now + 0.2); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(); osc.stop(now + 0.2); } else if (type === 'levelup') { osc.frequency.value = 1000; gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(); osc.stop(now + 0.3); } else if (type === 'perfect') { osc.frequency.value = 1200; gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4); osc.start(); osc.stop(now + 0.4); } } catch(e) {} }
+function vibrate(dur) { if (AppState.settings.vibration && navigator.vibrate) navigator.vibrate(dur); }
+
+class Particle { constructor(x, y, color) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 8; this.vy = (Math.random() - 0.5) * 8 - 3; this.color = color; this.life = 1; this.size = Math.random() * 8 + 4; } update() { this.x += this.vx; this.y += this.vy; this.vy += 0.2; this.life -= 0.02; } draw(ctx) { ctx.globalAlpha = this.life; ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.size, this.size); } }
+let particles = [];
+
+function showCoinEarned(amount, x, y) { const popup = document.createElement('div'); popup.className = 'coin-popup'; popup.textContent = `+${amount} 🪙`; popup.style.left = (x || window.innerWidth/2) + 'px'; popup.style.top = (y || window.innerHeight/2) + 'px'; document.body.appendChild(popup); setTimeout(() => popup.remove(), 1000); }
+function addCoins(amount, showX = null, showY = null) { coins += amount; AppState.currentCoinsEarned += amount; document.getElementById('coinAmount').textContent = Math.floor(coins); saveAllData(); if (showX) showCoinEarned(amount, showX, showY); else showCoinEarned(amount); }
+
+function calculateCoins(linesCleared, isTSpin = false, isPerfect = false, isTetris = false, comboLevel = 0) {
+    let base = 0;
+    if (isPerfect) base = 500;
+    else if (isTSpin) base = 75;
+    else if (isTetris) base = 100;
+    else base = [0, 5, 15, 30, 0][linesCleared];
+    let multiplier = 1 + Math.floor(level / 5) * 0.5;
+    multiplier = Math.min(multiplier, 3);
+    if (comboLevel >= 3) multiplier += 0.2;
+    if (comboLevel >= 5) multiplier += 0.3;
+    return Math.floor(base * multiplier);
+}
+
+function initBoard() { board = Array(ROWS).fill().map(() => Array(COLS).fill(0)); }
+function createRandomPiece() { const idx = Math.floor(Math.random() * PIECES.length); const p = PIECES[idx]; AppState.playerStats.pieceCounts[p.type]++; return { matrix: p.matrix.map(r => [...r]), colorIndex: p.colorIndex, type: p.type, x: Math.floor((COLS - p.matrix[0].length) / 2), y: 0 }; }
+function refillQueue() { while (nextPieces.length < 4) nextPieces.push(createRandomPiece()); }
+function spawnNewPiece() { 
+    if (nextPieces.length === 0) refillQueue(); 
+    currentPiece = nextPieces.shift(); refillQueue(); 
+    currentPiece.x = Math.floor((COLS - currentPiece.matrix[0].length) / 2); currentPiece.y = 0; holdUsed = false; 
+    if (collision(board, currentPiece)) { gameOver(); return false; } 
+    drawAll(); return true; 
+}
+function collision(b, p) { for (let r = 0; r < p.matrix.length; r++) for (let c = 0; c < p.matrix[0].length; c++) if (p.matrix[r][c]) { const br = p.y + r, bc = p.x + c; if (br < 0 || br >= ROWS || bc < 0 || bc >= COLS || (br >= 0 && b[br][bc] !== 0)) return true; } return false; }
+
+function checkTSpin() {
+    if (currentPiece.type !== 'T') return false;
+    if (!AppState.lastMoveWasRotate) return false;
+    const testPiece = { ...currentPiece, y: currentPiece.y + 1 };
+    if (!collision(board, testPiece)) return false;
+    let corners = 0;
+    const cornersPos = [[0,0], [0,2], [2,0], [2,2]];
+    for (let [dr, dc] of cornersPos) {
+        const r = currentPiece.y + dr, c = currentPiece.x + dc;
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== 0) corners++;
+    }
+    return corners >= 3 ? (corners === 3 ? 'mini' : 'normal') : false;
+}
+
+function calculateScore(linesCleared, isTSpin = false, tspinType = null) {
+    let base = 0;
+    if (isTSpin) base = tspinType === 'mini' ? 400 : (linesCleared === 2 ? 800 : 1600);
+    else base = [0, 100, 300, 700, 1500][linesCleared];
+    if ((linesCleared === 4 || isTSpin) && linesCleared > 0) {
+        if (AppState.b2b) { AppState.b2bMultiplier = Math.min(AppState.b2bMultiplier * 1.5, 4); }
+        else { AppState.b2b = true; AppState.b2bMultiplier = 1; }
+        base *= AppState.b2bMultiplier;
+        document.getElementById('b2bIndicator').textContent = `🔥 B2B x${AppState.b2bMultiplier.toFixed(1)}`;
+        document.getElementById('b2bIndicator').classList.add('show');
+        setTimeout(() => document.getElementById('b2bIndicator').classList.remove('show'), 1500);
+    } else if (linesCleared > 0) { AppState.b2b = false; AppState.b2bMultiplier = 1; }
+    return base * (level + 1);
+}
+
+async function clearFullRowsAnimated() {
+    const rowsToClear = [];
+    for (let r = 0; r < ROWS; r++) if (board[r].every(c => c !== 0)) rowsToClear.push(r);
+    if (rowsToClear.length === 0) return 0;
+    if (AppState.settings.particles) {
+        rowsToClear.forEach(r => { for (let c = 0; c < COLS; c++) if (board[r][c]) { const color = COLORS[board[r][c]]; for (let i = 0; i < 5; i++) particles.push(new Particle(c * BLOCK_SIZE + 15, r * BLOCK_SIZE + 15, color)); } });
+    }
+    for (let i = 0; i < 2; i++) {
+        rowsToClear.forEach(r => board[r].fill(0)); drawAll(); await sleep(60);
+        rowsToClear.forEach(r => { for (let c = 0; c < COLS; c++) board[r][c] = 1; }); drawAll(); await sleep(60);
+    }
+    rowsToClear.forEach(r => { board.splice(r, 1); board.unshift(Array(COLS).fill(0)); });
+    drawAll();
+    return rowsToClear.length;
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function freeze() {
+    for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) { const br = currentPiece.y + r, bc = currentPiece.x + c; if (br >= 0 && br < ROWS && bc >= 0 && bc < COLS) board[br][bc] = currentPiece.colorIndex; }
+    playSound('drop'); vibrate(10);
+    if (!AppState.lastWasHardDrop) AppState.hardDropStreak = 0;
+    AppState.lastWasHardDrop = false;
+    clearFullRowsAnimated().then(async cl => {
+        if (cl > 0) {
+            lines += cl; AppState.playerStats.totalLines += cl; AppState.comboCount++; 
+            AppState.playerStats.bestCombo = Math.max(AppState.playerStats.bestCombo, AppState.comboCount);
+            document.getElementById('comboIndicator').textContent = `x${AppState.comboCount + 1}`;
+            document.getElementById('comboIndicator').classList.add('show');
+            setTimeout(() => document.getElementById('comboIndicator').classList.remove('show'), 800);
+            
+            const isTSpin = checkTSpin(); let tspinType = null; 
+            if (isTSpin) { tspinType = isTSpin; AppState.tspinCount++; AppState.playerStats.tspinCount++; playSound('tspin'); }
+            if (cl === 4) { AppState.playerStats.tetrisCount++; playSound('tetris'); vibrate(50); } 
+            else if (cl > 0) { playSound('clear'); vibrate(20); }
+            
+            let coinsEarned = 0;
+            if (!AppState.zenMode) { 
+                score += calculateScore(cl, !!isTSpin, tspinType);
+                coinsEarned = calculateCoins(cl, !!isTSpin, false, cl === 4, AppState.comboCount);
+                addCoins(coinsEarned);
+            }
+            updateGameUI();
+            
+            const isPerfectClear = board.every(row => row.every(cell => cell === 0));
+            if (isPerfectClear && cl > 0) {
+                AppState.playerStats.perfectClears++;
+                score += 10000; lines += 5;
+                addCoins(500);
+                playSound('perfect');
+                showNotification('💎 PERFECT CLEAR! +10000 очков +5 линий +500 монет');
+                updateGameUI();
+            }
+            
+            if (!AppState.zenMode) { 
+                const nl = Math.floor(lines / 10); 
+                if (nl > level) { 
+                    level = nl; AppState.playerStats.maxLevel = Math.max(AppState.playerStats.maxLevel, level); 
+                    intervalTime = AppState.hardcoreMode ? Math.max(50, 250 - level * 20) : Math.max(100, 500 - level * 40); 
+                    resetGameLoop(); playSound('levelup'); showNotification(`🎉 Уровень ${level}!`); 
+                } 
+            }
+            if (AppState.gameMode === 'sprint' && lines >= AppState.sprintTarget) gameOver(true);
+            else if (AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget) gameOver(true);
+        } else { 
+            AppState.comboCount = 0; 
+            AppState.lastClearCount = 0; 
+        }
+        checkAchievements(); unlockThemesByProgress(); spawnNewPiece();
+    });
+}
+
+function moveDown() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return false; currentPiece.y++; if (collision(board, currentPiece)) { currentPiece.y--; freeze(); return true; } drawAll(); return false; }
+function moveHorizontal(dx) { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; if (AppState.settings.mirrorControl) dx = -dx; currentPiece.x += dx; if (collision(board, currentPiece)) currentPiece.x -= dx; else { playSound('move'); vibrate(5); drawAll(); } }
+function rotatePiece() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; AppState.lastMoveWasRotate = true; const m = currentPiece.matrix, rot = m[0].map((_, i) => m.map(r => r[i]).reverse()), orig = currentPiece.matrix; currentPiece.matrix = rot; if (collision(board, currentPiece)) { currentPiece.x--; if (!collision(board, currentPiece)) { playSound('rotate'); vibrate(8); drawAll(); return; } currentPiece.x += 2; if (!collision(board, currentPiece)) { playSound('rotate'); vibrate(8); drawAll(); return; } currentPiece.x--; currentPiece.matrix = orig; } else { playSound('rotate'); vibrate(8); drawAll(); } }
+function hardDrop() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused) return; AppState.lastWasHardDrop = true; AppState.hardDropStreak++; while (!collision(board, currentPiece)) currentPiece.y++; currentPiece.y--; freeze(); drawAll(); }
+function holdCurrent() { if (!currentPiece || !AppState.gameRunning || AppState.gamePaused || holdUsed) return; if (!holdPiece) { holdPiece = { matrix: currentPiece.matrix.map(r => [...r]), colorIndex: currentPiece.colorIndex, type: currentPiece.type }; spawnNewPiece(); } else { const temp = { matrix: currentPiece.matrix.map(r => [...r]), colorIndex: currentPiece.colorIndex, type: currentPiece.type }; currentPiece = { matrix: holdPiece.matrix.map(r => [...r]), colorIndex: holdPiece.colorIndex, type: holdPiece.type, x: Math.floor((COLS - holdPiece.matrix[0].length) / 2), y: 0 }; holdPiece = temp; if (collision(board, currentPiece)) { currentPiece = { matrix: temp.matrix.map(r => [...r]), colorIndex: temp.colorIndex, type: temp.type, x: Math.floor((COLS - temp.matrix[0].length) / 2), y: 0 }; return; } } holdUsed = true; AppState.playerStats.holdCount++; playSound('rotate'); drawAll(); }
+function drawGhost() { if (!AppState.settings.ghost || !currentPiece) return; let ghostY = currentPiece.y; while (!collision(board, { ...currentPiece, y: ghostY + 1 })) ghostY++; if (ghostY > currentPiece.y) { boardCtx.globalAlpha = 0.25; for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) { boardCtx.fillStyle = COLORS[currentPiece.colorIndex]; boardCtx.fillRect((currentPiece.x + c) * BLOCK_SIZE, ghostY * BLOCK_SIZE + r * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1); } boardCtx.globalAlpha = 1; } }
+function drawBlock(ctx, x, y, ci, sz = BLOCK_SIZE) { 
+    let c = COLORS[ci];
+    if (AppState.themes.blocks.current === 'fire') { const intensity = (Date.now() / 100) % 1; c = `rgb(255, ${Math.floor(80 + intensity * 80)}, 0)`; }
+    else if (AppState.themes.blocks.current === 'star') { const sparkle = Math.random() > 0.9 ? '#ffffff' : c; c = sparkle; }
+    ctx.fillStyle = c; ctx.fillRect(x * sz, y * sz, sz - 1, sz - 1);
+    if (AppState.settings.glow) { ctx.shadowColor = c; ctx.shadowBlur = 12; ctx.fillRect(x * sz, y * sz, sz - 1, sz - 1); ctx.shadowBlur = 0; }
+    ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(x * sz + 2, y * sz + 2, sz - 5, 4);
+}
+function drawBoard() { boardCtx.clearRect(0, 0, 300, 600); for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (board[r][c]) drawBlock(boardCtx, c, r, board[r][c]); drawGhost(); if (currentPiece) for (let r = 0; r < currentPiece.matrix.length; r++) for (let c = 0; c < currentPiece.matrix[0].length; c++) if (currentPiece.matrix[r][c]) drawBlock(boardCtx, currentPiece.x + c, currentPiece.y + r, currentPiece.colorIndex); particles = particles.filter(p => { p.update(); if (p.life > 0) { p.draw(boardCtx); return true; } return false; }); }
+function drawHold() { holdCtx.clearRect(0, 0, 60, 60); holdCtx.fillStyle = '#0a0d1a'; holdCtx.fillRect(0, 0, 60, 60); if (holdPiece) { const m = holdPiece.matrix, ox = (4 - m[0].length) * PREVIEW_SIZE / 2, oy = (4 - m.length) * PREVIEW_SIZE / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) drawBlock(holdCtx, ox/PREVIEW_SIZE + c, oy/PREVIEW_SIZE + r, holdPiece.colorIndex, PREVIEW_SIZE); } }
+function drawNextPieces() { nextContainer.innerHTML = ''; for (let i = 0; i < 3; i++) { if (nextPieces[i]) { const canvas = document.createElement('canvas'); canvas.width = 60; canvas.height = 60; canvas.className = 'next-piece-canvas'; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#0a0d1a'; ctx.fillRect(0, 0, 60, 60); const p = nextPieces[i], m = p.matrix, ox = (4 - m[0].length) * PREVIEW_SIZE / 2, oy = (4 - m.length) * PREVIEW_SIZE / 2; for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) drawBlock(ctx, ox/PREVIEW_SIZE + c, oy/PREVIEW_SIZE + r, p.colorIndex, PREVIEW_SIZE); nextContainer.appendChild(canvas); } } }
+function drawAll() { drawBoard(); drawHold(); drawNextPieces(); }
+function updateGameUI() { document.getElementById('gameScore').textContent = AppState.zenMode ? '∞' : score; document.getElementById('gameLines').textContent = lines; document.getElementById('gameLevel').textContent = AppState.zenMode ? '∞' : level; }
+function gameTick() { if (AppState.gameRunning && !AppState.gamePaused) { AppState.lastMoveWasRotate = false; moveDown(); } }
+function resetGameLoop() { if (AppState.gameLoop) clearInterval(AppState.gameLoop); if (AppState.gameRunning) AppState.gameLoop = setInterval(gameTick, intervalTime); }
+
+function startNewGame(mode) {
+    AppState.gameMode = mode; AppState.zenMode = mode === 'zen'; AppState.hardcoreMode = mode === 'hardcore';
+    initBoard(); score = 0; lines = 0; level = AppState.hardcoreMode ? 5 : 0; intervalTime = AppState.hardcoreMode ? 250 : 500;
+    holdPiece = null; holdUsed = false; nextPieces = []; refillQueue(); spawnNewPiece(); 
+    AppState.gameRunning = true; AppState.gamePaused = false; AppState.gameOver = false; startTime = Date.now();
+    AppState.comboCount = 0; AppState.hardDropStreak = 0; AppState.b2b = false; AppState.b2bMultiplier = 1; AppState.lastClearCount = 0; AppState.currentCoinsEarned = 0;
+    document.getElementById('gameStatus').textContent = 'ИГРА ИДЕТ...'; 
+    updateGameUI(); drawAll(); resetGameLoop(); 
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    showScreen('game');
+}
+
+function togglePause() { if (AppState.hardcoreMode) { showNotification('В Хардкоре нет паузы!', 'error'); return; } if (!AppState.gameRunning || AppState.gameOver) return; AppState.gamePaused = !AppState.gamePaused; document.getElementById('gameStatus').textContent = AppState.gamePaused ? 'ПАУЗА' : 'ИГРА ИДЕТ...'; drawAll(); }
+
+function gameOver(win = false) { 
+    AppState.gameRunning = false; AppState.gameOver = true; clearInterval(AppState.gameLoop); AppState.gameLoop = null; 
+    const timeElapsed = Math.floor((Date.now() - startTime) / 1000); AppState.playerStats.totalTime += timeElapsed;
+    document.getElementById('gameStatus').textContent = win ? `ПОБЕДА! ${timeElapsed}с` : 'GAME OVER'; 
+    document.getElementById('gameOverTitle').textContent = win ? 'ПОБЕДА!' : 'GAME OVER';
+    document.getElementById('finalScore').textContent = AppState.zenMode ? 'Дзен-режим' : `${score} очков`;
+    document.getElementById('coinsEarned').textContent = `+${AppState.currentCoinsEarned} 🪙`;
+    document.getElementById('gameOverPanel').style.display = 'block';
+    if (!AppState.zenMode && score > 0) { 
+        AppState.playerStats.totalScore += score; AppState.playerStats.gamesPlayed++; 
+        if (score > AppState.playerStats.bestScore) AppState.playerStats.bestScore = score; 
+        if (AppState.currentUser) { 
+            const u = AppState.users[AppState.currentUser]; u.totalScore += score; u.gamesPlayed++; 
+            if (score > u.bestScore) u.bestScore = score; 
+            const existing = AppState.records.find(r => r.name === u.username);
+            if (existing) { if (score > existing.score) existing.score = score; } 
+            else { AppState.records.push({ name: u.username, score }); }
+            AppState.records.sort((a,b) => b.score - a.score); AppState.records = AppState.records.slice(0, 20); 
+        } 
+    } else if (AppState.zenMode) { AppState.playerStats.gamesPlayed++; if (AppState.currentUser) AppState.users[AppState.currentUser].gamesPlayed++; }
+    checkAchievements(); unlockThemesByProgress(); saveAllData(); updateMainMenuStats(); updateProfileDisplay(); updateCoinDisplay();
+}
+// ============================================
+//               ДОСТИЖЕНИЯ И РАЗБЛОКИРОВКИ
+// ============================================
+function checkAchievements() {
+    const a = AppState.achievements; const ps = AppState.playerStats;
+    if (!a[0].unlocked && lines >= 1) { a[0].unlocked = true; addCoins(a[0].reward); showNotification(`🏆 ${a[0].name}! +${a[0].reward} монет`); }
+    if (!a[1].unlocked && ps.tetrisCount >= 1) { a[1].unlocked = true; addCoins(a[1].reward); showNotification(`🏆 ${a[1].name}! +${a[1].reward} монет`); }
+    if (!a[2].unlocked && ps.tetrisCount >= 10) { a[2].unlocked = true; addCoins(a[2].reward); showNotification(`🏆 ${a[2].name}! +${a[2].reward} монет`); }
+    if (!a[3].unlocked && score >= 50000) { a[3].unlocked = true; addCoins(a[3].reward); showNotification(`🏆 ${a[3].name}! +${a[3].reward} монет`); }
+    if (!a[4].unlocked && ps.maxLevel >= 10) { a[4].unlocked = true; addCoins(a[4].reward); showNotification(`🏆 ${a[4].name}! +${a[4].reward} монет`); }
+    if (!a[5].unlocked && ps.totalScore >= 1000000) { a[5].unlocked = true; addCoins(a[5].reward); showNotification(`🏆 ${a[5].name}! +${a[5].reward} монет`); }
+    if (!a[8].unlocked && AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget) { a[8].unlocked = true; addCoins(a[8].reward); showNotification(`🏆 ${a[8].name}! +${a[8].reward} монет`); }
+    if (!a[9].unlocked && AppState.gameMode === 'sprint' && lines >= AppState.sprintTarget) { a[9].unlocked = true; addCoins(a[9].reward); showNotification(`🏆 ${a[9].name}! +${a[9].reward} монет`); }
+    if (!a[10].unlocked && score >= 100000) { a[10].unlocked = true; addCoins(a[10].reward); showNotification(`🏆 ${a[10].name}! +${a[10].reward} монет`); }
+    if (!a[11].unlocked && ps.bestCombo >= 3) { a[11].unlocked = true; addCoins(a[11].reward); showNotification(`🏆 ${a[11].name}! +${a[11].reward} монет`); }
+    if (!a[12].unlocked && ps.totalLines >= 1000) { a[12].unlocked = true; addCoins(a[12].reward); showNotification(`🏆 ${a[12].name}! +${a[12].reward} монет`); }
+    if (!a[13].unlocked && AppState.hardDropStreak >= 10) { a[13].unlocked = true; addCoins(a[13].reward); showNotification(`🏆 ${a[13].name}! +${a[13].reward} монет`); }
+    if (!a[15].unlocked && AppState.tspinCount >= 1) { a[15].unlocked = true; addCoins(a[15].reward); showNotification(`🏆 ${a[15].name}! +${a[15].reward} монет`); }
+    if (!a[16].unlocked && AppState.tspinCount >= 5) { a[16].unlocked = true; addCoins(a[16].reward); showNotification(`🏆 ${a[16].name}! +${a[16].reward} монет`); }
+    if (!a[17].unlocked && ps.perfectClears >= 1) { a[17].unlocked = true; addCoins(a[17].reward); showNotification(`🏆 ${a[17].name}! +${a[17].reward} монет`); }
+    updateAchievementsProgress();
+}
+
+function unlockThemesByProgress() {
+    const ps = AppState.playerStats;
+    const unlockedCount = AppState.gameThemes.filter(t => t.unlocked).length + AppState.shellThemes.filter(t => t.unlocked).length + AppState.blockSkins.filter(s => s.unlocked).length;
+    
+    AppState.gameThemes.forEach(t => { if (!t.unlocked) { 
+        if (ps.maxLevel >= 5 && t.id === 'midnight') t.unlocked = true;
+        else if (ps.maxLevel >= 8 && t.id === 'sunset') t.unlocked = true;
+        else if (ps.maxLevel >= 5 && t.id === 'ocean') t.unlocked = true;
+        else if (ps.totalLines >= 100 && t.id === 'forest') t.unlocked = true;
+        else if (ps.tetrisCount >= 5 && t.id === 'candy') t.unlocked = true;
+        else if (ps.bestScore >= 50000 && t.id === 'volcano') t.unlocked = true;
+        else if (ps.tetrisCount >= 1 && t.id === 'matrix') t.unlocked = true;
+        else if (inventory.gameThemes.includes(t.id)) t.unlocked = true;
+    } });
+    
+    AppState.shellThemes.forEach(t => { if (!t.unlocked) { 
+        if (ps.gamesPlayed >= 20 && t.id === 'emerald') t.unlocked = true;
+        else if (ps.totalScore >= 150000 && t.id === 'ruby') t.unlocked = true;
+        else if (AppState.gameMode === 'hardcore' && lines >= 20 && t.id === 'obsidian') t.unlocked = true;
+        else if (AppState.achievements.filter(a => a.unlocked).length >= 5 && t.id === 'pearl') t.unlocked = true;
+        else if (ps.gamesPlayed >= 10 && t.id === 'japanese') t.unlocked = true;
+        else if (ps.gamesPlayed >= 30 && t.id === 'carbon') t.unlocked = true;
+        else if (ps.totalScore >= 150000 && t.id === 'golden') t.unlocked = true;
+        else if (ps.totalLines >= 200 && t.id === 'ice') t.unlocked = true;
+        else if (ps.tetrisCount >= 10 && t.id === 'matrix') t.unlocked = true;
+        else if (inventory.shellThemes.includes(t.id)) t.unlocked = true;
+    } });
+    
+    AppState.blockSkins.forEach(s => { if (!s.unlocked) { 
+        if (ps.maxLevel >= 5 && s.id === 'crystal') s.unlocked = true;
+        else if (ps.gamesPlayed >= 15 && s.id === 'metal') s.unlocked = true;
+        else if (ps.bestScore >= 30000 && s.id === 'lava') s.unlocked = true;
+        else if (ps.totalLines >= 150 && s.id === 'ice') s.unlocked = true;
+        else if (AppState.achievements.filter(a => a.unlocked).length >= 10 && s.id === 'rainbow') s.unlocked = true;
+        else if (ps.holdCount >= 20 && s.id === 'pixel') s.unlocked = true;
+        else if (ps.maxLevel >= 10 && s.id === 'glass') s.unlocked = true;
+        else if (AppState.gameMode === 'marathon' && lines >= AppState.marathonTarget && s.id === 'chrome') s.unlocked = true;
+        else if (inventory.blockSkins.includes(s.id)) s.unlocked = true;
+    } });
+    
+    if (!AppState.achievements[6].unlocked && unlockedCount >= 5) { AppState.achievements[6].unlocked = true; addCoins(AppState.achievements[6].reward); showNotification(`🏆 ${AppState.achievements[6].name}! +${AppState.achievements[6].reward} монет`); }
+    if (!AppState.achievements[7].unlocked && unlockedCount >= 31) { AppState.achievements[7].unlocked = true; addCoins(AppState.achievements[7].reward); showNotification(`🏆 ${AppState.achievements[7].name}! +${AppState.achievements[7].reward} монет`); }
+    if (!AppState.achievements[14].unlocked && AppState.blockSkins.filter(s => s.unlocked).length >= 13) { AppState.achievements[14].unlocked = true; addCoins(AppState.achievements[14].reward); showNotification(`🏆 ${AppState.achievements[14].name}! +${AppState.achievements[14].reward} монет`); }
+}
+
+function updateAchievementsProgress() {
+    const a = AppState.achievements; const ps = AppState.playerStats;
+    a[2].progress = Math.min(ps.tetrisCount, 10); a[3].progress = Math.min(score, 50000); a[4].progress = Math.min(ps.maxLevel, 10);
+    a[5].progress = Math.min(ps.totalScore, 1000000); a[10].progress = Math.min(score, 100000); a[12].progress = Math.min(ps.totalLines, 1000);
+    a[13].progress = Math.min(AppState.hardDropStreak, 10); a[15].progress = Math.min(AppState.tspinCount, 1); a[16].progress = Math.min(AppState.tspinCount, 5);
+    a[17].progress = Math.min(ps.perfectClears, 1);
+    const unlockedCount = AppState.gameThemes.filter(t => t.unlocked).length + AppState.shellThemes.filter(t => t.unlocked).length + AppState.blockSkins.filter(s => s.unlocked).length;
+    a[6].progress = Math.min(unlockedCount, 5); a[7].progress = Math.min(unlockedCount, 31); a[14].progress = Math.min(AppState.blockSkins.filter(s => s.unlocked).length, 13);
+}
+
+// ============================================
+//               МАГАЗИН И ИНВЕНТАРЬ
+// ============================================
+function buyItem(category, itemId) {
+    let item, price;
+    if (category === 'gameThemes') { item = shopItems.gameThemes.find(i => i.id === itemId); price = item.price; }
+    else if (category === 'blockSkins') { item = shopItems.blockSkins.find(i => i.id === itemId); price = item.price; }
+    else return false;
+    
+    if (coins >= price && !inventory[category].includes(itemId)) {
+        coins -= price;
+        inventory[category].push(itemId);
+        
+        if (category === 'gameThemes') {
+            const theme = AppState.gameThemes.find(t => t.id === itemId);
+            if (theme) theme.unlocked = true;
+        } else if (category === 'blockSkins') {
+            const skin = AppState.blockSkins.find(s => s.id === itemId);
+            if (skin) skin.unlocked = true;
+        }
+        
+        saveAllData();
+        updateCoinDisplay();
+        renderShop();
+        renderInventory();
+        showNotification(`🎉 Куплено: ${item.name}!`, 'success');
+        return true;
+    } else if (coins < price) {
+        showNotification('💰 Недостаточно монет!', 'error');
+    } else {
+        showNotification('✅ Уже куплено!', 'error');
+    }
+    return false;
+}
+
+function equipItem(category, itemId) {
+    if (category === 'gameThemes') {
+        const theme = AppState.gameThemes.find(t => t.id === itemId);
+        if (theme && theme.unlocked) {
+            AppState.themes.game.current = itemId;
+            applyGameTheme();
+            saveAllData();
+            renderInventory();
+            showNotification(`🎨 Тема "${theme.name}" применена!`);
+        }
+    } else if (category === 'shellThemes') {
+        const theme = AppState.shellThemes.find(t => t.id === itemId);
+        if (theme && theme.unlocked) {
+            AppState.themes.shell.current = itemId;
+            updateGameScreenMode();
+            saveAllData();
+            renderInventory();
+            showNotification(`📟 Тема "${theme.name}" применена!`);
+        }
+    } else if (category === 'blockSkins') {
+        const skin = AppState.blockSkins.find(s => s.id === itemId);
+        if (skin && skin.unlocked) {
+            AppState.themes.blocks.current = itemId;
+            COLORS = ['#0a0d1a', ...skin.colors];
+            saveAllData();
+            drawAll();
+            renderInventory();
+            showNotification(`🧱 Скин "${skin.name}" применён!`);
+        }
+    }
+}
+
+function renderShop() {
+    const categories = ['gameThemes', 'blockSkins'];
+    const categoryNames = { gameThemes: '🎨 ТЕМЫ ФОНА', blockSkins: '🧱 СКИНЫ БЛОКОВ' };
+    let html = '';
+    for (let cat of categories) {
+        html += `<h3 style="margin:15px 0 10px;color:#ffd700;">${categoryNames[cat]}</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;">`;
+        const items = cat === 'gameThemes' ? shopItems.gameThemes : shopItems.blockSkins;
+        for (let item of items) {
+            const owned = inventory[cat].includes(item.id);
+            html += `<div class="shop-item">
+                <div class="shop-item-info">
+                    <h4>${item.name}</h4>
+                    <p>${item.desc}</p>
+                    ${!owned ? `<div class="shop-item-price">💰 ${item.price} 🪙</div>` : '<div style="color:#51cf66;">✅ КУПЛЕНО</div>'}
+                </div>
+                ${!owned ? `<button onclick="buyItem('${cat}','${item.id}')">КУПИТЬ</button>` : `<button onclick="equipItem('${cat}','${item.id}')" style="background:rgba(255,255,255,0.2);">НАДЕТЬ</button>`}
+            </div>`;
+        }
+        html += `</div>`;
+    }
+    document.getElementById('shopItems').innerHTML = html;
+}
+
+function renderInventory() {
+    let html = `<h3 style="margin-bottom:15px;color:#ffd700;">🎨 МОИ ТЕМЫ ФОНА</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;">`;
+    for (let theme of AppState.gameThemes) {
+        if (theme.unlocked) {
+            html += `<div class="inventory-item">
+                <div class="theme-preview" style="background:${theme.bg};height:50px;"></div>
+                <div class="theme-name">${theme.name}</div>
+                ${AppState.themes.game.current === theme.id ? '<div style="color:#3f7bff;">✅ АКТИВНА</div>' : `<button onclick="equipItem('gameThemes','${theme.id}')">НАДЕТЬ</button>`}
+            </div>`;
+        }
+    }
+    html += `</div><h3 style="margin:20px 0 15px;color:#ffd700;">📟 МОИ ТЕМЫ КОНСОЛИ</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;">`;
+    for (let theme of AppState.shellThemes) {
+        if (theme.unlocked) {
+            html += `<div class="inventory-item">
+                <div class="theme-preview" style="background:${theme.color};height:50px;"></div>
+                <div class="theme-name">${theme.name}</div>
+                ${AppState.themes.shell.current === theme.id ? '<div style="color:#3f7bff;">✅ АКТИВНА</div>' : `<button onclick="equipItem('shellThemes','${theme.id}')">НАДЕТЬ</button>`}
+            </div>`;
+        }
+    }
+    html += `</div><h3 style="margin:20px 0 15px;color:#ffd700;">🧱 МОИ СКИНЫ БЛОКОВ</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;">`;
+    for (let skin of AppState.blockSkins) {
+        if (skin.unlocked) {
+            html += `<div class="inventory-item">
+                <div class="theme-preview" style="background:linear-gradient(135deg,${skin.colors[0]},${skin.colors[3]});height:50px;"></div>
+                <div class="theme-name">${skin.name}</div>
+                ${AppState.themes.blocks.current === skin.id ? '<div style="color:#3f7bff;">✅ АКТИВЕН</div>' : `<button onclick="equipItem('blockSkins','${skin.id}')">НАДЕТЬ</button>`}
+            </div>`;
+        }
+    }
+    html += `</div>`;
+    document.getElementById('inventoryItems').innerHTML = html;
+}
+
+// ============================================
+//               UI И ОБНОВЛЕНИЯ
+// ============================================
+function updateCoinDisplay() { document.getElementById('coinAmount').textContent = Math.floor(coins); }
+
+function exitToMenu() { if (AppState.gameRunning) { AppState.gameRunning = false; clearInterval(AppState.gameLoop); } document.getElementById('gameOverPanel').style.display = 'none'; showScreen('menu'); }
+function restartGame() { document.getElementById('gameOverPanel').style.display = 'none'; startNewGame(AppState.gameMode); }
+
+function showScreen(id) { 
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
+    document.getElementById(id + 'Screen').classList.add('active'); 
+    AppState.currentScreen = id; 
+    if (id === 'menu') { updateMainMenuStats(); updateCoinDisplay(); }
+    else if (id === 'game') { updateGameScreenMode(); }
+    else if (id === 'records') renderRecords();
+    else if (id === 'themes') renderAllThemes();
+    else if (id === 'profile') updateProfileDisplay();
+    else if (id === 'achievements') renderAchievements();
+    else if (id === 'shop') { renderShop(); updateCoinDisplay(); }
+    else if (id === 'inventory') { renderInventory(); updateCoinDisplay(); }
+}
+
+function applyGameTheme() { document.body.className = 'theme-' + AppState.themes.game.current; }
+function updateGameScreenMode() { applyGameTheme(); const gs = document.getElementById('gameScreen'); if (AppState.settings.controlStyle === 'modern') { gs.classList.add('modern-mode'); document.getElementById('retroControls').style.display = 'none'; } else { gs.classList.remove('modern-mode'); document.getElementById('retroControls').style.display = 'flex'; } document.getElementById('brickShell').className = 'brick-shell theme-' + AppState.themes.shell.current; }
+
+function updateMainMenuStats() { 
+    const ranks = [{ name: '🔰 Новичок', min: 0, max: 10000 },{ name: '📚 Ученик', min: 10000, max: 30000 },{ name: '⚔️ Боец', min: 30000, max: 70000 },{ name: '🛡️ Эксперт', min: 70000, max: 150000 },{ name: '👑 Мастер', min: 150000, max: 300000 },{ name: '🏛️ Архитектор', min: 300000, max: 600000 },{ name: '🎭 Виртуоз', min: 600000, max: 1000000 },{ name: '⭐ THE LEGEND', min: 1000000, max: Infinity }]; 
+    const ts = AppState.playerStats.totalScore; let cr = ranks[0], nr = ranks[1]; 
+    for (let i = 0; i < ranks.length; i++) if (ts >= ranks[i].min && ts < ranks[i].max) { cr = ranks[i]; nr = ranks[i + 1] || ranks[i]; break; } 
+    document.getElementById('currentRankDisplay').textContent = cr.name; 
+    document.getElementById('currentRankName').textContent = cr.name.split(' ')[1] || cr.name; 
+    document.getElementById('nextRankName').textContent = nr.name.split(' ')[1] || nr.name; 
+    document.getElementById('currentScore').textContent = ts.toLocaleString(); 
+    document.getElementById('nextRankScore').textContent = nr.min.toLocaleString(); 
+    document.getElementById('rankProgress').style.width = Math.min(((ts - cr.min) / (nr.min - cr.min)) * 100, 100) + '%'; 
+    document.getElementById('welcomeMessage').textContent = AppState.currentUser ? `👤 ${AppState.currentUser}` : '👤 Гость'; 
+}
+
+function updateProfileDisplay() { 
+    const pc = document.getElementById('profileContent'); const ps = AppState.playerStats; 
+    const formatTime = (s) => { const h = Math.floor(s/3600), m = Math.floor((s%3600)/60); return `${h}ч ${m}м`; }; 
+    if (AppState.currentUser) { 
+        const u = AppState.users[AppState.currentUser]; 
+        pc.innerHTML = `<div><div class="profile-avatar">${u.username === '0xKozume' ? '👑' : '🎮'}</div><div class="profile-name">${u.username}</div><div class="profile-stats">
+            <div class="stat-row"><span>Всего очков:</span><span>${u.totalScore.toLocaleString()}</span></div>
+            <div class="stat-row"><span>Сыграно игр:</span><span>${u.gamesPlayed}</span></div>
+            <div class="stat-row"><span>Лучший счет:</span><span>${u.bestScore.toLocaleString()}</span></div>
+            <div class="stat-row"><span>Всего линий:</span><span>${ps.totalLines}</span></div>
+            <div class="stat-row"><span>Tetris:</span><span>${ps.tetrisCount}</span></div>
+            <div class="stat-row"><span>T-Spin:</span><span>${ps.tspinCount}</span></div>
+            <div class="stat-row"><span>Perfect Clear:</span><span>${ps.perfectClears}</span></div>
+            <div class="stat-row"><span>Лучшее комбо:</span><span>${ps.bestCombo}</span></div>
+            <div class="stat-row"><span>Время в игре:</span><span>${formatTime(ps.totalTime)}</span></div>
+            <div class="stat-row"><span>Монет:</span><span>${Math.floor(coins)}</span></div>
+        </div><div class="menu-btn" id="logoutBtn">🚪 ВЫЙТИ</div></div>`; 
+        document.getElementById('logoutBtn').addEventListener('click', logout); 
+    } else { 
+        pc.innerHTML = `<div><div class="profile-avatar">👤</div><div class="profile-name">Гость</div><div class="profile-stats">
+            <div class="stat-row"><span>Всего очков:</span><span>${ps.totalScore.toLocaleString()}</span></div>
+            <div class="stat-row"><span>Сыграно игр:</span><span>${ps.gamesPlayed}</span></div>
+            <div class="stat-row"><span>Лучший счет:</span><span>${ps.bestScore.toLocaleString()}</span></div>
+            <div class="stat-row"><span>Всего линий:</span><span>${ps.totalLines}</span></div>
+            <div class="stat-row"><span>Tetris:</span><span>${ps.tetrisCount}</span></div>
+            <div class="stat-row"><span>T-Spin:</span><span>${ps.tspinCount}</span></div>
+            <div class="stat-row"><span>Perfect Clear:</span><span>${ps.perfectClears}</span></div>
+            <div class="stat-row"><span>Лучшее комбо:</span><span>${ps.bestCombo}</span></div>
+            <div class="stat-row"><span>Время в игре:</span><span>${formatTime(ps.totalTime)}</span></div>
+            <div class="stat-row"><span>Монет:</span><span>${Math.floor(coins)}</span></div>
+        </div><div class="menu-btn" id="loginBtn">🔐 ВОЙТИ</div><div class="menu-btn" id="registerBtn" style="margin-top:10px;">📝 РЕГИСТРАЦИЯ</div></div>`; 
+        document.getElementById('loginBtn').addEventListener('click', ()=>document.getElementById('loginModal').style.display='flex'); 
+        document.getElementById('registerBtn').addEventListener('click', ()=>document.getElementById('registerModal').style.display='flex'); 
+    } 
+}
+
+function renderRecords() { 
+    const sorted = [...AppState.records].sort((a,b)=>b.score-a.score).slice(0,10); 
+    document.getElementById('recordsList').innerHTML = sorted.map((r,i)=>`<div class="record-row"><div class="record-rank">${i+1}</div><div>${r.name}</div><div class="record-score">${r.score.toLocaleString()}</div></div>`).join(''); 
+}
+
+function renderAchievements() { 
+    updateAchievementsProgress(); 
+    document.getElementById('achievementsList').innerHTML = AppState.achievements.map(a => `<div class="achievement-item ${a.unlocked ? 'unlocked' : ''}"><div class="achievement-icon">${a.unlocked ? '✅' : '🔒'}</div><div class="achievement-info"><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.desc}</div></div><div class="achievement-progress">${a.unlocked ? '✓' : (a.progress || 0) + '/' + a.target}</div></div>`).join(''); 
+}
+
+function renderAllThemes() {
+    document.getElementById('gameThemesGrid').innerHTML = AppState.gameThemes.map(t => `<div class="theme-card ${AppState.themes.game.current===t.id?'active':''}" data-game-theme="${t.id}"><div class="theme-preview" style="background:${t.bg};"></div><div class="theme-name">${t.name}</div><div class="theme-status ${t.unlocked||AppState.isDeveloper?'unlocked':'locked'}">${t.unlocked||AppState.isDeveloper?'✓':'🔒'}</div></div>`).join('');
+    document.getElementById('shellThemesGrid').innerHTML = AppState.shellThemes.map(t => `<div class="theme-card ${AppState.themes.shell.current===t.id?'active':''}" data-shell-theme="${t.id}"><div class="theme-preview" style="background:${t.color};"></div><div class="theme-name">${t.name}</div><div class="theme-status ${t.unlocked||AppState.isDeveloper?'unlocked':'locked'}">${t.unlocked||AppState.isDeveloper?'✓':'🔒'}</div></div>`).join('');
+    document.getElementById('blockThemesGrid').innerHTML = AppState.blockSkins.map(s => `<div class="theme-card ${AppState.themes.blocks.current===s.id?'active':''}" data-block-theme="${s.id}"><div class="theme-preview" style="background:linear-gradient(135deg,${s.colors[0]},${s.colors[3]});"></div><div class="theme-name">${s.name}</div><div class="theme-status ${s.unlocked||AppState.isDeveloper?'unlocked':'locked'}">${s.unlocked||AppState.isDeveloper?'✓':'🔒'}</div></div>`).join('');
+    
+    document.querySelectorAll('[data-game-theme]').forEach(c => c.addEventListener('click', function(){ const t = AppState.gameThemes.find(x=>x.id===this.dataset.gameTheme); if (t.unlocked||AppState.isDeveloper) { AppState.themes.game.current = this.dataset.gameTheme; applyGameTheme(); renderAllThemes(); saveAllData(); showNotification(`Тема "${t.name}" применена`); } else showNotification('Тема заблокирована!', 'error'); }));
+    document.querySelectorAll('[data-shell-theme]').forEach(c => c.addEventListener('click', function(){ const t = AppState.shellThemes.find(x=>x.id===this.dataset.shellTheme); if (t.unlocked||AppState.isDeveloper) { AppState.themes.shell.current = this.dataset.shellTheme; renderAllThemes(); saveAllData(); updateGameScreenMode(); showNotification(`Тема "${t.name}" применена`); } else showNotification('Тема заблокирована!', 'error'); }));
+    document.querySelectorAll('[data-block-theme]').forEach(c => c.addEventListener('click', function(){ const s = AppState.blockSkins.find(x=>x.id===this.dataset.blockTheme); if (s.unlocked||AppState.isDeveloper) { AppState.themes.blocks.current = this.dataset.blockTheme; COLORS = ['#0a0d1a', ...s.colors]; renderAllThemes(); saveAllData(); drawAll(); showNotification(`Скин "${s.name}" применен`); } else showNotification('Скин заблокирован!', 'error'); }));
+}
+
+// ============================================
+//               МИНИ-ДЕМО
+// ============================================
+let miniPiece = PIECES[Math.floor(Math.random() * PIECES.length)], miniOpacity = 1, miniFadeDir = -0.015, miniLastChange = Date.now();
+function startMiniDemo() { 
+    function animate() { 
+        if (AppState.currentScreen === 'menu') { 
+            miniCtx.clearRect(0, 0, 180, 180); 
+            const bgColor = getComputedStyle(document.querySelector('.mini-screen')).backgroundColor; 
+            miniCtx.fillStyle = bgColor; miniCtx.fillRect(0, 0, 180, 180); 
+            if (Date.now() - miniLastChange > 5000) { miniFadeDir = -0.015; miniLastChange = Date.now(); } 
+            miniOpacity += miniFadeDir; 
+            if (miniOpacity <= 0.1) { miniPiece = PIECES[Math.floor(Math.random() * PIECES.length)]; miniFadeDir = 0.015; } 
+            if (miniOpacity >= 1) miniFadeDir = -0.015; 
+            miniCtx.globalAlpha = miniOpacity; 
+            const m = miniPiece.matrix, sz = 25, ox = (7 - m[0].length) * sz / 2, oy = (7 - m.length) * sz / 2; 
+            for (let r = 0; r < m.length; r++) for (let c = 0; c < m[0].length; c++) if (m[r][c]) { 
+                miniCtx.fillStyle = COLORS[miniPiece.colorIndex]; 
+                miniCtx.shadowColor = COLORS[miniPiece.colorIndex]; 
+                miniCtx.shadowBlur = 10; 
+                miniCtx.fillRect(ox + c * sz, oy + r * sz, sz - 1, sz - 1); 
+                miniCtx.shadowBlur = 0; 
+                miniCtx.fillStyle = 'rgba(255,255,255,0.3)'; 
+                miniCtx.fillRect(ox + c * sz + 3, oy + r * sz + 3, sz - 7, 5); 
+            } 
+            miniCtx.globalAlpha = 1; 
+        } 
+        requestAnimationFrame(animate); 
+    } 
+    animate(); 
+}
+
+// ============================================
+//               ДАННЫЕ
+// ============================================
+function loadAllData() { 
+    const s = localStorage.getItem('tetrisV10'); 
+    if (s) { 
+        try { 
+            const d = JSON.parse(s); 
+            AppState.playerStats = d.playerStats || AppState.playerStats; 
+            AppState.records = d.records || []; 
+            AppState.users = d.users || {}; 
+            AppState.settings = { ...AppState.settings, ...d.settings }; 
+            AppState.themes = { ...AppState.themes, ...d.themes }; 
+            AppState.achievements = d.achievements || AppState.achievements; 
+            AppState.currentUser = d.currentUser || null; 
+            AppState.isDeveloper = d.isDeveloper || false; 
+            coins = d.coins || 100;
+            inventory = d.inventory || inventory;
+            if (d.unlockedThemes) { 
+                AppState.gameThemes.forEach(t => { if (d.unlockedThemes.includes(t.id)) t.unlocked = true; }); 
+                AppState.shellThemes.forEach(t => { if (d.unlockedThemes.includes(t.id)) t.unlocked = true; }); 
+                AppState.blockSkins.forEach(s => { if (d.unlockedThemes.includes(s.id)) s.unlocked = true; }); 
+            } 
+        } catch(e) { console.error('Ошибка загрузки:', e); } 
+    } 
+    if (AppState.records.length === 0) AppState.records = [{ name: 'NeoMatrix', score: 3456789 },{ name: 'Fatishka', score: 2987654 },{ name: 'BlockMaster', score: 2456789 },{ name: 'Speedy', score: 1234567 },{ name: 'SharpMind', score: 1123456 }]; 
+    applyGameTheme(); 
+    if (AppState.themes.blocks.current) { 
+        const s = AppState.blockSkins.find(x=>x.id===AppState.themes.blocks.current); 
+        if (s) COLORS = ['#0a0d1a', ...s.colors]; 
+    } 
+    updateCoinDisplay();
+}
+
+function saveAllData() { 
+    localStorage.setItem('tetrisV10', JSON.stringify({ 
+        playerStats: AppState.playerStats, records: AppState.records, users: AppState.users, 
+        settings: AppState.settings, themes: AppState.themes, achievements: AppState.achievements, 
+        currentUser: AppState.currentUser, isDeveloper: AppState.isDeveloper, coins: coins, inventory: inventory,
+        unlockedThemes: [...AppState.gameThemes.filter(t=>t.unlocked).map(t=>t.id), ...AppState.shellThemes.filter(t=>t.unlocked).map(t=>t.id), ...AppState.blockSkins.filter(s=>s.unlocked).map(s=>s.id)] 
+    })); 
+}
+
+function resetAllData() { localStorage.removeItem('tetrisV10'); location.reload(); }
+
+function login(u, p) { 
+    if (u === '0xKozume' && p === 'dev123') { 
+        AppState.currentUser = u; AppState.isDeveloper = true; 
+        if (!AppState.users[u]) AppState.users[u] = { username: u, password: p, totalScore: 0, gamesPlayed: 0, bestScore: 0 }; 
+        AppState.gameThemes.forEach(t => t.unlocked = true); 
+        AppState.shellThemes.forEach(t => t.unlocked = true); 
+        AppState.blockSkins.forEach(s => s.unlocked = true); 
+        coins = 999999;
+        saveAllData(); 
+        showNotification('👑 Создатель! Всё открыто! +999999 монет'); 
+        return true; 
+    } 
+    const user = AppState.users[u]; 
+    if (user && user.password === p) { 
+        AppState.currentUser = u; AppState.isDeveloper = false; 
+        saveAllData(); 
+        showNotification(`С возвращением, ${u}!`); 
+        return true; 
+    } 
+    return false; 
+}
+
+function register(u, p) { 
+    if (AppState.users[u]) return false; 
+    AppState.users[u] = { username: u, password: p, totalScore: 0, gamesPlayed: 0, bestScore: 0 }; 
+    saveAllData(); 
+    return true; 
+}
+
+function logout() { 
+    AppState.currentUser = null; AppState.isDeveloper = false; 
+    saveAllData(); 
+    updateMainMenuStats(); 
+    updateProfileDisplay(); 
+    showNotification('Вы вышли'); 
+}
+
+function showNotification(m, type='success') { 
+    const n = document.createElement('div'); 
+    n.className = 'notification'; 
+    n.style.background = type === 'error' ? 'linear-gradient(135deg, #ff6b6b, #c92a2a)' : 'linear-gradient(135deg, #3f7bff, #c850c0)'; 
+    n.textContent = m; 
+    document.body.appendChild(n); 
+    setTimeout(() => n.remove(), 2800); 
+}
+        // ============================================
+        //               ЗАПУСК И ОБРАБОТЧИКИ
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAllData(); 
+            updateMainMenuStats(); 
+            updateProfileDisplay(); 
+            renderAllThemes(); 
+            startMiniDemo();
+            updateCoinDisplay();
+            
+            // Навигация
+            document.querySelectorAll('[data-screen]').forEach(b => b.addEventListener('click', () => showScreen(b.dataset.screen)));
+            document.querySelectorAll('.back-btn').forEach(b => b.addEventListener('click', () => showScreen('menu')));
+            
+            // Вкладки тем
+            document.querySelectorAll('[data-theme-tab]').forEach(t => t.addEventListener('click', function() { 
+                document.querySelectorAll('[data-theme-tab]').forEach(x => x.classList.remove('active')); 
+                document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active')); 
+                this.classList.add('active'); 
+                document.getElementById(this.dataset.themeTab + 'ThemesTab').classList.add('active'); 
+            }));
+            
+            // Выбор режима
+            document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', function() { startNewGame(this.dataset.mode); }));
+            
+            // Настройки
+            document.getElementById('controlStyleSelect').value = AppState.settings.controlStyle;
+            document.getElementById('controlStyleSelect').addEventListener('change', e => { AppState.settings.controlStyle = e.target.value; saveAllData(); updateGameScreenMode(); });
+            
+            ['mirrorControlToggle','hardDropToggle','ghostToggle','soundToggle','musicToggle','vibrationToggle','buttonAnimationsToggle','particlesToggle','glowToggle'].forEach((id, i) => { 
+                const keys = ['mirrorControl','hardDrop','ghost','sound','music','vibration','buttonAnimations','particles','glow']; 
+                const el = document.getElementById(id); 
+                if (AppState.settings[keys[i]]) el.classList.add('active'); 
+                el.addEventListener('click', function() { 
+                    this.classList.toggle('active'); 
+                    AppState.settings[keys[i]] = this.classList.contains('active'); 
+                    if (keys[i] === 'sound' && AppState.settings.sound) initAudio(); 
+                    saveAllData(); 
+                }); 
+            });
+            
+            // Ретро кнопки управления
+            document.querySelectorAll('.retro-btn').forEach(b => b.addEventListener('click', function() { 
+                const a = this.dataset.action; 
+                if (a === 'start') { 
+                    if (!AppState.gameRunning || AppState.gameOver) { 
+                        if (AppState.gameMode) startNewGame(AppState.gameMode); 
+                        else showNotification('Выберите режим!', 'error'); 
+                    } 
+                } else if (a === 'menu') { 
+                    if (AppState.gameRunning) document.getElementById('exitConfirmModal').style.display = 'flex'; 
+                    else exitToMenu(); 
+                } else if (a === 'hold') holdCurrent(); 
+                else if (AppState.gameRunning && !AppState.gamePaused) { 
+                    if (a === 'left') moveHorizontal(-1); 
+                    else if (a === 'right') moveHorizontal(1); 
+                    else if (a === 'down') moveDown(); 
+                    else if (a === 'rotate' || a === 'a') rotatePiece(); 
+                    else if (a === 'b' && AppState.settings.hardDrop) hardDrop(); 
+                } 
+                if (AppState.settings.buttonAnimations) { 
+                    this.style.transform = 'translateY(3px)'; 
+                    setTimeout(() => this.style.transform = '', 100); 
+                } 
+            }));
+            
+            // Современные кнопки
+            document.getElementById('modernMenuBtn').addEventListener('click', () => { 
+                if (AppState.gameRunning) document.getElementById('exitConfirmModal').style.display = 'flex'; 
+                else exitToMenu(); 
+            });
+            document.getElementById('modernStartBtn').addEventListener('click', () => { 
+                if (!AppState.gameRunning || AppState.gameOver) { 
+                    if (AppState.gameMode) startNewGame(AppState.gameMode); 
+                    else showNotification('Выберите режим!', 'error'); 
+                } 
+            });
+            
+            // Game Over панель
+            document.getElementById('playAgainBtn').addEventListener('click', restartGame);
+            document.getElementById('gameOverMenuBtn').addEventListener('click', exitToMenu);
+            
+            // Сброс данных
+            document.getElementById('resetDataBtn').addEventListener('click', () => document.getElementById('resetConfirmModal').style.display = 'flex');
+            document.getElementById('resetConfirmBtn').addEventListener('click', resetAllData);
+            document.getElementById('resetCancelBtn').addEventListener('click', () => document.getElementById('resetConfirmModal').style.display = 'none');
+            
+            // Логин/Регистрация
+            document.getElementById('loginSubmitBtn').addEventListener('click', () => { 
+                if (login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value)) { 
+                    document.getElementById('loginModal').style.display = 'none'; 
+                    updateMainMenuStats(); 
+                    updateProfileDisplay(); 
+                    renderAllThemes(); 
+                    updateCoinDisplay();
+                } else showNotification('Неверный логин или пароль!', 'error'); 
+            });
+            document.getElementById('registerSubmitBtn').addEventListener('click', () => { 
+                const u = document.getElementById('regUsername').value, p = document.getElementById('regPassword').value, c = document.getElementById('regConfirmPassword').value; 
+                if (!u || !p) return showNotification('Заполните поля!', 'error'); 
+                if (p !== c) return showNotification('Пароли не совпадают!', 'error'); 
+                if (register(u, p)) { 
+                    document.getElementById('registerModal').style.display = 'none'; 
+                    showNotification('Регистрация успешна! Войдите.'); 
+                } else showNotification('Пользователь уже существует!', 'error'); 
+            });
+            
+            // Закрытие модалок
+            document.querySelectorAll('#loginCancelBtn, #registerCancelBtn, #exitCancelBtn').forEach(b => b.addEventListener('click', () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none')));
+            document.getElementById('exitConfirmBtn').addEventListener('click', () => { document.getElementById('exitConfirmModal').style.display = 'none'; exitToMenu(); });
+            
+            // Клавиатура
+            document.addEventListener('keydown', e => { 
+                if (AppState.currentScreen !== 'game' || !AppState.gameRunning || AppState.gamePaused) return; 
+                e.preventDefault(); 
+                switch(e.key) { 
+                    case 'ArrowLeft': moveHorizontal(-1); break; 
+                    case 'ArrowRight': moveHorizontal(1); break; 
+                    case 'ArrowDown': moveDown(); break; 
+                    case 'ArrowUp': rotatePiece(); break; 
+                    case ' ': hardDrop(); break; 
+                    case 'Shift': holdCurrent(); break; 
+                    case 'p': case 'P': if (!AppState.hardcoreMode) togglePause(); break; 
+                    case 'r': case 'R': if (AppState.gameRunning && confirm('Начать игру заново?')) startNewGame(AppState.gameMode); break; 
+                    case 'Escape': document.getElementById('exitConfirmModal').style.display = 'flex'; break; 
+                } 
+            });
+            
+            // Свайпы для мобильных
+            let tsX = 0, tsY = 0; 
+            boardCanvas.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; }); 
+            boardCanvas.addEventListener('touchend', e => { 
+                if (AppState.settings.controlStyle !== 'modern' || !AppState.gameRunning || AppState.gamePaused) return; 
+                const dx = e.changedTouches[0].clientX - tsX, dy = e.changedTouches[0].clientY - tsY; 
+                if (Math.abs(dx) > Math.abs(dy)) { 
+                    if (dx > 30) moveHorizontal(1); 
+                    else if (dx < -30) moveHorizontal(-1); 
+                } else { 
+                    if (dy > 50) hardDrop(); 
+                    else if (dy < -30) rotatePiece(); 
+                } 
+            });
+            
+            applyGameTheme(); 
+            initAudio();
+            
+            // Глобальные функции для магазина
+            window.buyItem = buyItem;
+            window.equipItem = equipItem;
+        });
+    </script>
+</body>
+</html>
