@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Письмо для Фатимы | От Арслана</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* легкая атмосфера, чтобы не мельтешило выделение */
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f3e1cf 0%, #e7cfb5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', serif;
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* главная карточка — как тёплый лист бумаги */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 250, 240, 0.92);
+            backdrop-filter: blur(0px);
+            border-radius: 42px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 245, 225, 0.6);
+            overflow: hidden;
+            padding: 32px 28px 40px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        /* анимация появления */
+        .fade-in {
+            animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+
+        @keyframes fadeSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* сердце пульсирует, но не огромное */
+        .heart-beat {
+            font-size: 85px;
+            display: inline-block;
+            animation: gentlePulse 1.4s ease-in-out infinite;
+            margin-bottom: 20px;
+            cursor: default;
+            line-height: 1;
+        }
+
+        @keyframes gentlePulse {
+            0% { transform: scale(1); opacity: 0.9; text-shadow: 0 0 0px rgba(200, 100, 70, 0.2);}
+            50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 8px rgba(200, 100, 70, 0.4);}
+            100% { transform: scale(1); opacity: 0.9; text-shadow: 0 0 0px rgba(200, 100, 70, 0.2);}
+        }
+
+        /* конверт рисованный — профессиональный вид */
+        .envelope {
+            background: #fef5e6;
+            width: 220px;
+            height: 140px;
+            margin: 20px auto 20px;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,200,0.8);
+            border: 1px solid #e2cdae;
+            cursor: pointer;
+            transition: transform 0.25s ease;
+        }
+
+        .envelope:hover {
+            transform: translateY(-5px);
+        }
+
+        /* клапан конверта */
+        .envelope .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            border-top: 70px solid #f3e2ca;
+            border-left: 110px solid transparent;
+            border-right: 110px solid transparent;
+            border-radius: 8px 8px 0 0;
+            box-sizing: border-box;
+        }
+
+        /* восковая печать */
+        .seal {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 36px;
+            background: #c9774b;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffefcf;
+            font-size: 20px;
+            font-family: serif;
+            z-index: 2;
+        }
+
+        .envelope-text {
+            position: absolute;
+            bottom: 18px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #b46f3a;
+            font-size: 14px;
+            text-transform: uppercase;
+            background: rgba(254,245,230,0.7);
+            width: fit-content;
+            margin: 0 auto;
+            padding: 4px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* бланк — официальный стиль */
+        .form-card {
+            background: #fffef7;
+            border-radius: 28px;
+            padding: 28px 24px;
+            text-align: left;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eedfcb;
+        }
+
+        .official-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #e2cfb0;
+            padding-bottom: 12px;
+            margin-bottom: 28px;
+            font-family: monospace;
+            font-weight: 600;
+            color: #8b5a2b;
+        }
+
+        .input-name {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            border: 1px solid #ddc8ae;
+            border-radius: 60px;
+            background: #ffffff;
+            margin: 12px 0 10px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .input-name:focus {
+            outline: none;
+            border-color: #c28a5c;
+            box-shadow: 0 0 0 2px rgba(194, 138, 92, 0.2);
+        }
+
+        .sign-btn {
+            background: #d9b48b;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .sign-btn:hover {
+            background: #c27e54;
+            transform: scale(0.97);
+        }
+
+        .error-msg {
+            color: #b1624b;
+            background: #fff0e6;
+            border-left: 4px solid #c27448;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 18px;
+            font-weight: 500;
+        }
+
+        /* кнопка основная */
+        .action-btn {
+            background: #e0c2a0;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3b2a1f;
+            cursor: pointer;
+            margin-top: 28px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            width: auto;
+            min-width: 160px;
+            font-family: inherit;
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .message-card {
+            background: #fff9f0;
+            border-radius: 32px;
+            padding: 28px 20px;
+            margin: 20px 0 0;
+            text-align: left;
+            font-size: 1rem;
+            line-height: 1.55;
+            color: #4f3522;
+            box-shadow: inset 0 0 0 1px #fff6ea, 0 6px 14px rgba(0,0,0,0.03);
+            font-weight: 450;
+        }
+
+        .white-heart-btn {
+            background: #f3e5d5;
+            border: none;
+            font-size: 2.4rem;
+            padding: 12px 24px;
+            border-radius: 80px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            width: 90px;
+            margin-top: 18px;
+        }
+
+        .white-heart-btn:active {
+            transform: scale(0.92);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            font-size: 22px;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.7);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.2);
+            }
+        }
+
+        .sender-line {
+            font-size: 0.85rem;
+            text-align: right;
+            border-top: 1px dashed #ecdbba;
+            padding-top: 16px;
+            margin-top: 16px;
+            color: #a27b58;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- ЭТАП 0: Бланк с проверкой -->
+    <div id="stageForm">
+        <div class="form-card">
+            <div class="official-header">
+                <span>ОТ: АРСЛАН</span>
+                <span>№ 0420</span>
+            </div>
+            <div style="font-weight: 600; margin-bottom: 6px;">КОНФИДЕНЦИАЛЬНОЕ ПОСЛАНИЕ</div>
+            <div style="font-size: 0.85rem; color: #8b694a; margin-bottom: 20px;">Настоящим подтверждаю, что я являюсь адресатом данного письма. Для получения доступа необходимо указать своё полное имя в поле ниже и поставить подпись.</div>
+            <div style="font-weight: 500; margin: 10px 0 4px;">Имя получателя:</div>
+            <input type="text" id="recipientName" class="input-name" placeholder="введите ваше имя" autocomplete="off">
+            <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                <button id="signBtn" class="sign-btn">ПОДПИСАТЬ</button>
+            </div>
+            <div id="errorMessageArea" class="error-msg hidden"></div>
+        </div>
+    </div>
+
+    <!-- ЭТАП 2: Конверт (пока скрыт) -->
+    <div id="stageEnvelope" class="hidden">
+        <div class="envelope" id="envelopeBox">
+            <div class="flap"></div>
+            <div class="seal">❤</div>
+            <div class="envelope-text">ДЛЯ ФАТИМЫ</div>
+        </div>
+        <button id="openLetterBtn" class="action-btn" style="margin-top: 35px;">ОТКРЫТЬ ПИСЬМО</button>
+    </div>
+
+    <!-- ЭТАП 3-7: сердце + сообщение + кнопка -->
+    <div id="stageMessages" class="hidden">
+        <div class="heart-beat" id="pulseHeart">❤️</div>
+        <div id="dynamicMessage" class="message-card fade-in"></div>
+        <div id="actionButtonContainer"></div>
+    </div>
+</div>
+
+<script>
+    // ---------- тексты сообщений ----------
+    const message1 = `Я нагрубил тебе не потому, что ты меня разозлила. А потому, что я устал и позволил себе слабину. Ты не заслужила этого. Прости. Я тебя очень люблю.`;
+
+    const message2 = `Я люблю тебя за твой чудесный и прекрасный характер. За твой голос, который меня успокаивает в любой момент. За твои тёплые и нежные руки, которые я помню до сих пор. За то, как ты молчишь рядом со мной и это молчание говорит больше слов. За твоё умение прощать и не держать зла. За твою улыбку, которая появляется даже когда тебе тяжело. За твои глаза, твои глубокие и чудесные глаза, в которые хочется смотреть бесконечно. За то, что ты принимаешь меня разным, будучи я уставшим, грубым, неидеальным. За каждую секунду, когда ты просто есть рядом. За твоё тепло, которое я чувствую даже на расстоянии. За твою нежность, которую ты даришь только мне. За то, что с тобой я становлюсь лучше, лишь потому что я с тобою, Фатима.`;
+
+    const message3 = `Твои объятия — мой покой. Я скучаю по ним и хочу обнять тебя прямо сейчас.`;
+
+    const message4 = `Я люблю тебя, Фатима.`;
+
+    // массив сообщений
+    const messages = [message1, message2, message3, message4];
+    let currentStep = 0;      // 0,1,2,3  (4 сообщения)
+    let finalReached = false;  // после 4го нажатия (когда кнопка стала белым сердцем)
+    
+    // DOM элементы
+    const stageFormDiv = document.getElementById('stageForm');
+    const stageEnvelopeDiv = document.getElementById('stageEnvelope');
+    const stageMessagesDiv = document.getElementById('stageMessages');
+    const dynamicMessageDiv = document.getElementById('dynamicMessage');
+    const actionButtonContainer = document.getElementById('actionButtonContainer');
+    const pulseHeart = document.getElementById('pulseHeart');
+    
+    let currentActionButton = null;
+    
+    // ---- функция ошибок (3 случайные фразы) ----
+    const errorPhrases = [
+        "Извините, но это письмо предназначено не для вас. Только Фатима может его открыть. Попробуйте ещё раз.",
+        "Доступ закрыт. Конверт запечатан для Фатимы. Если вы — она, введите своё имя правильно.",
+        "Это письмо ждёт Фатиму. Вы ввели другое имя. Пожалуйста, попробуйте снова."
+    ];
+    
+    function showRandomError() {
+        const randomIndex = Math.floor(Math.random() * errorPhrases.length);
+        const errorDiv = document.getElementById('errorMessageArea');
+        errorDiv.innerText = errorPhrases[randomIndex];
+        errorDiv.classList.remove('hidden');
+        setTimeout(() => {
+            if (errorDiv) errorDiv.classList.add('hidden');
+        }, 2800);
+    }
+    
+    // функция проверки имени
+    function validateAndProceed() {
+        const nameInput = document.getElementById('recipientName');
+        const enteredName = nameInput.value.trim();
+        if (enteredName.toLowerCase() === "фатима") {
+            // Всё правильно — переходим к конверту
+            stageFormDiv.classList.add('hidden');
+            stageEnvelopeDiv.classList.remove('hidden');
+        } else {
+            showRandomError();
+            nameInput.value = "";
+            nameInput.focus();
+        }
+    }
+    
+    // Генерация падающих сердечек (бесконечно при нажатии на белую кнопку)
+    function createFloatingHeart() {
+        const heart = document.createElement('div');
+        heart.innerHTML = '❤️';
+        heart.classList.add('floating-heart');
+        heart.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+        heart.style.bottom = '20px';
+        heart.style.fontSize = (Math.random() * 20 + 18) + 'px';
+        heart.style.opacity = '0.8';
+        document.body.appendChild(heart);
+        setTimeout(() => {
+            heart.remove();
+        }, 1000);
+    }
+    
+    function burstHearts(count = 12) {
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => createFloatingHeart(), i * 70);
+        }
+    }
+    
+    // обновление сообщения и кнопки в зависимости от currentStep
+    function updateMessageAndButton() {
+        if (!finalReached) {
+            // обычный режим шагов 0..3
+            dynamicMessageDiv.innerHTML = messages[currentStep];
+            dynamicMessageDiv.classList.remove('hidden');
+            dynamicMessageDiv.classList.add('fade-in');
+            
+            // создаём кнопку "ДАЛЬШЕ", если шаг не последний (0,1,2)
+            if (currentStep < 3) {
+                const btn = document.createElement('button');
+                btn.innerText = 'ДАЛЬШЕ';
+                btn.className = 'action-btn';
+                btn.addEventListener('click', nextMessageHandler);
+                actionButtonContainer.innerHTML = '';
+                actionButtonContainer.appendChild(btn);
+                currentActionButton = btn;
+            } 
+            else if (currentStep === 3) {
+                // финальный четвёртый текст — показали "Я люблю тебя, Фатима"
+                // создаём кнопку с белым сердцем 🤍
+                const whiteHeartBtn = document.createElement('button');
+                whiteHeartBtn.innerHTML = '🤍';
+                whiteHeartBtn.className = 'white-heart-btn';
+                whiteHeartBtn.style.fontSize = '2.6rem';
+                whiteHeartBtn.style.lineHeight = '1';
+                whiteHeartBtn.addEventListener('click', () => {
+                    // при каждом нажатии на белую кнопку падают сердечки
+                    burstHearts(10);
+                });
+                actionButtonContainer.innerHTML = '';
+                actionButtonContainer.appendChild(whiteHeartBtn);
+                currentActionButton = whiteHeartBtn;
+                finalReached = true;
+            }
+        } else {
+            // finalReached === true: уже белая кнопка 🤍 на экране, сообщение = message4
+            // дополнительная страховка: если нет кнопки — создадим
+            if (!currentActionButton || currentActionButton.innerHTML !== '🤍') {
+                const whiteHeartBtn = document.createElement('button');
+                whiteHeartBtn.innerHTML = '🤍';
+                whiteHeartBtn.className = 'white-heart-btn';
+                whiteHeartBtn.style.fontSize = '2.6rem';
+                whiteHeartBtn.addEventListener('click', () => burstHearts(10));
+                actionButtonContainer.innerHTML = '';
+                actionButtonContainer.appendChild(whiteHeartBtn);
+                currentActionButton = whiteHeartBtn;
+            }
+            // и убедимся что текст финальный
+            dynamicMessageDiv.innerHTML = message4;
+        }
+        // маленькая пауза для анимации
+        setTimeout(() => {
+            if(dynamicMessageDiv) dynamicMessageDiv.classList.remove('fade-in');
+        }, 400);
+    }
+    
+    function nextMessageHandler() {
+        if (finalReached) {
+            // если уже финал, не переключаем, но дополнительные сердечки уже по клику на белую кнопку
+            burstHearts(8);
+            return;
+        }
+        // идём к следующему сообщению
+        if (currentStep < 3) {
+            currentStep++;
+            updateMessageAndButton();
+            // добавим немного сердечек при переходе (приятно)
+            if (currentStep === 1 || currentStep === 2) {
+                burstHearts(6);
+            }
+        } 
+        else if (currentStep === 3) {
+            // переходим в финальное состояние (белая кнопка)
+            // но currentStep уже 3, надо активировать финал
+            finalReached = true;
+            updateMessageAndButton(); // покажет финальный текст и белую кнопку
+            burstHearts(10);
+        }
+    }
+    
+    // обработчик открытия конверта (переход к первому сообщению)
+    function openEnvelopeAndStart() {
+        stageEnvelopeDiv.classList.add('hidden');
+        stageMessagesDiv.classList.remove('hidden');
+        // инициализация сообщений с нуля
+        currentStep = 0;
+        finalReached = false;
+        updateMessageAndButton();
+        burstHearts(8); // радостные сердца при открытии письма
+    }
+    
+    // обработчик клика по конверту (можно и на сам конверт)
+    function setupEnvelopeEvents() {
+        const envelopeDiv = document.getElementById('envelopeBox');
+        if (envelopeDiv) {
+            envelopeDiv.addEventListener('click', () => {
+                // если кнопка "открыть письмо" тоже есть, но можно открыть и по конверту
+                openEnvelopeAndStart();
+            });
+        }
+        const openBtn = document.getElementById('openLetterBtn');
+        if (openBtn) {
+            openBtn.addEventListener('click', openEnvelopeAndStart);
+        }
+    }
+    
+    // вешаем событие на кнопку подписать
+    document.getElementById('signBtn').addEventListener('click', validateAndProceed);
+    
+    // также разрешаем нажать Enter в поле ввода
+    const nameField = document.getElementById('recipientName');
+    nameField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            validateAndProceed();
+        }
+    });
+    
+    // инициализация событий конверта (после загрузки)
+    setupEnvelopeEvents();
+    
+    // предзагрузка: небольшая стилизация, чтобы сердце не прыгало раньше времени
+    // также, если вдруг пользователь случайно переоткроет, но всё ок
+    // дополнительный стиль для кнопки с белым сердцем при клике (двойной бурст уже есть)
+    
+    // Тонкая настройка: если при финале нажать на белое сердце, уже летят сердца
+    // также в nextMessageHandler добавили burstHearts при переходах.
+    
+    // Чтобы сообщения выглядели элегантно, добавим перенос строк для длинного текста (css уже)
+    // Длинный текст сохранен в точности.
+    
+    // Убираем возможные артефакты с анимацией при первом входе
+    console.log("Письмо для Фатимы | От Арслана готово");
+</script>
+</body>
+</html>
