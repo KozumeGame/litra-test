@@ -7,7 +7,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ===== ПЕРЕМЕННЫЕ (по умолчанию Modern Dark) ===== */
         :root {
             --bg-page: #0a0a0f;
             --bg-card: #1e1e2a;
@@ -21,6 +20,7 @@
             --radius-card: 24px;
             --radius-btn: 60px;
             --font-size: 16px;
+            --grid-cols: 2;
             --transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
@@ -33,74 +33,48 @@
             min-height: 100vh;
         }
 
-        /* анимированные частицы */
-        .particle {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.3;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 20px 16px 40px;
-            position: relative;
-            z-index: 2;
-        }
-
+        .particle { position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.3; }
+        .container { max-width: 700px; margin: 0 auto; padding: 20px 16px 40px; position: relative; z-index: 2; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
         h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), #c49a6c); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.5px; }
         .settings-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 8px 18px; cursor: pointer; font-weight: 500; transition: var(--transition); display: flex; align-items: center; gap: 6px; }
         .settings-btn:hover { transform: scale(0.96); background: var(--accent); color: white; border-color: var(--accent); }
-
         .action-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
         .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); border: none; border-radius: var(--radius-btn); padding: 12px 20px; color: white; font-weight: 600; cursor: pointer; flex: 1; text-align: center; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
         .btn-secondary { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 12px 20px; cursor: pointer; flex: 1; text-align: center; transition: var(--transition); }
         .btn-secondary:hover { background: var(--accent); color: white; border-color: var(--accent); }
-
         .search-box { width: 100%; padding: 14px 20px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--bg-card); margin-bottom: 20px; font-size: 0.9rem; transition: var(--transition); }
         .search-box:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,160,180,0.2); }
-
         .filter-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
         .chip { background: var(--bg-card); border: 1px solid var(--border); border-radius: 40px; padding: 8px 18px; font-size: 0.85rem; cursor: pointer; transition: var(--transition); }
         .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
         .chip:hover { transform: translateY(-2px); }
-
         .view-toggle { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 20px; }
         .view-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: 30px; padding: 6px 14px; cursor: pointer; font-size: 0.75rem; transition: var(--transition); }
         .view-btn.active { background: var(--accent); color: white; }
-
-        .recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .recipes-grid { display: grid; grid-template-columns: repeat(var(--grid-cols), 1fr); gap: 20px; }
         .recipes-list { display: flex; flex-direction: column; gap: 16px; }
         .recipe-card { background: var(--bg-card); border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--border); transition: var(--transition); cursor: pointer; }
         .recipe-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
         .recipe-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #2a2a35; }
         .recipe-info { padding: 16px; }
-        .recipe-title { font-weight: 700; font-size: 1.2rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .recipe-meta { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px; flex-wrap: wrap; }
+        .recipe-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .recipe-meta { display: flex; gap: 12px; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 10px; flex-wrap: wrap; }
         .tags { display: flex; gap: 6px; flex-wrap: wrap; }
         .tag { background: var(--bg-page); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; }
-        .favorite-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; transition: var(--transition); }
-        .favorite-btn:hover { transform: scale(1.1); }
-        .edit-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; margin-left: 8px; }
-
+        .favorite-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: var(--transition); }
+        .edit-btn { background: none; border: none; font-size: 1rem; cursor: pointer; margin-left: 8px; }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; }
         .modal.open { visibility: visible; opacity: 1; }
         .modal-content { background: var(--bg-card); width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; border-radius: 32px; padding: 24px; position: relative; }
         .close-modal { position: sticky; top: 0; text-align: right; font-size: 28px; cursor: pointer; }
-
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-primary); transition: var(--transition); }
         input:focus, textarea:focus { outline: none; border-color: var(--accent); }
         .category-check { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
         .delete-btn { background: #e0745a; border: none; border-radius: var(--radius-btn); padding: 12px; color: white; font-weight: 600; cursor: pointer; width: 100%; margin-top: 16px; }
-
-        /* режим готовки */
+        .color-option { display: inline-flex; align-items: center; gap: 8px; margin: 6px 12px 6px 0; cursor: pointer; padding: 6px 12px; border-radius: 40px; background: var(--bg-page); }
+        .color-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); }
         .cooking-mode { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-page); z-index: 1100; display: flex; flex-direction: column; padding: 30px 20px; }
         .progress-container { margin: 20px 0; }
         .progress-bar-bg { background: var(--border); border-radius: 30px; height: 24px; overflow: hidden; position: relative; }
@@ -110,77 +84,41 @@
         .step-card { background: var(--bg-card); border-radius: 28px; padding: 28px; margin: 20px 0; flex: 1; overflow-y: auto; }
         .cooking-buttons { display: flex; gap: 16px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
         .voice-btn { background: var(--accent); border: none; border-radius: 50px; padding: 12px 24px; color: white; font-size: 1.2rem; cursor: pointer; }
-
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #3d2a1f; color: white; padding: 12px 24px; border-radius: 60px; font-size: 0.9rem; z-index: 1200; animation: fadeInUp 0.3s ease; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         footer { text-align: center; margin-top: 50px; font-size: 0.7rem; color: var(--text-secondary); }
+        @media (max-width: 500px) { .recipes-grid { gap: 12px; } .recipe-title { font-size: 0.9rem; } }
     </style>
 </head>
 <body>
 <canvas id="particleCanvas" class="particle"></canvas>
 <div class="container">
-    <div class="header">
-        <h1>📖 Her Cookbook</h1>
-        <button class="settings-btn" id="openSettingsBtn">⚙️ дизайн</button>
-    </div>
-    <div class="action-bar">
-        <button class="btn-primary" id="newRecipeBtn">➕ новый рецепт</button>
-        <button class="btn-secondary" id="randomBtn">🎲 мне повезёт</button>
-    </div>
+    <div class="header"><h1>📖 Her Cookbook</h1><button class="settings-btn" id="openSettingsBtn">⚙️ дизайн</button></div>
+    <div class="action-bar"><button class="btn-primary" id="newRecipeBtn">➕ новый рецепт</button><button class="btn-secondary" id="randomBtn">🎲 случайный рецепт</button></div>
     <input type="text" id="searchInput" class="search-box" placeholder="🔍 поиск...">
     <div class="filter-chips" id="categoryFilters"></div>
-    <div class="view-toggle">
-        <button class="view-btn" data-view="grid">сетка</button>
-        <button class="view-btn" data-view="list">список</button>
-    </div>
+    <div class="view-toggle"><button class="view-btn" data-view="grid">сетка</button><button class="view-btn" data-view="list">список</button></div>
     <div id="recipesContainer" class="recipes-grid"></div>
     <footer>✨ все рецепты сохраняются в браузере</footer>
 </div>
 
-<!-- Модалка настроек -->
-<div id="settingsModal" class="modal">
-    <div class="modal-content">
-        <div class="close-modal">&times;</div>
-        <h3>⚙️ дизайн и настройки</h3>
-        <label>🎨 готовая тема:</label>
-        <select id="themeSelect">
-            <option value="dark">Modern Dark</option>
-            <option value="forest">Forest Green</option>
-            <option value="coffee">Coffee Break</option>
-            <option value="blush">Soft Blush</option>
-            <option value="ocean">Ocean Breeze</option>
-            <option value="custom">🎨 Своя тема</option>
-        </select>
-        <div id="customColors" style="display:none;">
-            <label>фон страницы:</label><input type="color" id="customBg" value="#0a0a0f">
-            <label>фон карточек:</label><input type="color" id="customCard" value="#1e1e2a">
-            <label>цвет текста:</label><input type="color" id="customText" value="#f0ede8">
-            <label>акцентный цвет:</label><input type="color" id="customAccent" value="#e8a0b4">
-        </div>
-        <label>🎨 градиент прогресс-бара:</label>
-        <select id="gradientSelect">
-            <option value="orange-pink">Оранжевый → Розовый</option>
-            <option value="green-purple">Зелёный → Фиолетовый</option>
-            <option value="yellow-green">Жёлтый → Зелёный</option>
-            <option value="cyan-blue">Циан → Синий</option>
-            <option value="pink-darkpurple">Розовый → Тёмно-фиолетовый</option>
-            <option value="yellow-orange">Жёлтый → Оранжевый</option>
-            <option value="teal-blue">Бирюзовый → Синий</option>
-            <option value="brown-gold">Коричневый → Золотой</option>
-        </select>
-        <label>🔤 размер шрифта:</label>
-        <select id="fontSizeSelect"><option value="14px">Маленький</option><option value="16px" selected>Средний</option><option value="18px">Большой</option></select>
-        <label>🔊 звуки:</label>
-        <button id="soundToggleBtn" class="btn-secondary">🔊 включены</button>
-        <button id="saveSettingsBtn" class="btn-primary" style="margin-top:20px;">💾 сохранить</button>
+<div id="settingsModal" class="modal"><div class="modal-content"><div class="close-modal">&times;</div><h3>⚙️ дизайн и настройки</h3>
+    <label>🎨 тема оформления:</label><select id="themeSelect"><option value="dark">🌙 Modern Dark</option><option value="pink">🌸 Soft Pink</option><option value="mint">🍃 Mint Fresh</option><option value="lavender">🫐 Lavender Dream</option><option value="peach">🍑 Peach Sunset</option><option value="sky">☁️ Sky Blue</option><option value="vanilla">🍋 Vanilla Yellow</option><option value="lilac">🌸 Lilac Mist</option><option value="coral">🍊 Coral Reef</option><option value="pistachio">🌿 Pistachio</option><option value="turquoise">💎 Turquoise</option><option value="custom">🎨 Своя тема</option></select>
+    <div id="customColors" style="display:none; margin-top:16px;">
+        <div><label>🎨 фон страницы:</label><div id="bgColorPicker" class="color-palette"></div></div>
+        <div><label>📦 фон карточек:</label><div id="cardColorPicker" class="color-palette"></div></div>
+        <div><label>✨ акцентный цвет:</label><div id="accentColorPicker" class="color-palette"></div></div>
     </div>
-</div>
+    <label>🎨 градиент прогресс-бара:</label><select id="gradientSelect"><option value="orange-pink">Оранжевый → Розовый</option><option value="green-purple">Зелёный → Фиолетовый</option><option value="yellow-green">Жёлтый → Зелёный</option><option value="cyan-blue">Циан → Синий</option><option value="pink-darkpurple">Розовый → Тёмно-фиолетовый</option><option value="yellow-orange">Жёлтый → Оранжевый</option><option value="teal-blue">Бирюзовый → Синий</option><option value="brown-gold">Коричневый → Золотой</option></select>
+    <label>📐 вид сетки:</label><select id="gridColsSelect"><option value="2">2 колонки (по умолчанию)</option><option value="1">1 колонка</option></select>
+    <label>🔤 размер шрифта:</label><select id="fontSizeSelect"><option value="14px">Маленький</option><option value="16px" selected>Средний</option><option value="18px">Большой</option></select>
+    <label>🔊 звуки:</label><button id="soundToggleBtn" class="btn-secondary">🔊 включены</button>
+    <button id="saveSettingsBtn" class="btn-primary" style="margin-top:20px;">💾 сохранить</button>
+</div></div>
 
-<!-- Модалка рецепта -->
 <div id="recipeModal" class="modal"><div class="modal-content"><div class="close-modal">&times;</div><div id="recipeModalBody"></div></div></div>
 
 <script>
-    // ========== ЗВУКИ ==========
     let soundEnabled = localStorage.getItem('hercookbook_sound') !== 'false';
     function playSound(type){
         if(!soundEnabled) return;
@@ -196,11 +134,10 @@
     }
     function showToast(msg){ let d=document.createElement('div'); d.className='toast'; d.innerText=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),2000); }
 
-    // ========== ДАННЫЕ ==========
     let recipes = JSON.parse(localStorage.getItem('hercookbook_recipes')) || [];
     if(recipes.length===0){
-        recipes.push({ id: Date.now(), title: "Идеальная яичница", categories: ["Завтрак"], difficulty: 2, time: 5, tags: ["#быстро"], ingredients: ["2 яйца","сливочное масло"], steps: ["Разогреть сковороду","Растопить масло","Вбить яйца","Жарить 2 минуты"], comment: "Люблю с помидорами!", mainPhoto: "", extraPhotos: [], favorite: false });
-        recipes.push({ id: Date.now()+1, title: "Паста карбонара", categories: ["Обед","Ужин"], difficulty: 3, time: 25, tags: ["#паста","#ужин"], ingredients: ["спагетти","бекон","сливки","пармезан","яйцо"], steps: ["Отварить пасту","Обжарить бекон","Смешать сливки с желтком","Соединить с пастой","Посыпать пармезаном"], comment: "Маша любит с беконом", mainPhoto: "", extraPhotos: [], favorite: false });
+        recipes.push({ id: Date.now(), title: "Идеальная яичница", categories: ["Завтрак"], difficulty: 2, time: 5, tags: ["#быстро"], ingredients: ["2 яйца","сливочное масло"], steps: ["Разогреть сковороду","Растопить масло","Вбить яйца","Жарить 2 минуты"], comment: "Люблю с помидорами!", mainPhoto: "", favorite: false });
+        recipes.push({ id: Date.now()+1, title: "Паста карбонара", categories: ["Обед","Ужин"], difficulty: 3, time: 25, tags: ["#паста","#ужин"], ingredients: ["спагетти","бекон","сливки","пармезан","яйцо"], steps: ["Отварить пасту","Обжарить бекон","Смешать сливки с желтком","Соединить с пастой","Посыпать пармезаном"], comment: "Маша любит с беконом", mainPhoto: "", favorite: false });
     }
     let currentView = localStorage.getItem('hercookbook_view') || 'grid';
     let currentCategoryFilter = 'все';
@@ -245,17 +182,13 @@
         document.getElementById('cookBtn').onclick = ()=>{ modal.classList.remove('open'); startCooking(r); };
     }
 
-    // ========== РЕЖИМ ГОТОВКИ С ГОЛОСОМ ==========
-    let currentCookingRecipe = null;
-    let currentStepIndex = 0;
-    let recognition = null;
+    let currentCookingRecipe = null, currentStepIndex = 0, recognition = null;
     function startCooking(recipe){
         currentCookingRecipe = recipe;
         currentStepIndex = 0;
         const gradMap = { 'orange-pink':'linear-gradient(90deg,#ff8c42,#ff6b9d)', 'green-purple':'linear-gradient(90deg,#4caf50,#9c27b0)', 'yellow-green':'linear-gradient(90deg,#ffeb3b,#4caf50)', 'cyan-blue':'linear-gradient(90deg,#00bcd4,#2196f3)', 'pink-darkpurple':'linear-gradient(90deg,#e91e63,#4a148c)', 'yellow-orange':'linear-gradient(90deg,#ffc107,#ff5722)', 'teal-blue':'linear-gradient(90deg,#00897b,#1565c0)', 'brown-gold':'linear-gradient(90deg,#795548,#ffc107)' };
         const gradKey = localStorage.getItem('hercookbook_gradient') || 'orange-pink';
         const gradient = gradMap[gradKey] || gradMap['orange-pink'];
-        const modal = document.getElementById('recipeModal');
         const cookDiv = document.createElement('div');
         cookDiv.className = 'cooking-mode';
         cookDiv.id = 'cookingMode';
@@ -265,24 +198,22 @@
             <div class="cooking-buttons"><button id="prevStepBtn" class="btn-secondary">◀ назад</button><button id="nextStepBtn" class="btn-primary">вперед ▶</button><button id="voiceControlBtn" class="voice-btn">🎤 голос</button></div>
             <button id="finishCookingBtn" class="btn-secondary" style="margin-top:16px;">✅ завершить готовку</button>`;
         document.body.appendChild(cookDiv);
-        updateProgress();
+        function updateStep(){ document.getElementById('stepText').innerHTML = escapeHtml(recipe.steps[currentStepIndex]); document.getElementById('currentStepNum').innerText = currentStepIndex+1; const percent = ((currentStepIndex+1)/recipe.steps.length)*100; document.getElementById('progressFill').style.width = percent+'%'; document.getElementById('stepCounter').innerText = `${currentStepIndex+1} / ${recipe.steps.length} шагов`; }
+        updateStep();
         document.getElementById('exitCookingBtn').onclick = ()=>{ if(recognition) recognition.abort(); cookDiv.remove(); };
         document.getElementById('prevStepBtn').onclick = ()=>{ if(currentStepIndex>0){ currentStepIndex--; updateStep(); playSound('step'); } };
         document.getElementById('nextStepBtn').onclick = ()=>{ if(currentStepIndex<recipe.steps.length-1){ currentStepIndex++; updateStep(); playSound('step'); } else if(currentStepIndex===recipe.steps.length-1){ showToast('🎉 Поздравляю! Блюдо готово!'); cookDiv.remove(); } };
         document.getElementById('finishCookingBtn').onclick = ()=>{ cookDiv.remove(); showToast('👩‍🍳 Готовка завершена!'); };
-        
-        // голосовое управление
         const voiceBtn = document.getElementById('voiceControlBtn');
-        let isListening = false;
         voiceBtn.onclick = ()=>{
-            if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){ showToast('Голосовое управление не поддерживается в этом браузере'); return; }
+            if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){ showToast('Голосовое управление не поддерживается'); return; }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if(recognition) recognition.abort();
             recognition = new SpeechRecognition();
             recognition.lang = 'ru-RU';
             recognition.interimResults = false;
-            recognition.onstart = ()=>{ isListening=true; voiceBtn.style.background='#4caf50'; showToast('🎤 слушаю...'); };
-            recognition.onend = ()=>{ isListening=false; voiceBtn.style.background='var(--accent)'; };
+            recognition.onstart = ()=>{ voiceBtn.style.background='#4caf50'; showToast('🎤 слушаю...'); };
+            recognition.onend = ()=>{ voiceBtn.style.background='var(--accent)'; };
             recognition.onresult = (event)=>{
                 const command = event.results[0][0].transcript.toLowerCase();
                 showToast(`🔊 "${command}"`);
@@ -294,16 +225,11 @@
             };
             recognition.start();
         };
-        function updateStep(){ document.getElementById('stepText').innerHTML = escapeHtml(recipe.steps[currentStepIndex]); document.getElementById('currentStepNum').innerText = currentStepIndex+1; updateProgress(); }
-        function updateProgress(){ const percent = ((currentStepIndex+1)/recipe.steps.length)*100; document.getElementById('progressFill').style.width = percent+'%'; document.getElementById('stepCounter').innerText = `${currentStepIndex+1} / ${recipe.steps.length} шагов`; }
-        
-        // свайп для телефона
         let touchStartX = 0;
         cookDiv.addEventListener('touchstart', (e)=>{ touchStartX = e.changedTouches[0].screenX; });
         cookDiv.addEventListener('touchend', (e)=>{ const endX = e.changedTouches[0].screenX; if(endX - touchStartX > 50 && currentStepIndex>0){ currentStepIndex--; updateStep(); playSound('step'); } else if(touchStartX - endX > 50 && currentStepIndex<recipe.steps.length-1){ currentStepIndex++; updateStep(); playSound('step'); } });
     }
 
-    // ========== ФОРМА РЕЦЕПТА ==========
     function openRecipeForm(id=null){
         const r = id ? recipes.find(r=>r.id===id) : null;
         const modal = document.getElementById('recipeModal');
@@ -338,7 +264,7 @@
             const mainPhoto = window.tempPhoto || (r ? r.mainPhoto : '');
             const comment = document.getElementById('formComment').value;
             if(!r){
-                recipes.push({ id:Date.now(), title, categories, difficulty, time, tags, ingredients:[...ingredients], steps:[...steps], comment, mainPhoto, extraPhotos:[], favorite:false });
+                recipes.push({ id:Date.now(), title, categories, difficulty, time, tags, ingredients:[...ingredients], steps:[...steps], comment, mainPhoto, favorite:false });
                 playSound('save'); showToast('✨ рецепт добавлен!');
             } else {
                 r.title=title; r.categories=categories; r.difficulty=difficulty; r.time=time; r.tags=tags; r.ingredients=[...ingredients]; r.steps=[...steps]; r.comment=comment;
@@ -358,24 +284,38 @@
         document.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{ if(ch.dataset.cat==='favorite'){ favoritesOnly=!favoritesOnly; buildFilters(); renderRecipes(); } else { currentCategoryFilter=ch.dataset.cat; favoritesOnly=false; buildFilters(); renderRecipes(); } }));
     }
 
-    // ========== ТЕМЫ ==========
     const themes = {
         dark: { bg: '#0a0a0f', card: '#1e1e2a', text: '#f0ede8', accent: '#e8a0b4' },
-        forest: { bg: '#1a2e1f', card: '#2a4530', text: '#e8f0e3', accent: '#d4af37' },
-        coffee: { bg: '#2c1810', card: '#d4b896', text: '#3d2a1f', accent: '#c68e3e' },
-        blush: { bg: '#f9e8ec', card: '#ffffff', text: '#5e3a4a', accent: '#e87b9c' },
-        ocean: { bg: '#0d2b3e', card: '#1a4a6e', text: '#ffffff', accent: '#00bcd4' }
+        pink: { bg: '#fff0f3', card: '#ffffff', text: '#5e3a4a', accent: '#e87b9c' },
+        mint: { bg: '#e8f5e9', card: '#ffffff', text: '#2e5c3e', accent: '#4caf50' },
+        lavender: { bg: '#f3e8ff', card: '#ffffff', text: '#4a3a6e', accent: '#9c27b0' },
+        peach: { bg: '#fff5e6', card: '#ffffff', text: '#6e4a3a', accent: '#ff8c42' },
+        sky: { bg: '#e8f4f8', card: '#ffffff', text: '#2a5a6e', accent: '#00bcd4' },
+        vanilla: { bg: '#fffbe6', card: '#ffffff', text: '#6e6a3a', accent: '#ffc107' },
+        lilac: { bg: '#f9e8f5', card: '#ffffff', text: '#6e3a5e', accent: '#e91e63' },
+        coral: { bg: '#fff0ec', card: '#ffffff', text: '#6e3a2a', accent: '#ff5722' },
+        pistachio: { bg: '#f0f7e8', card: '#ffffff', text: '#3a5e2a', accent: '#8bc34a' },
+        turquoise: { bg: '#e8f7f5', card: '#ffffff', text: '#2a5e5a', accent: '#00897b' }
     };
+    const colorOptions = ['#0a0a0f','#1e1e2a','#f0ede8','#ffffff','#fff0f3','#e8f5e9','#f3e8ff','#fff5e6','#e8f4f8','#fffbe6','#f9e8f5','#fff0ec','#f0f7e8','#e8f7f5','#e8a0b4','#e87b9c','#4caf50','#9c27b0','#ff8c42','#00bcd4','#ffc107','#e91e63','#ff5722','#8bc34a','#00897b'];
+    function renderColorPicker(containerId, selectedColor, onSelect){
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        colorOptions.forEach(color=>{
+            const btn = document.createElement('div');
+            btn.className = 'color-option';
+            btn.innerHTML = `<div class="color-circle" style="background:${color}; border-color:${color==='#ffffff'?'#ccc':'transparent'}"></div><span>${color}</span>`;
+            btn.style.border = selectedColor===color ? `2px solid var(--accent)` : 'none';
+            btn.onclick = ()=>{ onSelect(color); renderColorPicker(containerId, color, onSelect); };
+            container.appendChild(btn);
+        });
+    }
     function applyTheme(themeName){
         if(themeName==='custom'){
-            const bg = localStorage.getItem('custom_bg') || '#0a0a0f';
-            const card = localStorage.getItem('custom_card') || '#1e1e2a';
-            const text = localStorage.getItem('custom_text') || '#f0ede8';
-            const accent = localStorage.getItem('custom_accent') || '#e8a0b4';
-            document.documentElement.style.setProperty('--bg-page', bg);
-            document.documentElement.style.setProperty('--bg-card', card);
-            document.documentElement.style.setProperty('--text-primary', text);
-            document.documentElement.style.setProperty('--accent', accent);
+            document.documentElement.style.setProperty('--bg-page', localStorage.getItem('custom_bg') || '#fff0f3');
+            document.documentElement.style.setProperty('--bg-card', localStorage.getItem('custom_card') || '#ffffff');
+            document.documentElement.style.setProperty('--text-primary', localStorage.getItem('custom_text') || '#5e3a4a');
+            document.documentElement.style.setProperty('--accent', localStorage.getItem('custom_accent') || '#e87b9c');
         } else if(themes[themeName]){
             document.documentElement.style.setProperty('--bg-page', themes[themeName].bg);
             document.documentElement.style.setProperty('--bg-card', themes[themeName].card);
@@ -387,33 +327,37 @@
         const theme = document.getElementById('themeSelect').value;
         localStorage.setItem('hercookbook_theme', theme);
         if(theme==='custom'){
-            localStorage.setItem('custom_bg', document.getElementById('customBg').value);
-            localStorage.setItem('custom_card', document.getElementById('customCard').value);
-            localStorage.setItem('custom_text', document.getElementById('customText').value);
-            localStorage.setItem('custom_accent', document.getElementById('customAccent').value);
+            localStorage.setItem('custom_bg', document.getElementById('customBgVal').dataset.color || '#fff0f3');
+            localStorage.setItem('custom_card', document.getElementById('customCardVal').dataset.color || '#ffffff');
+            localStorage.setItem('custom_text', document.getElementById('customTextVal').dataset.color || '#5e3a4a');
+            localStorage.setItem('custom_accent', document.getElementById('customAccentVal').dataset.color || '#e87b9c');
         }
         localStorage.setItem('hercookbook_gradient', document.getElementById('gradientSelect').value);
         localStorage.setItem('hercookbook_fontSize', document.getElementById('fontSizeSelect').value);
+        localStorage.setItem('hercookbook_gridCols', document.getElementById('gridColsSelect').value);
         document.documentElement.style.setProperty('--font-size', localStorage.getItem('hercookbook_fontSize') || '16px');
+        document.documentElement.style.setProperty('--grid-cols', localStorage.getItem('hercookbook_gridCols') || '2');
         applyTheme(theme);
+        renderRecipes();
         showToast('настройки сохранены');
     }
     function openSettings(){
         const modal = document.getElementById('settingsModal');
-        const savedTheme = localStorage.getItem('hercookbook_theme') || 'dark';
+        const savedTheme = localStorage.getItem('hercookbook_theme') || 'pink';
         document.getElementById('themeSelect').value = savedTheme;
         document.getElementById('gradientSelect').value = localStorage.getItem('hercookbook_gradient') || 'orange-pink';
         document.getElementById('fontSizeSelect').value = localStorage.getItem('hercookbook_fontSize') || '16px';
-        document.getElementById('customBg').value = localStorage.getItem('custom_bg') || '#0a0a0f';
-        document.getElementById('customCard').value = localStorage.getItem('custom_card') || '#1e1e2a';
-        document.getElementById('customText').value = localStorage.getItem('custom_text') || '#f0ede8';
-        document.getElementById('customAccent').value = localStorage.getItem('custom_accent') || '#e8a0b4';
+        document.getElementById('gridColsSelect').value = localStorage.getItem('hercookbook_gridCols') || '2';
         document.getElementById('customColors').style.display = savedTheme==='custom' ? 'block' : 'none';
+        if(savedTheme==='custom'){
+            renderColorPicker('bgColorPicker', localStorage.getItem('custom_bg') || '#fff0f3', (c)=>{ document.getElementById('customBgVal').dataset.color = c; });
+            renderColorPicker('cardColorPicker', localStorage.getItem('custom_card') || '#ffffff', (c)=>{ document.getElementById('customCardVal').dataset.color = c; });
+            renderColorPicker('accentColorPicker', localStorage.getItem('custom_accent') || '#e87b9c', (c)=>{ document.getElementById('customAccentVal').dataset.color = c; });
+        }
         document.getElementById('themeSelect').onchange = ()=>{ document.getElementById('customColors').style.display = document.getElementById('themeSelect').value==='custom' ? 'block' : 'none'; };
         modal.classList.add('open');
     }
 
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
     document.getElementById('saveSettingsBtn').addEventListener('click', ()=>{ saveSettings(); document.getElementById('settingsModal').classList.remove('open'); });
     document.getElementById('openSettingsBtn').onclick = openSettings;
     document.getElementById('soundToggleBtn')?.addEventListener('click',()=>{ soundEnabled=!soundEnabled; localStorage.setItem('hercookbook_sound',soundEnabled); document.getElementById('soundToggleBtn').innerHTML = soundEnabled ? '🔊 включены' : '🔇 выключены'; showToast(soundEnabled?'звук включён':'звук выключен'); });
@@ -423,11 +367,11 @@
     document.getElementById('searchInput').addEventListener('input',(e)=>{ currentSearch=e.target.value.toLowerCase(); renderRecipes(); });
     document.querySelectorAll('.view-btn').forEach(btn=>btn.addEventListener('click',()=>{ currentView=btn.dataset.view; localStorage.setItem('hercookbook_view',currentView); renderRecipes(); document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }));
     document.querySelector(`.view-btn[data-view="${currentView}"]`).classList.add('active');
-    applyTheme(localStorage.getItem('hercookbook_theme') || 'dark');
+    document.documentElement.style.setProperty('--grid-cols', localStorage.getItem('hercookbook_gridCols') || '2');
+    applyTheme(localStorage.getItem('hercookbook_theme') || 'pink');
     document.documentElement.style.setProperty('--font-size', localStorage.getItem('hercookbook_fontSize') || '16px');
     buildFilters(); renderRecipes();
 
-    // частицы
     const canvas = document.getElementById('particleCanvas');
     const ctxCanvas = canvas.getContext('2d');
     let particles = [];
