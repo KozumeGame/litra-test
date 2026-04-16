@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>🎬 CineMatch | твой киногид</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ========= ПЕРЕМЕННЫЕ ТЕМ ========= */
+        :root {
+            --bg-page: #0a0a0f;
+            --bg-surface: #14141a;
+            --bg-card: #1e1e28;
+            --border: #2a2a35;
+            --text-primary: #f0ede8;
+            --text-secondary: #aaa5a0;
+            --accent: #e6b873;
+            --accent-glow: rgba(230, 184, 115, 0.2);
+            --shadow: 0 8px 20px rgba(0,0,0,0.4);
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --transition: 0.2s ease;
+        }
+
+        body.light {
+            --bg-page: #f5f2ed;
+            --bg-surface: #ffffff;
+            --bg-card: #fefaf5;
+            --border: #e0d6ca;
+            --text-primary: #2c2a28;
+            --text-secondary: #6e685e;
+            --accent: #c68e3e;
+            --shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        body {
+            background: var(--bg-page);
+            color: var(--text-primary);
+            font-family: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+            transition: background 0.2s, color 0.2s;
+            min-height: 100vh;
+        }
+
+        /* ========= БОКОВОЕ МЕНЮ (выезжающее) ========= */
+        .menu-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 52px;
+            height: 52px;
+            background: var(--bg-surface);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            border: 1px solid var(--accent);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .menu-btn:hover { transform: scale(1.02); background: var(--accent); }
+        .menu-icon { width: 24px; height: 2px; background: var(--accent); position: relative; border-radius: 4px; }
+        .menu-icon::before, .menu-icon::after { content: ''; position: absolute; width: 24px; height: 2px; background: var(--accent); border-radius: 4px; transition: 0.2s; }
+        .menu-icon::before { top: -8px; }
+        .menu-icon::after { top: 8px; }
+        .menu-btn.open .menu-icon { background: transparent; }
+        .menu-btn.open .menu-icon::before { transform: rotate(45deg); top: 0; background: var(--text-primary); }
+        .menu-btn.open .menu-icon::after { transform: rotate(-45deg); top: 0; background: var(--text-primary); }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            z-index: 999;
+            transition: 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            padding: 80px 20px 30px;
+            border-right: 1px solid var(--accent);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-section { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .sidebar-section h4 { color: var(--accent); margin-bottom: 12px; font-size: 1rem; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
+        .theme-switch, .radius-switch { width: 44px; height: 24px; background: var(--border); border-radius: 30px; cursor: pointer; position: relative; transition: 0.2s; }
+        .theme-switch.active, .radius-switch.active { background: var(--accent); }
+        .theme-switch::after, .radius-switch::after { content: ''; width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: 0.2s; }
+        .theme-switch.active::after, .radius-switch.active::after { left: 21px; }
+
+        /* ========= ОСНОВНОЙ КОНТЕНТ ========= */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 80px 24px 40px;
+        }
+        .logo-area { text-align: center; margin-bottom: 32px; }
+        .logo-area h1 { font-size: 2.8rem; letter-spacing: -1px; background: linear-gradient(135deg, var(--accent), #f2d680); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .search-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-bar input { flex: 1; padding: 14px 20px; border-radius: 60px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-primary); font-size: 1rem; }
+        .search-bar button { background: var(--accent); border: none; border-radius: 60px; padding: 0 24px; font-weight: bold; color: #0a0a0f; cursor: pointer; }
+
+        .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 30px; overflow-x: auto; padding-bottom: 8px; }
+        .filter-chip { background: var(--bg-card); border: 1px solid var(--border); border-radius: 60px; padding: 8px 20px; font-size: 0.85rem; cursor: pointer; transition: 0.1s; white-space: nowrap; }
+        .filter-chip.active { background: var(--accent); color: #0a0a0f; border-color: var(--accent); }
+
+        /* сетка фильмов */
+        .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px; margin: 30px 0; }
+        .movie-card { background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border); }
+        .movie-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+        .poster { width: 100%; aspect-ratio: 2/3; background: #2a2a35; object-fit: cover; }
+        .movie-info { padding: 12px; }
+        .movie-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rating { color: var(--accent); font-size: 0.8rem; margin-top: 6px; }
+        .add-to-list { background: none; border: 1px solid var(--accent); border-radius: 30px; padding: 4px 12px; font-size: 0.7rem; margin-top: 8px; cursor: pointer; width: 100%; }
+
+        .pagination { display: flex; justify-content: center; gap: 12px; margin: 40px 0; }
+        .page-btn { background: var(--bg-card); border: 1px solid var(--border); border-radius: 40px; padding: 8px 18px; cursor: pointer; }
+
+        /* модалка */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1100; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal.open { visibility: visible; opacity: 1; }
+        .modal-content { background: var(--bg-surface); max-width: 500px; width: 90%; border-radius: var(--radius-lg); padding: 20px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 16px; right: 20px; font-size: 28px; cursor: pointer; }
+        .trailer-btn { background: var(--accent); border: none; border-radius: 40px; padding: 10px; margin: 12px 0; width: 100%; font-weight: bold; }
+
+        @media (max-width: 600px) {
+            .container { padding: 70px 16px 30px; }
+            .movies-grid { gap: 12px; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+        }
+        footer { text-align: center; font-size: 0.7rem; margin-top: 40px; opacity: 0.6; }
+    </style>
+</head>
+<body>
+<div class="menu-btn" id="menuBtn"><div class="menu-icon"></div></div>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+        <h4>🎨 интерфейс</h4>
+        <div class="setting-row">
+            <span>🌙 тёмная тема</span>
+            <div class="theme-switch active" id="themeToggleBtn"></div>
+        </div>
+        <div class="setting-row">
+            <span>⭕ круглые углы</span>
+            <div class="radius-switch active" id="radiusToggleBtn"></div>
+        </div>
+    </div>
+    <div class="sidebar-section">
+        <h4>📋 мой список</h4>
+        <div id="watchlistCount">0 фильмов</div>
+        <button id="clearWatchlistBtn" style="margin-top:12px; background:transparent; border:1px solid var(--accent); border-radius:40px; padding:6px;">очистить</button>
+    </div>
+    <div class="sidebar-section">
+        <h4>🎲 случайный фильм</h4>
+        <button id="randomMovieBtn" style="width:100%; border-radius:40px;">🍿 не знаю что выбрать</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="logo-area"><h1>🎬 CINEMATCH</h1><p>найди идеальный фильм</p></div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Название фильма... (например, Inception)">
+        <button id="searchBtn">🔍 искать</button>
+    </div>
+    <div class="filters" id="filtersContainer"></div>
+    <div id="moviesGrid" class="movies-grid"></div>
+    <div class="pagination" id="pagination"></div>
+    <footer>⚡ данные от TMDB (демо-режим) · настройки сохраняются</footer>
+</div>
+
+<div id="movieModal" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><div id="modalBody"></div></div></div>
+
+<script>
+    // ========== НАСТРОЙКИ ИНТЕРФЕЙСА ==========
+    let settings = JSON.parse(localStorage.getItem('cinematch_settings')) || { theme: 'dark', rounded: true };
+    function applySettings() {
+        if(settings.theme === 'light') document.body.classList.add('light'); else document.body.classList.remove('light');
+        document.getElementById('themeToggleBtn').classList.toggle('active', settings.theme === 'light');
+        let root = document.documentElement;
+        if(settings.rounded) { root.style.setProperty('--radius-sm', '16px'); root.style.setProperty('--radius-md', '24px'); root.style.setProperty('--radius-lg', '32px'); }
+        else { root.style.setProperty('--radius-sm', '6px'); root.style.setProperty('--radius-md', '10px'); root.style.setProperty('--radius-lg', '16px'); }
+        document.getElementById('radiusToggleBtn').classList.toggle('active', settings.rounded);
+    }
+    document.getElementById('themeToggleBtn').addEventListener('click', () => { settings.theme = settings.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('cinematch_settings', JSON.stringify(settings)); applySettings(); });
+    document.getElementById('radiusToggleBtn').addEventListener('click', () => { settings.rounded = !settings.rounded; localStorage.setItem('cinematch_settings', JSON.stringify(settings)); applySettings(); });
+    applySettings();
+
+    // ========== ДАННЫЕ, WATCHLIST ==========
+    let watchlist = JSON.parse(localStorage.getItem('cinematch_watchlist')) || [];
+    function updateWatchlistUI() { document.getElementById('watchlistCount').innerText = watchlist.length + (watchlist.length===1?' фильм':' фильмов'); }
+    updateWatchlistUI();
+
+    function addToWatchlist(movie) { if(!watchlist.some(m=>m.id===movie.id)) { watchlist.push(movie); localStorage.setItem('cinematch_watchlist', JSON.stringify(watchlist)); updateWatchlistUI(); alert('✅ добавлено в «мой список»'); } else alert('уже в списке'); }
+    document.getElementById('clearWatchlistBtn').addEventListener('click', () => { watchlist = []; localStorage.setItem('cinematch_watchlist', JSON.stringify(watchlist)); updateWatchlistUI(); renderMovies(currentMovies); });
+
+    // ========== ЭМУЛЯЦИЯ ФИЛЬМОВ (без API-ключа, работает сразу) ==========
+    let allMoviesCache = [];
+    let currentMovies = [];
+    let currentPage = 1;
+    let totalPages = 5;
+    let activeGenre = 'all', activeYear = 'all', sortBy = 'popularity';
+    const genresList = ['все','боевик','комедия','драма','фантастика','ужасы'];
+    const yearsList = ['все','2024','2023','2022','2021','2020'];
+
+    function generateMockMovies(page=1) {
+        const titles = ['Дюна: Часть вторая', 'Оппенгеймер', 'Барби', 'Джон Уик 4', 'Гладиатор 2', 'Матрица 5', 'Начало', 'Интерстеллар', 'Безумный Макс', 'Фуриоса', 'Дэдпул 3', 'Веном 3', 'Мулан', 'Король Лев', 'Аватар 3'];
+        const genresMap = {'боевик':[0,2,3],'комедия':[2,10],'драма':[1,4,6],'фантастика':[0,7,8,14],'ужасы':[11]};
+        let arr = [];
+        for(let i=0;i<20;i++) {
+            let id = (page-1)*20+i;
+            let title = titles[(id+Math.floor(Math.random()*titles.length))%titles.length] + (Math.random()>0.8 ? ' 2' : '');
+            let year = 2015 + Math.floor(Math.random()*10);
+            let rating = (5 + Math.random()*5).toFixed(1);
+            let genre = genresList[Math.floor(Math.random()*(genresList.length-1))+1];
+            arr.push({ id, title, year, rating, overview: `Это захватывающий фильм «${title}» с потрясающим сюжетом и визуальными эффектами. Рекомендуем к просмотру!`, poster: `https://picsum.photos/id/${(id%100)+30}/300/450`, genre });
+        }
+        return arr;
+    }
+
+    function filterMovies(movies) {
+        let filtered = [...movies];
+        if(activeGenre !== 'all') filtered = filtered.filter(m => m.genre === activeGenre);
+        if(activeYear !== 'all') filtered = filtered.filter(m => m.year == activeYear);
+        if(sortBy === 'rating') filtered.sort((a,b)=>b.rating - a.rating);
+        else if(sortBy === 'year') filtered.sort((a,b)=>b.year - a.year);
+        return filtered;
+    }
+
+    function renderMovies(movies) {
+        const grid = document.getElementById('moviesGrid');
+        if(!movies.length) { grid.innerHTML = '<div style="grid-column:1/-1; text-align:center;">😔 фильмы не найдены</div>'; return; }
+        grid.innerHTML = movies.map(m => `
+            <div class="movie-card" data-id="${m.id}">
+                <img class="poster" src="${m.poster}" alt="${m.title}" loading="lazy">
+                <div class="movie-info">
+                    <div class="movie-title">${m.title}</div>
+                    <div class="rating">⭐ ${m.rating} / ${m.year}</div>
+                    <button class="add-to-list" data-id="${m.id}" data-title="${m.title}" data-poster="${m.poster}" data-rating="${m.rating}" data-year="${m.year}" data-overview="${m.overview.replace(/"/g, '&quot;')}">➕ в список</button>
+                </div>
+            </div>
+        `).join('');
+        document.querySelectorAll('.movie-card').forEach(card => { card.addEventListener('click', (e) => { if(!e.target.classList.contains('add-to-list')) { const id = parseInt(card.dataset.id); const movie = movies.find(m=>m.id===id); if(movie) openModal(movie); } }); });
+        document.querySelectorAll('.add-to-list').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const movie = { id: parseInt(btn.dataset.id), title: btn.dataset.title, poster: btn.dataset.poster, rating: btn.dataset.rating, year: btn.dataset.year, overview: btn.dataset.overview }; addToWatchlist(movie); }); });
+    }
+
+    function loadPage(page) {
+        currentPage = page;
+        let mock = generateMockMovies(page);
+        allMoviesCache = mock;
+        let filtered = filterMovies(mock);
+        currentMovies = filtered;
+        renderMovies(filtered);
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const pagDiv = document.getElementById('pagination');
+        pagDiv.innerHTML = `<button class="page-btn" data-page="${currentPage-1}" ${currentPage<=1?'disabled':''}>◀ назад</button>
+                            <span style="padding:8px">стр. ${currentPage} / ${totalPages}</span>
+                            <button class="page-btn" data-page="${currentPage+1}" ${currentPage>=totalPages?'disabled':''}>вперёд ▶</button>`;
+        document.querySelectorAll('.page-btn').forEach(btn => { btn.addEventListener('click', () => { let pg = parseInt(btn.dataset.page); if(pg>=1 && pg<=totalPages) loadPage(pg); }); });
+    }
+
+    function buildFilters() {
+        const container = document.getElementById('filtersContainer');
+        container.innerHTML = `<div class="filter-chip ${activeGenre==='all'?'active':''}" data-filter="genre" data-value="all">все жанры</div>` + genresList.filter(g=>g!=='все').map(g=>`<div class="filter-chip ${activeGenre===g?'active':''}" data-filter="genre" data-value="${g}">${g}</div>`).join('');
+        container.innerHTML += `<div class="filter-chip ${activeYear==='all'?'active':''}" data-filter="year" data-value="all">все года</div>` + yearsList.filter(y=>y!=='все').map(y=>`<div class="filter-chip ${activeYear===y?'active':''}" data-filter="year" data-value="${y}">${y}</div>`).join('');
+        container.innerHTML += `<div class="filter-chip" data-filter="sort" data-value="popularity">⭐ популярные</div>
+                                <div class="filter-chip" data-filter="sort" data-value="rating">🏆 рейтинг</div>
+                                <div class="filter-chip" data-filter="sort" data-value="year">📅 новинки</div>`;
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const type = chip.dataset.filter;
+                const val = chip.dataset.value;
+                if(type === 'genre') activeGenre = val;
+                else if(type === 'year') activeYear = val;
+                else if(type === 'sort') sortBy = val;
+                let filtered = filterMovies(allMoviesCache);
+                currentMovies = filtered;
+                renderMovies(currentMovies);
+                buildFilters(); // обновить активные классы
+            });
+        });
+    }
+
+    function openModal(movie) {
+        const modal = document.getElementById('movieModal');
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <h2>${movie.title} (${movie.year})</h2>
+            <img src="${movie.poster}" style="width:100%; border-radius:20px; margin:12px 0;">
+            <p>⭐ ${movie.rating} / 10</p>
+            <p>${movie.overview}</p>
+            <button class="trailer-btn" id="trailerMockBtn">🎬 смотреть трейлер (демо)</button>
+            <button id="modalAddToList" style="margin-top:8px; border-radius:40px;">📌 добавить в мой список</button>
+        `;
+        modal.classList.add('open');
+        document.getElementById('trailerMockBtn').addEventListener('click', () => alert('🎥 Здесь мог быть трейлер с YouTube (демо-режим)'));
+        document.getElementById('modalAddToList').addEventListener('click', () => addToWatchlist(movie));
+    }
+    document.querySelector('.close-modal').addEventListener('click', () => document.getElementById('movieModal').classList.remove('open'));
+    document.getElementById('movieModal').addEventListener('click', (e) => { if(e.target === document.getElementById('movieModal')) document.getElementById('movieModal').classList.remove('open'); });
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+        if(!query) { loadPage(1); return; }
+        let filtered = allMoviesCache.filter(m => m.title.toLowerCase().includes(query));
+        currentMovies = filtered;
+        renderMovies(currentMovies);
+    });
+    document.getElementById('randomMovieBtn').addEventListener('click', () => {
+        let randomIndex = Math.floor(Math.random() * currentMovies.length);
+        if(currentMovies[randomIndex]) openModal(currentMovies[randomIndex]);
+        else alert('список фильмов пуст, нажми поиск');
+    });
+
+    // меню
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    menuBtn.addEventListener('click', () => { menuBtn.classList.toggle('open'); sidebar.classList.toggle('open'); });
+    document.addEventListener('click', (e) => { if(sidebar.classList.contains('open') && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) { sidebar.classList.remove('open'); menuBtn.classList.remove('open'); } });
+
+    buildFilters();
+    loadPage(1);
+</script>
+</body>
+</html>
