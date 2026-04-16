@@ -8,15 +8,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg-page: #0a0a0f;
-            --bg-card: #1e1e2a;
-            --text-primary: #f0ede8;
-            --text-secondary: #aaa5a0;
-            --accent: #e8a0b4;
-            --accent-hover: #d47a9e;
-            --border: #2a2a35;
-            --shadow: 0 8px 20px rgba(0,0,0,0.3);
-            --shadow-hover: 0 12px 28px rgba(0,0,0,0.4);
+            --bg-page: #fff0f3;
+            --bg-card: #ffffff;
+            --text-primary: #5e3a4a;
+            --text-secondary: #8a6a7a;
+            --accent: #e87b9c;
+            --accent-hover: #d46284;
+            --border: #f0dce4;
+            --shadow: 0 8px 20px rgba(0,0,0,0.05);
+            --shadow-hover: 0 12px 28px rgba(0,0,0,0.1);
             --radius-card: 24px;
             --radius-btn: 60px;
             --font-size: 16px;
@@ -33,7 +33,7 @@
             min-height: 100vh;
         }
 
-        .particle { position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.3; }
+        .particle { position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.2; }
         .container { max-width: 700px; margin: 0 auto; padding: 20px 16px 40px; position: relative; z-index: 2; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
         h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), #c49a6c); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.5px; }
@@ -41,7 +41,7 @@
         .settings-btn:hover { transform: scale(0.96); background: var(--accent); color: white; border-color: var(--accent); }
         .action-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
         .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); border: none; border-radius: var(--radius-btn); padding: 12px 20px; color: white; font-weight: 600; cursor: pointer; flex: 1; text-align: center; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .btn-secondary { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-btn); padding: 12px 20px; cursor: pointer; flex: 1; text-align: center; transition: var(--transition); }
         .btn-secondary:hover { background: var(--accent); color: white; border-color: var(--accent); }
         .search-box { width: 100%; padding: 14px 20px; border-radius: var(--radius-btn); border: 1px solid var(--border); background: var(--bg-card); margin-bottom: 20px; font-size: 0.9rem; transition: var(--transition); }
@@ -57,7 +57,7 @@
         .recipes-list { display: flex; flex-direction: column; gap: 16px; }
         .recipe-card { background: var(--bg-card); border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--border); transition: var(--transition); cursor: pointer; }
         .recipe-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
-        .recipe-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #2a2a35; }
+        .recipe-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #e8dccc; }
         .recipe-info { padding: 16px; }
         .recipe-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .recipe-meta { display: flex; gap: 12px; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 10px; flex-wrap: wrap; }
@@ -65,7 +65,7 @@
         .tag { background: var(--bg-page); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; }
         .favorite-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: var(--transition); }
         .edit-btn { background: none; border: none; font-size: 1rem; cursor: pointer; margin-left: 8px; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; }
         .modal.open { visibility: visible; opacity: 1; }
         .modal-content { background: var(--bg-card); width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; border-radius: 32px; padding: 24px; position: relative; }
         .close-modal { position: sticky; top: 0; text-align: right; font-size: 28px; cursor: pointer; }
@@ -73,8 +73,12 @@
         input:focus, textarea:focus { outline: none; border-color: var(--accent); }
         .category-check { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
         .delete-btn { background: #e0745a; border: none; border-radius: var(--radius-btn); padding: 12px; color: white; font-weight: 600; cursor: pointer; width: 100%; margin-top: 16px; }
-        .color-option { display: inline-flex; align-items: center; gap: 8px; margin: 6px 12px 6px 0; cursor: pointer; padding: 6px 12px; border-radius: 40px; background: var(--bg-page); }
-        .color-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); }
+        .color-grid { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0 20px 0; }
+        .color-option { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; padding: 6px; border-radius: 16px; transition: var(--transition); min-width: 70px; }
+        .color-option:hover { transform: scale(1.05); background: var(--border); }
+        .color-option.selected { background: var(--accent); }
+        .color-circle { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .color-name { font-size: 0.7rem; text-align: center; }
         .cooking-mode { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-page); z-index: 1100; display: flex; flex-direction: column; padding: 30px 20px; }
         .progress-container { margin: 20px 0; }
         .progress-bar-bg { background: var(--border); border-radius: 30px; height: 24px; overflow: hidden; position: relative; }
@@ -103,22 +107,65 @@
 </div>
 
 <div id="settingsModal" class="modal"><div class="modal-content"><div class="close-modal">&times;</div><h3>⚙️ дизайн и настройки</h3>
-    <label>🎨 тема оформления:</label><select id="themeSelect"><option value="dark">🌙 Modern Dark</option><option value="pink">🌸 Soft Pink</option><option value="mint">🍃 Mint Fresh</option><option value="lavender">🫐 Lavender Dream</option><option value="peach">🍑 Peach Sunset</option><option value="sky">☁️ Sky Blue</option><option value="vanilla">🍋 Vanilla Yellow</option><option value="lilac">🌸 Lilac Mist</option><option value="coral">🍊 Coral Reef</option><option value="pistachio">🌿 Pistachio</option><option value="turquoise">💎 Turquoise</option><option value="custom">🎨 Своя тема</option></select>
-    <div id="customColors" style="display:none; margin-top:16px;">
-        <div><label>🎨 фон страницы:</label><div id="bgColorPicker" class="color-palette"></div></div>
-        <div><label>📦 фон карточек:</label><div id="cardColorPicker" class="color-palette"></div></div>
-        <div><label>✨ акцентный цвет:</label><div id="accentColorPicker" class="color-palette"></div></div>
+    <label>🎨 тема оформления:</label>
+    <select id="themeSelect">
+        <option value="pink">🌸 Soft Pink</option>
+        <option value="mint">🍃 Mint Fresh</option>
+        <option value="lavender">🫐 Lavender Dream</option>
+        <option value="peach">🍑 Peach Sunset</option>
+        <option value="sky">☁️ Sky Blue</option>
+        <option value="vanilla">🍋 Vanilla Yellow</option>
+        <option value="lilac">🌸 Lilac Mist</option>
+        <option value="coral">🍊 Coral Reef</option>
+        <option value="pistachio">🌿 Pistachio</option>
+        <option value="turquoise">💎 Turquoise</option>
+        <option value="dark">🌙 Modern Dark</option>
+        <option value="custom">🎨 Своя тема</option>
+    </select>
+    
+    <div id="customColorsPanel" style="display:none; margin-top: 20px;">
+        <div style="margin-bottom: 20px;">
+            <label>📄 фон страницы:</label>
+            <div id="bgColorGrid" class="color-grid"></div>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label>📦 фон карточек:</label>
+            <div id="cardColorGrid" class="color-grid"></div>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label>✨ акцентный цвет:</label>
+            <div id="accentColorGrid" class="color-grid"></div>
+        </div>
     </div>
-    <label>🎨 градиент прогресс-бара:</label><select id="gradientSelect"><option value="orange-pink">Оранжевый → Розовый</option><option value="green-purple">Зелёный → Фиолетовый</option><option value="yellow-green">Жёлтый → Зелёный</option><option value="cyan-blue">Циан → Синий</option><option value="pink-darkpurple">Розовый → Тёмно-фиолетовый</option><option value="yellow-orange">Жёлтый → Оранжевый</option><option value="teal-blue">Бирюзовый → Синий</option><option value="brown-gold">Коричневый → Золотой</option></select>
-    <label>📐 вид сетки:</label><select id="gridColsSelect"><option value="2">2 колонки (по умолчанию)</option><option value="1">1 колонка</option></select>
-    <label>🔤 размер шрифта:</label><select id="fontSizeSelect"><option value="14px">Маленький</option><option value="16px" selected>Средний</option><option value="18px">Большой</option></select>
-    <label>🔊 звуки:</label><button id="soundToggleBtn" class="btn-secondary">🔊 включены</button>
+
+    <label>🎨 градиент прогресс-бара:</label>
+    <select id="gradientSelect">
+        <option value="orange-pink">🍊 Оранжевый → Розовый</option>
+        <option value="green-purple">💚 Зелёный → Фиолетовый</option>
+        <option value="yellow-green">💛 Жёлтый → Зелёный</option>
+        <option value="cyan-blue">💙 Циан → Синий</option>
+        <option value="pink-darkpurple">💗 Розовый → Тёмно-фиолетовый</option>
+        <option value="yellow-orange">🧡 Жёлтый → Оранжевый</option>
+        <option value="teal-blue">💚 Бирюзовый → Синий</option>
+        <option value="brown-gold">🤎 Коричневый → Золотой</option>
+    </select>
+
+    <label>📐 вид сетки:</label>
+    <select id="gridColsSelect"><option value="2">2 колонки</option><option value="1">1 колонка</option></select>
+
+    <label>🔤 размер шрифта:</label>
+    <select id="fontSizeSelect"><option value="14px">Маленький</option><option value="16px" selected>Средний</option><option value="18px">Большой</option></select>
+
+    <label>🔊 звуки:</label>
+    <button id="soundToggleBtn" class="btn-secondary">🔊 включены</button>
+
     <button id="saveSettingsBtn" class="btn-primary" style="margin-top:20px;">💾 сохранить</button>
 </div></div>
 
 <div id="recipeModal" class="modal"><div class="modal-content"><div class="close-modal">&times;</div><div id="recipeModalBody"></div></div></div>
 
 <script>
+    // ========== ЗВУКИ ==========
     let soundEnabled = localStorage.getItem('hercookbook_sound') !== 'false';
     function playSound(type){
         if(!soundEnabled) return;
@@ -134,6 +181,7 @@
     }
     function showToast(msg){ let d=document.createElement('div'); d.className='toast'; d.innerText=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),2000); }
 
+    // ========== ДАННЫЕ ==========
     let recipes = JSON.parse(localStorage.getItem('hercookbook_recipes')) || [];
     if(recipes.length===0){
         recipes.push({ id: Date.now(), title: "Идеальная яичница", categories: ["Завтрак"], difficulty: 2, time: 5, tags: ["#быстро"], ingredients: ["2 яйца","сливочное масло"], steps: ["Разогреть сковороду","Растопить масло","Вбить яйца","Жарить 2 минуты"], comment: "Люблю с помидорами!", mainPhoto: "", favorite: false });
@@ -182,6 +230,7 @@
         document.getElementById('cookBtn').onclick = ()=>{ modal.classList.remove('open'); startCooking(r); };
     }
 
+    // ========== РЕЖИМ ГОТОВКИ ==========
     let currentCookingRecipe = null, currentStepIndex = 0, recognition = null;
     function startCooking(recipe){
         currentCookingRecipe = recipe;
@@ -230,6 +279,7 @@
         cookDiv.addEventListener('touchend', (e)=>{ const endX = e.changedTouches[0].screenX; if(endX - touchStartX > 50 && currentStepIndex>0){ currentStepIndex--; updateStep(); playSound('step'); } else if(touchStartX - endX > 50 && currentStepIndex<recipe.steps.length-1){ currentStepIndex++; updateStep(); playSound('step'); } });
     }
 
+    // ========== ФОРМА РЕЦЕПТА ==========
     function openRecipeForm(id=null){
         const r = id ? recipes.find(r=>r.id===id) : null;
         const modal = document.getElementById('recipeModal');
@@ -284,8 +334,8 @@
         document.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{ if(ch.dataset.cat==='favorite'){ favoritesOnly=!favoritesOnly; buildFilters(); renderRecipes(); } else { currentCategoryFilter=ch.dataset.cat; favoritesOnly=false; buildFilters(); renderRecipes(); } }));
     }
 
+    // ========== ТЕМЫ И НАСТРОЙКИ ==========
     const themes = {
-        dark: { bg: '#0a0a0f', card: '#1e1e2a', text: '#f0ede8', accent: '#e8a0b4' },
         pink: { bg: '#fff0f3', card: '#ffffff', text: '#5e3a4a', accent: '#e87b9c' },
         mint: { bg: '#e8f5e9', card: '#ffffff', text: '#2e5c3e', accent: '#4caf50' },
         lavender: { bg: '#f3e8ff', card: '#ffffff', text: '#4a3a6e', accent: '#9c27b0' },
@@ -295,27 +345,77 @@
         lilac: { bg: '#f9e8f5', card: '#ffffff', text: '#6e3a5e', accent: '#e91e63' },
         coral: { bg: '#fff0ec', card: '#ffffff', text: '#6e3a2a', accent: '#ff5722' },
         pistachio: { bg: '#f0f7e8', card: '#ffffff', text: '#3a5e2a', accent: '#8bc34a' },
-        turquoise: { bg: '#e8f7f5', card: '#ffffff', text: '#2a5e5a', accent: '#00897b' }
+        turquoise: { bg: '#e8f7f5', card: '#ffffff', text: '#2a5e5a', accent: '#00897b' },
+        dark: { bg: '#0a0a0f', card: '#1e1e2a', text: '#f0ede8', accent: '#e8a0b4' }
     };
-    const colorOptions = ['#0a0a0f','#1e1e2a','#f0ede8','#ffffff','#fff0f3','#e8f5e9','#f3e8ff','#fff5e6','#e8f4f8','#fffbe6','#f9e8f5','#fff0ec','#f0f7e8','#e8f7f5','#e8a0b4','#e87b9c','#4caf50','#9c27b0','#ff8c42','#00bcd4','#ffc107','#e91e63','#ff5722','#8bc34a','#00897b'];
-    function renderColorPicker(containerId, selectedColor, onSelect){
+
+    const colorPalette = [
+        { name: 'Нежный розовый', code: '#fff0f3' },
+        { name: 'Мятный', code: '#e8f5e9' },
+        { name: 'Лавандовый', code: '#f3e8ff' },
+        { name: 'Персиковый', code: '#fff5e6' },
+        { name: 'Небесный', code: '#e8f4f8' },
+        { name: 'Ванильный', code: '#fffbe6' },
+        { name: 'Сиреневый', code: '#f9e8f5' },
+        { name: 'Коралловый', code: '#fff0ec' },
+        { name: 'Фисташковый', code: '#f0f7e8' },
+        { name: 'Бирюзовый', code: '#e8f7f5' },
+        { name: 'Белый', code: '#ffffff' },
+        { name: 'Кремовый', code: '#fef7e8' },
+        { name: 'Тёмный', code: '#0a0a0f' },
+        { name: 'Тёмно-серый', code: '#1e1e2a' }
+    ];
+
+    const cardColors = [
+        { name: 'Белый', code: '#ffffff' },
+        { name: 'Кремовый', code: '#fef7e8' },
+        { name: 'Нежно-розовый', code: '#fff0f3' },
+        { name: 'Мятный', code: '#e8f5e9' },
+        { name: 'Лавандовый', code: '#f3e8ff' },
+        { name: 'Тёмно-серый', code: '#1e1e2a' }
+    ];
+
+    const accentColors = [
+        { name: 'Розовый', code: '#e87b9c' },
+        { name: 'Малиновый', code: '#e91e63' },
+        { name: 'Зелёный', code: '#4caf50' },
+        { name: 'Фиолетовый', code: '#9c27b0' },
+        { name: 'Оранжевый', code: '#ff8c42' },
+        { name: 'Синий', code: '#00bcd4' },
+        { name: 'Жёлтый', code: '#ffc107' },
+        { name: 'Коралловый', code: '#ff5722' },
+        { name: 'Золотой', code: '#d4af37' },
+        { name: 'Бирюзовый', code: '#00897b' },
+        { name: 'Розово-золотой', code: '#e8a0b4' }
+    ];
+
+    function renderColorGrid(containerId, colors, selectedColor, onSelect){
         const container = document.getElementById(containerId);
+        if(!container) return;
         container.innerHTML = '';
-        colorOptions.forEach(color=>{
-            const btn = document.createElement('div');
-            btn.className = 'color-option';
-            btn.innerHTML = `<div class="color-circle" style="background:${color}; border-color:${color==='#ffffff'?'#ccc':'transparent'}"></div><span>${color}</span>`;
-            btn.style.border = selectedColor===color ? `2px solid var(--accent)` : 'none';
-            btn.onclick = ()=>{ onSelect(color); renderColorPicker(containerId, color, onSelect); };
-            container.appendChild(btn);
+        colors.forEach(color=>{
+            const option = document.createElement('div');
+            option.className = 'color-option' + (selectedColor === color.code ? ' selected' : '');
+            option.innerHTML = `<div class="color-circle" style="background:${color.code}; border:2px solid ${color.code==='#ffffff'?'#ddd':'transparent'}"></div><div class="color-name">${color.name}</div>`;
+            option.onclick = ()=>{
+                onSelect(color.code);
+                renderColorGrid(containerId, colors, color.code, onSelect);
+            };
+            container.appendChild(option);
         });
     }
+
+    let customBg = localStorage.getItem('custom_bg') || '#fff0f3';
+    let customCard = localStorage.getItem('custom_card') || '#ffffff';
+    let customAccent = localStorage.getItem('custom_accent') || '#e87b9c';
+
     function applyTheme(themeName){
-        if(themeName==='custom'){
-            document.documentElement.style.setProperty('--bg-page', localStorage.getItem('custom_bg') || '#fff0f3');
-            document.documentElement.style.setProperty('--bg-card', localStorage.getItem('custom_card') || '#ffffff');
-            document.documentElement.style.setProperty('--text-primary', localStorage.getItem('custom_text') || '#5e3a4a');
-            document.documentElement.style.setProperty('--accent', localStorage.getItem('custom_accent') || '#e87b9c');
+        if(themeName === 'custom'){
+            document.documentElement.style.setProperty('--bg-page', customBg);
+            document.documentElement.style.setProperty('--bg-card', customCard);
+            document.documentElement.style.setProperty('--accent', customAccent);
+            let textColor = (customBg === '#0a0a0f' || customBg === '#1e1e2a') ? '#f0ede8' : '#5e3a4a';
+            document.documentElement.style.setProperty('--text-primary', textColor);
         } else if(themes[themeName]){
             document.documentElement.style.setProperty('--bg-page', themes[themeName].bg);
             document.documentElement.style.setProperty('--bg-card', themes[themeName].card);
@@ -323,14 +423,14 @@
             document.documentElement.style.setProperty('--accent', themes[themeName].accent);
         }
     }
+
     function saveSettings(){
         const theme = document.getElementById('themeSelect').value;
         localStorage.setItem('hercookbook_theme', theme);
-        if(theme==='custom'){
-            localStorage.setItem('custom_bg', document.getElementById('customBgVal').dataset.color || '#fff0f3');
-            localStorage.setItem('custom_card', document.getElementById('customCardVal').dataset.color || '#ffffff');
-            localStorage.setItem('custom_text', document.getElementById('customTextVal').dataset.color || '#5e3a4a');
-            localStorage.setItem('custom_accent', document.getElementById('customAccentVal').dataset.color || '#e87b9c');
+        if(theme === 'custom'){
+            localStorage.setItem('custom_bg', customBg);
+            localStorage.setItem('custom_card', customCard);
+            localStorage.setItem('custom_accent', customAccent);
         }
         localStorage.setItem('hercookbook_gradient', document.getElementById('gradientSelect').value);
         localStorage.setItem('hercookbook_fontSize', document.getElementById('fontSizeSelect').value);
@@ -341,6 +441,7 @@
         renderRecipes();
         showToast('настройки сохранены');
     }
+
     function openSettings(){
         const modal = document.getElementById('settingsModal');
         const savedTheme = localStorage.getItem('hercookbook_theme') || 'pink';
@@ -348,16 +449,34 @@
         document.getElementById('gradientSelect').value = localStorage.getItem('hercookbook_gradient') || 'orange-pink';
         document.getElementById('fontSizeSelect').value = localStorage.getItem('hercookbook_fontSize') || '16px';
         document.getElementById('gridColsSelect').value = localStorage.getItem('hercookbook_gridCols') || '2';
-        document.getElementById('customColors').style.display = savedTheme==='custom' ? 'block' : 'none';
-        if(savedTheme==='custom'){
-            renderColorPicker('bgColorPicker', localStorage.getItem('custom_bg') || '#fff0f3', (c)=>{ document.getElementById('customBgVal').dataset.color = c; });
-            renderColorPicker('cardColorPicker', localStorage.getItem('custom_card') || '#ffffff', (c)=>{ document.getElementById('customCardVal').dataset.color = c; });
-            renderColorPicker('accentColorPicker', localStorage.getItem('custom_accent') || '#e87b9c', (c)=>{ document.getElementById('customAccentVal').dataset.color = c; });
+        
+        const customPanel = document.getElementById('customColorsPanel');
+        customPanel.style.display = savedTheme === 'custom' ? 'block' : 'none';
+        
+        if(savedTheme === 'custom'){
+            customBg = localStorage.getItem('custom_bg') || '#fff0f3';
+            customCard = localStorage.getItem('custom_card') || '#ffffff';
+            customAccent = localStorage.getItem('custom_accent') || '#e87b9c';
+            renderColorGrid('bgColorGrid', colorPalette, customBg, (c)=>{ customBg = c; applyTheme('custom'); });
+            renderColorGrid('cardColorGrid', cardColors, customCard, (c)=>{ customCard = c; applyTheme('custom'); });
+            renderColorGrid('accentColorGrid', accentColors, customAccent, (c)=>{ customAccent = c; applyTheme('custom'); });
         }
-        document.getElementById('themeSelect').onchange = ()=>{ document.getElementById('customColors').style.display = document.getElementById('themeSelect').value==='custom' ? 'block' : 'none'; };
+        
+        document.getElementById('themeSelect').onchange = (e)=>{
+            const isCustom = e.target.value === 'custom';
+            customPanel.style.display = isCustom ? 'block' : 'none';
+            if(isCustom){
+                renderColorGrid('bgColorGrid', colorPalette, customBg, (c)=>{ customBg = c; applyTheme('custom'); });
+                renderColorGrid('cardColorGrid', cardColors, customCard, (c)=>{ customCard = c; applyTheme('custom'); });
+                renderColorGrid('accentColorGrid', accentColors, customAccent, (c)=>{ customAccent = c; applyTheme('custom'); });
+            } else {
+                applyTheme(e.target.value);
+            }
+        };
         modal.classList.add('open');
     }
 
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
     document.getElementById('saveSettingsBtn').addEventListener('click', ()=>{ saveSettings(); document.getElementById('settingsModal').classList.remove('open'); });
     document.getElementById('openSettingsBtn').onclick = openSettings;
     document.getElementById('soundToggleBtn')?.addEventListener('click',()=>{ soundEnabled=!soundEnabled; localStorage.setItem('hercookbook_sound',soundEnabled); document.getElementById('soundToggleBtn').innerHTML = soundEnabled ? '🔊 включены' : '🔇 выключены'; showToast(soundEnabled?'звук включён':'звук выключен'); });
@@ -372,10 +491,11 @@
     document.documentElement.style.setProperty('--font-size', localStorage.getItem('hercookbook_fontSize') || '16px');
     buildFilters(); renderRecipes();
 
+    // частицы
     const canvas = document.getElementById('particleCanvas');
     const ctxCanvas = canvas.getContext('2d');
     let particles = [];
-    function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; particles=[]; for(let i=0;i<60;i++) particles.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+1, alpha:Math.random()*0.3, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.1+0.05 }); }
+    function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; particles=[]; for(let i=0;i<60;i++) particles.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+1, alpha:Math.random()*0.2, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.1+0.05 }); }
     function drawParticles(){ if(!ctxCanvas) return; ctxCanvas.clearRect(0,0,canvas.width,canvas.height); for(let p of particles){ ctxCanvas.beginPath(); ctxCanvas.arc(p.x,p.y,p.r,0,Math.PI*2); ctxCanvas.fillStyle=`rgba(210,180,140,${p.alpha})`; ctxCanvas.fill(); p.x+=p.vx; p.y+=p.vy; if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0; if(p.y>canvas.height) p.y=0; if(p.y<0) p.y=canvas.height; } requestAnimationFrame(drawParticles); }
     window.addEventListener('resize',()=>{ resizeCanvas(); });
     resizeCanvas(); drawParticles();
