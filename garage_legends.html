@@ -2,153 +2,214 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>GARAGE LEGENDS — Премиум и гоночные иконы</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* ========== ПЕРЕМЕННЫЕ И СБРОС ========== */
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Inter', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Inter', 'Montserrat', sans-serif; }
     body {
-      --bg-primary: #0a0f1e;
-      --bg-secondary: #141a2b;
-      --bg-card: rgba(20, 30, 50, 0.85);
-      --glass-border: rgba(212, 175, 55, 0.3);
+      --bg-primary: #0a0e17;
+      --bg-secondary: #131826;
+      --bg-card: rgba(20, 28, 45, 0.85);
+      --glass-border: rgba(212, 175, 55, 0.25);
       --accent-gold: #d4af37;
-      --accent-red: #ff3b3b;
+      --accent-red: #ff2a2a;
+      --accent-neon: #ff6b00;
       --text-primary: #ffffff;
-      --text-secondary: #b0c0d0;
-      --shadow-heavy: 0 20px 40px rgba(0,0,0,0.6);
-      --transition: all 0.25s ease;
+      --text-secondary: #a0b0c8;
+      --shadow-heavy: 0 25px 45px rgba(0,0,0,0.7);
+      --transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
       background: var(--bg-primary);
       color: var(--text-primary);
       min-height: 100vh;
     }
     body.light-theme {
-      --bg-primary: #f0f2f8;
+      --bg-primary: #f5f7fc;
       --bg-secondary: #ffffff;
-      --bg-card: rgba(255,255,255,0.85);
-      --glass-border: rgba(100,100,150,0.2);
+      --bg-card: rgba(255,255,255,0.9);
+      --glass-border: rgba(180, 130, 30, 0.25);
       --accent-gold: #b8860b;
       --accent-red: #c0392b;
+      --accent-neon: #e65c00;
       --text-primary: #1a1a2e;
       --text-secondary: #2c3e50;
       --shadow-heavy: 0 15px 30px rgba(0,0,0,0.1);
     }
-    /* ========== БОКОВОЕ МЕНЮ ========== */
     .side-menu {
-      position: fixed; top: 0; left: -320px; width: 300px; max-width: 85vw; height: 100vh;
-      background: var(--bg-secondary); backdrop-filter: blur(20px); z-index: 1000;
-      transition: left 0.35s cubic-bezier(0.2,0.9,0.4,1); overflow-y: auto; padding: 20px 16px;
-      border-right: 1px solid var(--glass-border); color: var(--text-primary);
+      position: fixed; top: 0; left: -340px; width: 320px; max-width: 85vw; height: 100vh;
+      background: var(--bg-secondary); backdrop-filter: blur(25px); z-index: 1000;
+      transition: left 0.4s; overflow-y: auto; padding: 24px 18px;
+      border-right: 1px solid var(--glass-border);
     }
     .side-menu.open { left: 0; }
     .menu-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(4px); z-index: 999; opacity: 0; visibility: hidden; transition: 0.3s;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 999;
+      opacity: 0; visibility: hidden; transition: 0.3s;
     }
     .menu-overlay.show { opacity: 1; visibility: visible; }
-    .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
     .menu-header h3 { color: var(--accent-gold); }
-    .close-menu { font-size: 28px; cursor: pointer; color: var(--text-secondary); }
-    .menu-section { margin-bottom: 24px; }
-    .menu-section h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-gold); margin-bottom: 12px; }
+    .close-menu { font-size: 30px; cursor: pointer; }
+    .menu-section { margin-bottom: 28px; }
+    .menu-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-gold); margin-bottom: 14px; }
     .menu-item {
-      padding: 10px 8px; margin: 4px 0; border-radius: 10px; cursor: pointer;
-      display: flex; align-items: center; gap: 12px; transition: var(--transition); color: var(--text-primary);
+      padding: 12px; margin: 6px 0; border-radius: 14px; cursor: pointer;
+      display: flex; align-items: center; gap: 14px; transition: var(--transition);
+      color: var(--text-primary);
     }
-    .menu-item i { width: 24px; color: var(--accent-gold); }
-    .menu-item:hover { background: rgba(212,175,55,0.1); }
-    .search-box { background: rgba(0,0,0,0.2); border-radius: 30px; padding: 8px 16px; display: flex; border: 1px solid var(--glass-border); }
-    .search-box i { color: var(--text-secondary); margin-right: 10px; }
+    .menu-item i { width: 26px; color: var(--accent-gold); }
+    .menu-item:hover { background: rgba(212,175,55,0.12); transform: translateX(5px); }
+    .search-box {
+      background: rgba(0,0,0,0.2); border-radius: 40px; padding: 10px 18px;
+      display: flex; align-items: center; border: 1px solid var(--glass-border);
+    }
     .search-box input { background: transparent; border: none; color: var(--text-primary); width: 100%; outline: none; }
-    /* ========== ОСНОВНОЙ КОНТЕНТ ========== */
-    .app-wrapper { max-width: 1440px; margin: 0 auto; padding: 16px 24px 40px; }
-    .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; }
-    .burger-btn { font-size: 28px; cursor: pointer; color: var(--accent-gold); background: var(--bg-card); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px solid var(--glass-border); }
-    .logo h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--accent-gold), #f5e7b2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .app-wrapper { max-width: 1400px; margin: 0 auto; padding: 20px 28px 40px; }
+    .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 15px; }
+    .logo-area { display: flex; align-items: center; gap: 15px; }
+    .burger-btn {
+      font-size: 28px; cursor: pointer; background: var(--bg-card); width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center; border-radius: 18px;
+      border: 1px solid var(--glass-border); transition: var(--transition);
+    }
+    .burger-btn:hover { background: var(--accent-gold); color: #0a0e17; }
+    .logo h1 { font-size: 30px; font-weight: 800; background: linear-gradient(135deg, var(--accent-gold), #ffe7a0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .logo p { font-size: 13px; color: var(--text-secondary); }
+    .header-actions { display: flex; gap: 12px; }
+    .icon-btn {
+      background: var(--bg-card); border: 1px solid var(--glass-border); width: 52px; height: 52px;
+      border-radius: 18px; display: flex; align-items: center; justify-content: center;
+      font-size: 22px; cursor: pointer; transition: var(--transition);
+    }
+    .icon-btn:hover { background: var(--accent-gold); color: #0a0e17; }
     .tabs-container { display: flex; gap: 8px; margin: 20px 0 30px; border-bottom: 1px solid var(--glass-border); }
-    .tab { padding: 14px 32px; font-size: 18px; font-weight: 600; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; border-radius: 40px 40px 0 0; }
-    .tab.active { color: var(--accent-gold); background: var(--bg-card); backdrop-filter: blur(8px); }
-    .selector-panel { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
-    .custom-select { background: var(--bg-card); backdrop-filter: blur(8px); border: 1px solid var(--glass-border); border-radius: 40px; padding: 12px 24px; color: var(--text-primary); font-size: 16px; min-width: 240px; }
-    .car-showcase { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 40px; padding: 30px; box-shadow: var(--shadow-heavy); margin-bottom: 30px; }
-    .slider-container { position: relative; margin-bottom: 20px; border-radius: 24px; overflow: hidden; }
-    .slider-image { width: 100%; height: 380px; object-fit: cover; border-radius: 24px; background: #1a1f2e; }
-    .slider-nav { display: flex; justify-content: center; gap: 30px; margin-top: 15px; }
-    .slider-btn { background: var(--bg-secondary); border: 1px solid var(--accent-gold); color: var(--accent-gold); width: 50px; height: 50px; border-radius: 30px; font-size: 24px; cursor: pointer; }
-    .dots { display: flex; gap: 10px; justify-content: center; margin: 15px 0; }
-    .dot { width: 12px; height: 12px; border-radius: 20px; background: #3a4a6a; cursor: pointer; transition: 0.2s; }
-    .dot.active { background: var(--accent-gold); width: 30px; }
-    .car-title { font-size: 36px; font-weight: 700; margin-bottom: 15px; }
-    .car-description { font-size: 16px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 25px; }
-    .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 20px; margin: 25px 0; }
-    .spec-card { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 20px; border: 1px solid var(--glass-border); }
-    .spec-label { color: var(--accent-gold); font-size: 13px; text-transform: uppercase; }
-    .spec-value { font-size: 20px; font-weight: 600; }
-    .price-tag { font-size: 32px; font-weight: 700; color: var(--accent-gold); }
-    .engine-start-btn, .fav-btn { background: var(--accent-red); border: none; color: white; padding: 14px 28px; border-radius: 60px; font-weight: bold; cursor: pointer; }
-    .jdm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
-    .jdm-card { background: var(--bg-card); backdrop-filter: blur(8px); border-radius: 30px; padding: 20px; border: 1px solid var(--glass-border); position: relative; }
-    .jdm-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 20px; margin-bottom: 15px; background: #2a3446; }
-    .jdm-title { font-size: 22px; font-weight: 700; }
-    .jdm-sub { color: var(--accent-red); margin: 8px 0; }
-    .detail-btn { background: transparent; border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 10px 20px; border-radius: 30px; margin-top: 15px; cursor: pointer; width: 100%; }
-    .card-fav { position: absolute; top: 30px; right: 30px; background: rgba(0,0,0,0.5); border-radius: 30px; padding: 8px 12px; cursor: pointer; color: white; }
-    .card-fav i { color: var(--accent-red); }
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-    .modal-content { background: var(--bg-secondary); max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 40px; padding: 30px; border: 1px solid var(--glass-border); }
-    .close-modal { float: right; font-size: 32px; cursor: pointer; }
-    .pagination { display: flex; gap: 10px; justify-content: center; margin-top: 30px; }
-    .page-btn { padding: 10px 18px; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 30px; cursor: pointer; color: var(--text-primary); }
-    .page-btn.active { background: var(--accent-gold); color: black; }
-    .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab { padding: 14px 32px; font-size: 18px; font-weight: 600; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; border-radius: 40px 40px 0 0; transition: var(--transition); }
+    .tab.active { color: var(--accent-gold); background: var(--bg-card); }
+    .selector-panel { display: flex; gap: 20px; margin-bottom: 35px; flex-wrap: wrap; }
+    .custom-select {
+      padding: 16px 24px; background: var(--bg-card); border: 1.5px solid var(--glass-border);
+      border-radius: 50px; color: var(--text-primary); font-size: 16px; cursor: pointer;
+      min-width: 240px;
+    }
+    .car-showcase {
+      background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--glass-border);
+      border-radius: 50px; padding: 35px; margin-bottom: 40px;
+    }
+    .slider-container { position: relative; margin-bottom: 25px; border-radius: 30px; overflow: hidden; }
+    .slider-image { width: 100%; height: 400px; object-fit: cover; border-radius: 30px; background: #1e2638; }
+    .slider-nav { display: flex; justify-content: center; gap: 25px; margin-top: 20px; }
+    .slider-btn {
+      background: var(--bg-secondary); border: 1.5px solid var(--accent-gold); color: var(--accent-gold);
+      width: 55px; height: 55px; border-radius: 40px; font-size: 26px; cursor: pointer;
+    }
+    .dots { display: flex; gap: 12px; justify-content: center; margin: 18px 0; }
+    .dot { width: 12px; height: 12px; border-radius: 20px; background: #3a4a6a; cursor: pointer; }
+    .dot.active { background: var(--accent-gold); width: 35px; }
+    .car-title { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
+    .car-short { font-size: 20px; color: var(--accent-gold); margin-bottom: 20px; font-style: italic; }
+    .car-description { font-size: 16px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 30px; }
+    .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 20px; margin: 30px 0; }
+    .spec-card { background: rgba(0,0,0,0.25); padding: 18px; border-radius: 24px; border: 1px solid var(--glass-border); }
+    .spec-label { color: var(--accent-gold); font-size: 13px; text-transform: uppercase; margin-bottom: 8px; }
+    .spec-value { font-size: 24px; font-weight: 700; }
+    .price-tag { font-size: 38px; font-weight: 800; color: var(--accent-gold); display: inline-block; margin-right: 25px; }
+    .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+    .engine-start-btn, .fav-btn {
+      background: var(--accent-red); border: none; color: white; padding: 16px 32px;
+      border-radius: 60px; font-size: 16px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 12px;
+    }
+    .fav-btn { background: transparent; border: 2px solid var(--accent-gold); color: var(--accent-gold); }
+    .jdm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; margin-top: 20px; }
+    .jdm-card {
+      background: linear-gradient(145deg, rgba(25,20,35,0.9), rgba(15,10,25,0.95));
+      backdrop-filter: blur(12px); border-radius: 35px; padding: 24px;
+      border: 1px solid rgba(255,80,0,0.3); transition: var(--transition);
+    }
+    .jdm-card:hover { transform: translateY(-8px); border-color: var(--accent-neon); }
+    .jdm-card img { width: 100%; height: 190px; object-fit: cover; border-radius: 25px; margin-bottom: 18px; background: #2a2a3a; }
+    .jdm-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+    .jdm-sub { color: var(--accent-neon); margin: 10px 0; display: flex; gap: 15px; flex-wrap: wrap; }
+    .detail-btn {
+      background: transparent; border: 2px solid var(--accent-neon); color: var(--accent-neon);
+      padding: 14px 24px; border-radius: 50px; margin-top: 20px; cursor: pointer;
+      width: 100%; font-weight: 700; transition: var(--transition);
+    }
+    .detail-btn:hover { background: var(--accent-neon); color: #0a0e17; }
+    .card-fav {
+      position: absolute; top: 35px; right: 35px; background: rgba(0,0,0,0.6);
+      border-radius: 50px; padding: 10px 14px; cursor: pointer; z-index: 5;
+    }
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+      display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px;
+    }
+    .modal-content {
+      background: var(--bg-secondary); max-width: 850px; width: 100%;
+      max-height: 90vh; overflow-y: auto; border-radius: 45px; padding: 35px;
+      border: 1px solid var(--glass-border);
+    }
+    .close-modal { float: right; font-size: 36px; cursor: pointer; }
+    .pagination { display: flex; gap: 12px; justify-content: center; margin-top: 45px; }
+    .page-btn {
+      padding: 12px 22px; background: var(--bg-card); border: 1px solid var(--glass-border);
+      border-radius: 40px; cursor: pointer; font-weight: 600;
+    }
+    .page-btn.active { background: var(--accent-neon); color: #0a0e17; }
     .hidden-section { display: none; }
+    .filter-bar { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+    @media (max-width: 700px) {
+      .app-wrapper { padding: 12px; }
+      .car-title { font-size: 28px; }
+      .slider-image { height: 240px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- БОКОВОЕ МЕНЮ -->
 <div class="menu-overlay" id="menuOverlay"></div>
 <div class="side-menu" id="sideMenu">
-  <div class="menu-header"><h3><i class="fas fa-bars"></i> МЕНЮ</h3><i class="fas fa-times close-menu" id="closeMenuBtn"></i></div>
+  <div class="menu-header"><h3><i class="fas fa-garage"></i> GARAGE MENU</h3><i class="fas fa-times close-menu" id="closeMenuBtn"></i></div>
   <div class="menu-section"><h4>ПРОФИЛЬ</h4>
     <div class="menu-item"><i class="fas fa-user-circle"></i> Гость</div>
     <div class="menu-item" id="favoritesMenuBtn"><i class="fas fa-heart"></i> Избранное (<span id="favCount">0</span>)</div>
-    <div class="menu-item" id="historyMenuBtn"><i class="fas fa-history"></i> История просмотров</div>
+    <div class="menu-item" id="historyMenuBtn"><i class="fas fa-history"></i> История</div>
   </div>
   <div class="menu-section"><h4>КАТАЛОГ</h4>
-    <div class="menu-item" data-tab="premium"><i class="fas fa-car"></i> Премиум (16)</div>
+    <div class="menu-item" data-tab="premium"><i class="fas fa-gem"></i> Премиум (16)</div>
     <div class="menu-item" data-tab="legends"><i class="fas fa-flag-checkered"></i> Легенды (24)</div>
     <div class="menu-item" id="popularMenuItem"><i class="fas fa-fire"></i> Популярные</div>
   </div>
   <div class="menu-section"><h4>НАСТРОЙКИ</h4>
-    <div class="menu-item"><span><i class="fas fa-moon"></i> Тема</span><button id="themeSwitchBtn" style="padding:6px 14px; border-radius:30px; background:var(--bg-card); color:var(--text-primary); border:1px solid var(--glass-border);">🌙 Тёмная</button></div>
-    <div class="menu-item"><span><i class="fas fa-volume-up"></i> Звук</span><input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5" style="width:100px;"></div>
+    <div class="menu-item"><i class="fas fa-moon"></i> Тема <button id="themeSwitchBtn" style="margin-left:auto; padding:6px 14px; border-radius:30px; background:var(--bg-card);">🌙</button></div>
+    <div class="menu-item"><i class="fas fa-volume-up"></i> Звук <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5" style="width:80px; margin-left:auto;"></div>
   </div>
-  <div class="menu-section"><h4>ПОИСК</h4><div class="search-box"><i class="fas fa-search"></i><input type="text" id="globalSearchInput" placeholder="Модель, марка..."></div></div>
+  <div class="menu-section"><h4>ПОИСК</h4>
+    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="globalSearchInput" placeholder="Модель, марка..."></div>
+  </div>
   <div class="menu-section"><h4>СРАВНЕНИЕ И ТОПЫ</h4>
-    <div class="menu-item" id="compareMenuBtn"><i class="fas fa-balance-scale"></i> Сравнить (выбрать)</div>
+    <div class="menu-item" id="compareMenuBtn"><i class="fas fa-balance-scale"></i> Сравнить</div>
     <div class="menu-item" id="topAccelerationBtn"><i class="fas fa-tachometer-alt"></i> Топ по разгону</div>
-    <div class="menu-item" id="topPowerPriceBtn"><i class="fas fa-dollar-sign"></i> Цена/мощность</div>
+    <div class="menu-item" id="topPowerPriceBtn"><i class="fas fa-chart-line"></i> Цена/мощность</div>
   </div>
 </div>
 
-<!-- ОСНОВНОЙ КОНТЕНТ -->
 <div class="app-wrapper">
   <div class="top-bar">
     <div class="logo-area"><div class="burger-btn" id="burgerBtn"><i class="fas fa-bars"></i></div><div class="logo"><h1><i class="fas fa-garage"></i> GARAGE LEGENDS</h1><p>Премиум · JDM · Гоночные иконы</p></div></div>
     <div class="header-actions">
       <div class="icon-btn" id="headerFavBtn"><i class="fas fa-heart"></i></div>
-      <div class="icon-btn" id="headerSearchBtn"><i class="fas fa-search"></i></div>
       <div class="icon-btn" id="headerSettingsBtn"><i class="fas fa-cog"></i></div>
     </div>
   </div>
+
   <div class="tabs-container">
     <button class="tab active" data-tab="premium"><i class="fas fa-gem"></i> ПРЕМИУМ</button>
     <button class="tab" data-tab="legends"><i class="fas fa-trophy"></i> ЛЕГЕНДЫ 90-Х</button>
   </div>
 
-  <!-- ПРЕМИУМ СЕКЦИЯ -->
   <div id="premiumSection">
     <div class="selector-panel">
       <select id="brandSelect" class="custom-select"></select>
@@ -157,11 +218,9 @@
     <div id="premiumCarDisplay" class="car-showcase"></div>
   </div>
 
-  <!-- ЛЕГЕНДЫ СЕКЦИЯ -->
   <div id="legendsSection" class="hidden-section">
-    <h2 style="margin-bottom:20px;"><i class="fas fa-flag-checkered" style="color:var(--accent-red);"></i> Легенды 90-х и гоночные иконы</h2>
     <div class="filter-bar">
-      <select id="countryFilter" class="custom-select"><option value="all">Все страны</option><option value="🇯🇵">Япония</option><option value="🇩🇪">Германия</option><option value="🇮🇹">Италия</option><option value="🇬🇧">Великобритания</option></select>
+      <select id="countryFilter" class="custom-select"><option value="all">Все страны</option><option value="🇯🇵">Япония 🇯🇵</option><option value="🇩🇪">Германия 🇩🇪</option><option value="🇮🇹">Италия 🇮🇹</option><option value="🇬🇧">Великобритания 🇬🇧</option></select>
       <select id="engineFilter" class="custom-select"><option value="all">Все двигатели</option><option value="турбо">Турбо</option><option value="атмо">Атмосферный</option><option value="ротор">Роторный</option></select>
     </div>
     <div id="jdmGridContainer" class="jdm-grid"></div>
@@ -169,146 +228,312 @@
   </div>
 </div>
 
-<!-- МОДАЛЬНОЕ ОКНО -->
 <div class="modal" id="detailModal"><div class="modal-content"><i class="fas fa-times close-modal" id="closeModalBtn"></i><div id="modalBody"></div></div></div>
+<div class="modal" id="favoritesModal"><div class="modal-content"><i class="fas fa-times close-modal" id="closeFavModal"></i><h3>❤️ Избранное</h3><div id="favListBody"></div></div></div>
 <audio id="engineAudio" preload="none"></audio>
 
 <script>
-  (function(){
-    "use strict";
-    // ---------- ПОЛНЫЕ ДАННЫЕ 40 МАШИН (БОЛЬШИЕ ОПИСАНИЯ) ----------
-    const premiumFull = [
-      { brand:"BMW", series:"M3 Competition xDrive", price:85000, power:510, engine:"3.0L Twin-Turbo I6", transmission:"8-ступ. M Steptronic", drivetrain:"AWD", acceleration:3.5, description:"BMW M3 G80 с системой M xDrive — это инженерный прорыв. Рядный шестицилиндровый S58 с двумя турбинами выдаёт 510 л.с. и 650 Нм момента. Активный дифференциал и адаптивная подвеска позволяют одинаково уверенно атаковать серпантины и комфортно передвигаться по городу. Карбоновая крыша и расширенные арки придают силуэту хищную осанку.", images:["bmw_m3_1","bmw_m3_2"] },
-      { brand:"BMW", series:"M5 CS", price:142000, power:635, engine:"4.4L V8 Twin-Turbo", transmission:"8-ступ. M Steptronic", drivetrain:"AWD", acceleration:3.0, description:"M5 CS — самый мощный серийный BMW в истории. 635 лошадиных сил снимаются с доработанного V8, а сниженная на 70 кг масса и карбоновые ковши делают этот седан острее бритвы. Система полного привода M xDrive позволяет дрифтить на треке и уверенно стартовать в дождь.", images:["m5_cs_1"] },
-      { brand:"Mercedes", series:"AMG GT 63 S E Performance", price:195000, power:843, engine:"4.0L V8 Biturbo + электромотор", transmission:"9-ступ. AMG Speedshift", drivetrain:"AWD", acceleration:2.8, description:"Флагманский гибрид от AMG сочетает 639-сильный V8 и 204-сильный электродвигатель на задней оси. Суммарная отдача — 843 л.с. и 1470 Нм. Батарея с технологией Формулы-1 обеспечивает мгновенный отклик, а полный привод с векторизацией тяги — невероятную цепкость в поворотах.", images:["amg_gt63_1","amg_gt63_2"] },
-      { brand:"Porsche", series:"911 Turbo S", price:245000, power:650, engine:"3.8L Twin-Turbo Flat-6", transmission:"8-ступ. PDK", drivetrain:"AWD", acceleration:2.7, description:"911 Turbo S (992) — это ежедневный суперкар без компромиссов. Оппозитный шестицилиндровый двигатель с двумя турбинами VTG выдаёт 650 л.с. и 800 Нм. Полный привод с электронноуправляемой муфтой и подруливающая задняя ось позволяют проходить повороты на скоростях, от которых захватывает дух. Разгон до 100 км/ч за 2.7 секунды — быстрее многих гиперкаров.", images:["911_turbo_s_1","911_turbo_s_2","911_turbo_s_3"] },
-      { brand:"Lamborghini", series:"Revuelto", price:608000, power:1015, engine:"6.5L V12 + 3 электромотора", transmission:"8-ступ. DCT", drivetrain:"AWD", acceleration:2.5, description:"Первый серийный гибрид Lamborghini с культовым V12. Атмосферный мотор развивает 825 л.с., а три электродвигателя добавляют ещё 190 л.с. Суммарная мощность 1015 л.с. позволяет разгоняться до сотни за 2.5 секунды. Углепластиковый монокок и активная аэродинамика делают Revuelto самой технологичной Lamborghini в истории.", images:["revuelto_1"] },
-      { brand:"Audi", series:"RS6 Avant Performance", price:126000, power:630, engine:"4.0L V8 TFSI Biturbo", transmission:"8-ступ. Tiptronic", drivetrain:"AWD", acceleration:3.3, description:"Семейный универсал, который унижает спорткары. 630 л.с. и 850 Нм крутящего момента разгоняют RS6 до сотни за 3.3 секунды. Пневмоподвеска, полноуправляемое шасси и спортивный дифференциал quattro делают его королём автобанов и серпантинов, а багажник на 565 литров позволяет взять с собой всё необходимое.", images:["rs6_1","rs6_2"] },
-    ];
-    // Добавляем ещё 10 премиум авто для полных 16
-    const extraPremium = [
-      { brand:"Porsche", series:"911 GT3 Touring", price:220000, power:510, engine:"4.0L Flat-6", transmission:"6-ступ. механика", drivetrain:"RWD", acceleration:3.4, description:"Атмосферный оппозитник объёмом 4.0 литра раскручивается до 9000 об/мин, выдавая 510 л.с. Версия Touring лишена массивного антикрыла, но сохранила гоночные гены: задний привод, механическую коробку и острую как бритва управляемость.", images:["gt3_touring_1"] },
-      { brand:"Mercedes", series:"S63 AMG E Performance", price:210000, power:802, engine:"4.0L V8 Biturbo PHEV", transmission:"9G-Tronic", drivetrain:"AWD", acceleration:3.3, description:"Роскошный седан с повадками суперкара. Гибридная силовая установка выдаёт 802 л.с. и 1430 Нм. Пневмоподвеска E-Active Body Control сканирует дорогу и подстраивает каждый амортизатор индивидуально, обеспечивая непревзойдённый комфорт.", images:["s63_1"] },
-      { brand:"Audi", series:"R8 V10 Performance RWD", price:180000, power:570, engine:"5.2L V10 FSI", transmission:"7-ступ. S tronic", drivetrain:"RWD", acceleration:3.7, description:"Прощальный поклон атмосферному V10. Двигатель от Lamborghini развивает 570 л.с. и передаёт всю мощь на задние колёса. Это чистый драйверский инструмент с потрясающим звуком и острой управляемостью.", images:["r8_rwd_1"] },
-      { brand:"Bentley", series:"Continental GT Speed", price:280000, power:659, engine:"6.0L W12 Twin-Turbo", transmission:"8-ступ. DCT", drivetrain:"AWD", acceleration:3.6, description:"Ручная сборка, кожа и дерево в салоне сочетаются с 659 л.с. W12. Continental GT Speed разгоняется до сотни за 3.6 секунды, но делает это с грацией джентльмена. Полноуправляемое шасси и активные стабилизаторы поперечной устойчивости творят чудеса в поворотах.", images:["bentley_gt_1"] },
-      { brand:"Aston Martin", series:"DBS Superleggera", price:330000, power:725, engine:"5.2L V12 Twin-Turbo", transmission:"8-ступ. ZF", drivetrain:"RWD", acceleration:3.4, description:"Британский мускул-кар в смокинге. 725 л.с. и 900 Нм крутящего момента отправляются на задние колёса через карбоновый карданный вал. Углепластиковые кузовные панели и агрессивный обвес делают DBS одним из самых харизматичных GT современности.", images:["dbs_1"] },
-    ];
-    const fullPremium = [...premiumFull, ...extraPremium, 
-      { brand:"BMW",series:"XM Label Red",price:185000,power:748,engine:"4.4L V8 PHEV",acceleration:3.8,description:"Самый мощный BMW в истории. 748 л.с."},
-      { brand:"Porsche",series:"Taycan Turbo GT",price:230000,power:1108,engine:"Электрический",acceleration:2.2,description:"Рекордсмен Нюрбургринга."},
-      { brand:"Lamborghini",series:"Huracan STO",price:350000,power:640,engine:"5.2L V10",acceleration:3.0,description:"Трековый монстр с омологацией."},
-    ].slice(0,16);
+(function(){
+  // ========== ПРЕМИУМ АВТОМОБИЛИ (16 шт) ==========
+  const premiumCars = [
+    { brand:"Porsche", series:"911 Turbo S (992)", price:245000, power:650, torque:800, engine:"3.8L Twin-Turbo Flat-6", transmission:"8-ступ. PDK", drivetrain:"AWD", acceleration:2.7, topSpeed:330, weight:1640, shortQuote:"Ракета на кожаных сиденьях. Разрывает пространство быстрее, чем мозг успевает испугаться.", description:"Porsche 911 Turbo S — это тот случай, когда немецкие инженеры создали машину, которая одновременно комфортнее бизнес-седана и быстрее большинства суперкаров. В основе — 3,8-литровый оппозитный битурбо, спрятанный за задней осью. На старте с Launch Control позвонки водителя испытывают перегрузку в 1,1 G. Но самое пугающее — как эта машина проходит повороты. Полный привод с векторизацией тяги и подруливающая задняя ось заставляют физику работать на тебя. В салоне пахнет дорогой кожей и алькантарой, а единственный громкий звук — это свист турбин и гул 6-цилиндрового оппозитника за спиной. Porsche 911 Turbo S — идеальный ежедневный суперкар для тех, кто не хочет кричать о своём статусе, но всегда готов уехать с любого светофора первым.", images:["https://images.unsplash.com/photo-1503376780354-9c3d6f7d5f8d?w=800","https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=800"] },
+    { brand:"Porsche", series:"718 Cayman GT4 RS", price:160000, power:500, torque:450, engine:"4.0L Flat-6 (атмосферный)", transmission:"7-ступ. PDK", drivetrain:"RWD", acceleration:3.2, topSpeed:315, weight:1415, shortQuote:"Атмосферный шестицилиндровый монстр за спиной. 9000 об/мин, 500 л.с. и никаких компромиссов.", description:"Cayman GT4 RS — это лучший Cayman в истории. 4.0-литровый атмосферный Flat-6 от 911 GT3 (но без турбин) выдаёт 500 л.с. при 9000 об/мин. Это самая высокая удельная мощность среди среднемоторных Porsche. Разгон до сотни — 3.2 секунды. Максималка — 315 км/ч. Шасси — карбон, керамические тормоза, адаптивные амортизаторы, колёсные гайки центральной затяжки. Аэродинамика: огромное антикрыло, диффузор, воздухозаборники за дверьми. Салон — чистая функциональность: ковши, каркас безопасности, алькантара. GT4 RS — это машина для трек-дней. Она создана, чтобы бить рекорды.", images:["https://images.unsplash.com/photo-1614200187524-dc4b892acf16?w=800"] },
+    { brand:"BMW", series:"M3 Competition xDrive (G80)", price:85000, power:510, torque:650, engine:"3.0L Twin-Turbo I6 (S58)", transmission:"8-ступ. M Steptronic", drivetrain:"AWD", acceleration:3.5, topSpeed:290, weight:1780, shortQuote:"Четырёхдверный монстр, который кусает асфальт и обижает суперкары.", description:"BMW M3 G80 с полным приводом M xDrive — это снаряд для любых дорог. Рядная шестёрка S58 выдувает 510 лошадиных сил и 650 Нм крутящего момента, разрывая шины с минимальной задержкой. Система векторизации крутящего момента и адаптивная подвеска делают её точной на треке и комфортной в городе. Карбоновая крыша, расширенные арки и огромная радиаторная решётка подчёркивают агрессивный силуэт. При включении Launch Control кажется, что тебя выстрелили из катапульты. При этом M3 остаётся практичным седаном: четырёхдверка, багажник 480 литров.", images:["https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=800"] },
+    { brand:"BMW", series:"M5 CS (F90)", price:142000, power:635, torque:750, engine:"4.4L Twin-Turbo V8", transmission:"8-ступ. M Steptronic", drivetrain:"AWD", acceleration:3.0, topSpeed:305, weight:1825, shortQuote:"Карбоновый зверь, который носит костюм и разрывает автобаны.", description:"M5 CS — вершина седанов BMW M. 635 л.с., карбоновые ковши, сниженный вес и уникальная настройка шасси. Этот автомобиль проезжает Нюрбургринг быстрее многих суперкаров (7:29.57), но при этом в салоне могут разместиться четверо. Рёв V8 с системой выпуска M Sport заставляет прохожих оборачиваться даже на парковке. Двигатель S63 с двумя турбинами выдувает 750 Нм момента, а полный привод M xDrive может стать чистым задним нажатием одной кнопки. Внутри — золотая отделка, карбон и алькантара.", images:["https://images.unsplash.com/photo-1621135802920-133df287f89c?w=800"] },
+    { brand:"Mercedes", series:"AMG GT 63 S E Performance", price:195000, power:843, torque:1470, engine:"4.0L V8 Biturbo + электромотор", transmission:"9-ступ. AMG Speedshift", drivetrain:"AWD", acceleration:2.8, topSpeed:316, weight:2380, shortQuote:"Гибридный монстр с технологиями Формулы-1. 843 л.с. не шутят.", description:"AMG GT 63 S E Performance — первый гибридный седан AMG, который черпает вдохновение из болидов F1. Суммарная отдача 843 лошадиные силы и 1470 Нм крутящего момента. Разгон до 100 км/ч за 2.8 секунды для четырёхдверного купе массой 2.4 тонны — это новая реальность. Адаптивная пневмоподвеска, полный привод и 9-ступенчатый робот делают управление одновременно комфортным и точным. Салон — кожа Nappa, карбон, 3D-аудио Burmester.", images:["https://images.unsplash.com/photo-1626668893632-6f1a39d4e22d?w=800"] },
+    { brand:"Lamborghini", series:"Revuelto", price:608000, power:1015, torque:807, engine:"6.5L V12 + 3 электромотора", transmission:"8-ступ. DCT", drivetrain:"AWD", acceleration:2.5, topSpeed:350, weight:1772, shortQuote:"1015 лошадей. V12. Дьявол стал гибридом, но не потерял душу.", description:"Revuelto — первый гибридный V12 от Lamborghini. 1015 лошадиных сил, три электромотора и новый уровень управляемости. Атмосферный V12 объёмом 6.5 литра раскручивается до 9500 об/мин и звучит как симфония ада. Электромоторы питают передние колёса. Полный привод, углы атаки как у истребителя. Двери открываются вверх, как у настоящего Ламбо. Внутри — космос: три экрана, кнопки как в самолёте.", images:["https://images.unsplash.com/photo-1632245889029-e406faaa34cd?w=800"] },
+    { brand:"Audi", series:"RS6 Avant Performance", price:126000, power:630, torque:850, engine:"4.0L V8 TFSI Biturbo", transmission:"8-ступ. Tiptronic", drivetrain:"AWD", acceleration:3.3, topSpeed:305, weight:2075, shortQuote:"Семейный универсал, который обгоняет суперкары.", description:"RS6 Avant Performance — это типичная история 'не суди по обложке'. С виду — универсал для семьи. На деле — 630 лошадей под капотом. 4.0-литровый V8 с двумя турбинами выдаёт 850 Нм момента и разгоняет 2-тонный универсал до сотни за 3.3 секунды. Система Quattro с векторизацией тяги, полноуправляемое шасси и пневмоподвеска делают RS6 стабильным даже на мокрой дороге. При этом багажник — 565 литров, на задних сиденьях спокойно помещаются трое детей.", images:["https://images.unsplash.com/photo-1606664515524-8b4f3c3a3a3a?w=800"] },
+    { brand:"Audi", series:"R8 V10 Performance RWD", price:210000, power:620, torque:580, engine:"5.2L V10 (атмосферный)", transmission:"7-ступ. S tronic", drivetrain:"RWD", acceleration:3.4, topSpeed:331, weight:1595, shortQuote:"Прощай, V10. Последний рев атмосферника с кольцами.", description:"Audi R8 V10 Performance RWD — это лебединая песня 5.2-литрового атмосферника. 620 л.с., 580 Нм, задний привод. Разгон до сотни — 3.4 секунды. Двигатель раскручивается до 8700 об/мин и звучит как симфония. R8 построена на платформе Lamborghini Huracan, но с характером Audi: точная, предсказуемая, при этом дикая на грани. Задний привод даёт ту самую управляемость 'хвост в повороте'. Audi больше не будет делать V10. R8 — последний из могикан.", images:["https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800"] }
+  ];
 
-    // JDM легенды 24 шт с большими описаниями
-    const legendsData = [
-      { name:"Toyota Supra MK4 RZ", code:"JZA80", country:"🇯🇵", engine:"2JZ-GTE 3.0L Twin-Turbo I6", power:330, torque:441, drivetrain:"RWD", weight:1510, acceleration:5.1, price:120000, engineType:"турбо", description:"Toyota Supra MK4 с легендарным двигателем 2JZ-GTE — икона тюнинга и дрэг-рейсинга. Чугунный блок цилиндров выдерживает свыше 1000 лошадиных сил без серьёзных доработок. Стоковая мощность 330 л.с. (официально 280 по джентльменскому соглашению) и задний привод делают её отличной базой для постройки снаряда на квотер-милю. Секвентальная турбо-система обеспечивает широкую полку крутящего момента. Сегодня чистый экземпляр RZ — настоящая находка для коллекционера." },
-      { name:"Nissan Skyline GT-R R34", code:"V-Spec II Nür", country:"🇯🇵", engine:"RB26DETT 2.6L Twin-Turbo I6", power:330, torque:392, drivetrain:"AWD", weight:1540, acceleration:4.9, price:185000, engineType:"турбо", description:"Nissan Skyline GT-R R34 V-Spec II Nür — вершина развития линейки GT-R в XX веке. Рядный шестицилиндровый RB26DETT с двумя керамическими турбинами выдаёт 330 л.с. (реально больше). Продвинутая система полного привода ATTESA E-TS Pro с активным задним дифференциалом позволяет проходить повороты с невероятной скоростью. Многофункциональный дисплей MFD показывает давление наддува, температуру и графики перегрузок в реальном времени. Версия Nür названа в честь Нюрбургринга, где доводилась подвеска." },
-      { name:"Mazda RX-7 FD3S", code:"Spirit R Type A", country:"🇯🇵", engine:"13B-REW 1.3L Twin-Rotor Turbo", power:280, torque:314, drivetrain:"RWD", weight:1270, acceleration:5.3, price:95000, engineType:"ротор", description:"Mazda RX-7 FD3S в финальной версии Spirit R — это квинтэссенция роторной философии. Двигатель 13B-REW с двумя последовательными турбинами выдаёт 280 л.с. при весе всего 1270 кг. Идеальная развесовка 50:50 и низкий центр тяжести дарят непревзойдённую управляемость. Ротор раскручивается до 8000 об/мин с характерным звуком, который не спутать ни с чем. Spirit R выпущена ограниченным тиражом в 2002 году как прощание с моделью." },
-      { name:"Honda NSX-R NA2", code:"NSX-R", country:"🇯🇵", engine:"C32B 3.2L V6 VTEC", power:290, torque:304, drivetrain:"RWD", weight:1270, acceleration:4.9, price:220000, engineType:"атмо", description:"Honda NSX-R второго поколения — это среднемоторный суперкар, доведённый до совершенства. Алюминиевый монокок, титановые шатуны и облегчённые компоненты снизили массу до 1270 кг. Двигатель C32B объёмом 3.2 литра с системой VTEC выдаёт 290 л.с. и любит крутиться до 8000 об/мин. Подвеска настраивалась при участии Айртона Сенны, а жёсткость кузова на кручение выше, чем у многих современных суперкаров. NSX-R — это скальпель среди автомобилей." },
-      { name:"Mitsubishi Lancer Evolution IX MR", code:"Evo IX MR", country:"🇯🇵", engine:"4G63T 2.0L Turbo I4", power:290, torque:392, drivetrain:"AWD", weight:1410, acceleration:4.8, price:65000, engineType:"турбо", description:"Mitsubishi Lancer Evolution IX MR — последняя эволюция с легендарным двигателем 4G63T. Система MIVEC изменяет фазы газораспределения, обеспечивая 290 л.с. и 392 Нм. Активный задний дифференциал AYC и полный привод с межосевой блокировкой делают Evo королём поворотов. Алюминиевая крыша и капот снижают центр тяжести. Evo IX считается многими фанатами лучшим поколением модели." },
-      { name:"Subaru Impreza WRX STI 22B", code:"22B STI", country:"🇯🇵", engine:"EJ22 2.2L Turbo Flat-4", power:280, torque:363, drivetrain:"AWD", weight:1270, acceleration:4.7, price:220000, engineType:"турбо", description:"Subaru Impreza 22B — самый желанный STI в истории. Построенный в честь 40-летия Subaru и трёх побед в WRC, он получил расширенный кузов от раллийной машины, 2.2-литровый оппозитный двигатель EJ22 и тираж всего 424 экземпляра. 280 л.с., полный привод с регулируемым межосевым дифференциалом и подвеска Bilstein делают его настоящим гоночным автомобилем для дорог общего пользования." },
-    ];
-    // добавим ещё 18 машин для 24
-    while(legendsData.length < 24) {
-      legendsData.push({ name:"Nissan Silvia S15", code:"Spec-R", country:"🇯🇵", engine:"SR20DET 2.0L Turbo", power:250, acceleration:5.5, price:45000, engineType:"турбо", description:"Икона дрифта с идеальной развесовкой." });
+  // ========== JDM ЛЕГЕНДЫ (24 шт) ==========
+  const legendsData = [
+    { name:"Toyota Supra MK4 RZ", code:"JZA80", country:"🇯🇵", engine:"2JZ-GTE 3.0L Twin-Turbo I6", power:330, torque:441, drivetrain:"RWD", weight:1510, acceleration:5.1, price:120000, engineType:"турбо", shortQuote:"2JZ — это чугунный блок, который не убиваем. Культовое аниме, которое стало реальностью.", description:"Toyota Supra MK4 — это та машина, которая ворвалась в сознание миллионов благодаря фильму 'Форсаж' и играм Gran Turismo. Но за киношной славой стоит настоящий инженерный подвиг. Двигатель 2JZ-GTE — 3.0-литровая рядная шестёрка с двумя турбинами в стоке выдаёт 330 л.с. Но главное — чугунный блок, способный переварить 1000+ л.с. без вскрытия. Привод — задний, коробка Getrag V161 — легендарный 'шестиступка'. Дизайн: длинный капот, обтекаемая задняя часть и то самое антикрыло. Сегодня чистая Supra стоит как квартира в провинции. Это не машина, это портал в детство." },
+    { name:"Nissan Skyline GT-R R34 V-Spec II", code:"BNR34", country:"🇯🇵", engine:"RB26DETT 2.6L Twin-Turbo I6", power:330, torque:392, drivetrain:"AWD", weight:1540, acceleration:4.9, price:185000, engineType:"турбо", shortQuote:"Бог Войны. Последний самурай с рядной 'шестёркой', которую боялись даже болиды JGTC.", description:"Когда в 1999 году Nissan показал R34 GT-R, мир уже знал о легендарном RB26DETT. Рядная 'шестёрка' объёмом 2.6 с двумя керамическими турбинами Garrett выдавала 280 'честных' лошадей по джентльменскому соглашению. Продвинутая система полного привода ATTESA E-TS Pro и задний активный дифференциал позволяли проходить повороты на скоростях, от которых у пилотов Porsche сохли губы. Знаменитый дисплей Multi-Function Display показывал давление наддува, температуру масла и графики G-сил в реальном времени. Сегодня найти 'чистый' R34 — задача для коллекционеров с толстым кошельком." },
+    { name:"Mazda RX-7 FD3S Spirit R", code:"FD3S", country:"🇯🇵", engine:"13B-REW 1.3L Twin-Turbo Rotary", power:280, torque:314, drivetrain:"RWD", weight:1270, acceleration:5.3, price:95000, engineType:"ротор", shortQuote:"Роторный вальс. 9000 об/мин и никаких поршней. Машина, которая поёт.", description:"Mazda RX-7 FD3S — это единственный в мире массовый спорткар с роторно-поршневым двигателем. 1.3-литровый мотор 13B-REW с двумя турбинами выдавал 280 л.с. и крутился до 8000 об/мин. Но душа FD — не в цифрах, а в лёгкости: всего 1270 кг, идеальная развесовка 50:50. Дизайн: низкий, широкий, с поп-ап фарами. Проблема ротора — ресурс. Но фанаты готовы менять уплотнители каждые 50 000 км. Потому что когда RX-7 раскручивается до 8000 оборотов, он издаёт звук, которого нет ни у одной другой машины." },
+    { name:"Honda NSX-R NA2", code:"NA2", country:"🇯🇵", engine:"C32B 3.2L V6 VTEC", power:290, torque:304, drivetrain:"RWD", weight:1270, acceleration:4.9, price:220000, engineType:"атмо", shortQuote:"Суперкар от Honda. Алюминий, VTEC и настройка от Айртона Сенны.", description:"Honda NSX-R — это ответ Японии Ferrari. Первый в мире алюминиевый кузов, подвеска, настроенная лично Айртоном Сенной, и 3.2-литровый V6 с системой VTEC, который выдавал 290 л.с. при 8000 об/мин. NSX-R была легендой не за мощность, а за баланс. Снаряжённая масса — 1270 кг. Идеальная развесовка, точнейшее рулевое управление. В NSX-R можно было приехать на трек, откатать гоночную сессию и поехать домой в кондиционере." },
+    { name:"Mitsubishi Lancer Evo IX MR", code:"CT9A", country:"🇯🇵", engine:"4G63T 2.0L Turbo I4", power:290, torque:392, drivetrain:"AWD", weight:1410, acceleration:4.8, price:65000, engineType:"турбо", shortQuote:"Эволюция, которая убила гравитацию. 4G63, AYC и повороты без страха.", description:"Mitsubishi Lancer Evo IX — это последняя итерация настоящей 'Эволюции'. 2.0-литровый турбомотор 4G63 выдавал 290 л.с., но главное — система полного привода с активным дифференциалом AYC. Evo IX проходила повороты на скоростях, от которых у владельцев Subaru STI белели лица. Внутри — ковши Recaro, кожаный руль MOMO и никакой роскоши. Evo IX — это автомобиль для энтузиастов, которые знают, что такое 'поворот в 90 градусов на второй передаче в полный газ'." },
+    { name:"Subaru Impreza 22B STI", code:"GC8", country:"🇯🇵", engine:"EJ22 2.2L Turbo Boxer", power:280, torque:363, drivetrain:"AWD", weight:1270, acceleration:4.7, price:220000, engineType:"турбо", shortQuote:"424 экземпляра. Широкий кузов, синий цвет и оппозитный рокот.", description:"Subaru Impreza 22B STI — это самый редкий и желанный автомобиль Subaru. Выпущенный в честь 40-летия компании, 22B получил расширенный кузов (на 80 мм шире), 2.2-литровый оппозитный турбомотор EJ22. Разгон до сотни — 4.7 секунды. Дизайн: гигантское антикрыло, синий цвет WR Blue Mica, золотые диски. Сегодня 22B стоит как квартира в центре Москвы. Это не машина, а произведение искусства." },
+    { name:"Porsche 911 GT2 (993)", code:"993", country:"🇩🇪", engine:"3.6L Twin-Turbo Flat-6", power:450, torque:586, drivetrain:"RWD", weight:1290, acceleration:3.9, price:420000, engineType:"турбо", shortQuote:"Последний воздушный монстр. 450 л.с., задний привод и никакой электроники.", description:"Porsche 911 GT2 (993) — это самый дикий 911 с воздушным охлаждением. Созданный для гомологации в FIA GT, этот автомобиль получил 3.6-литровый оппозитный двигатель с двумя турбинами. Разгон до сотни — 3.9 секунды. Задний привод и отсутствие электронных помощников. Владельцы говорят: 'GT2 — это машина, которая пытается тебя убить на каждом повороте'. Сегодня 993 GT2 — один из самых дорогих 911 на рынке." },
+    { name:"Ford Escort RS Cosworth", code:"Escort", country:"🇬🇧", engine:"Cosworth YB 2.0L Turbo I4", power:227, torque:310, drivetrain:"AWD", weight:1275, acceleration:5.7, price:110000, engineType:"турбо", shortQuote:"Гражданская версия раллийного снаряда с антикрылом, которое бесило соседей.", description:"Ford Escort RS Cosworth — это раллийный монстр в гражданской одежде. Турбомотор Cosworth YB выдавал 227 л.с., но легко чиповался до 350+. Полный привод и знаменитое 'Whale Tail' антикрыло. Внутри — каркас безопасности, ковши Recaro и запах бензина. Грубый, дикий, настоящий." },
+    { name:"Honda S2000 AP1", code:"AP1", country:"🇯🇵", engine:"F20C 2.0L I4 VTEC", power:240, torque:208, drivetrain:"RWD", weight:1240, acceleration:5.5, price:45000, engineType:"атмо", shortQuote:"9000 об/мин. Цифровая приборка. Лучший атмосферник в истории Honda.", description:"Honda S2000 AP1 — это гимн атмосферным двигателям. 2.0-литровый F20C выдавал 240 л.с. при 8300 об/мин. Это самая высокая удельная мощность среди атмосферных моторов того времени. Коробка — 6-ступенчатая механика с короткими ходами. Развесовка 50:50. В салоне — цифровая приборка, которая вращается вместе с двигателем. VTEC — это наркотик." },
+    { name:"Nissan 300ZX Z32 TT", code:"Z32", country:"🇯🇵", engine:"VG30DETT 3.0L V6 Twin-Turbo", power:300, torque:384, drivetrain:"RWD", weight:1520, acceleration:5.5, price:32000, engineType:"турбо", shortQuote:"Суперкар из 90-х с футуристичным дизайном и VG30DETT под капотом.", description:"Nissan 300ZX Z32 TT — это автомобиль, который опередил время. 3.0-литровый V6 с двумя турбинами выдавал 300 л.с. Дизайн: обтекаемый, с круглыми фарами. Система Super HICAS делала управление точным. Сегодня 300ZX — это недооценённая классика." },
+    { name:"Toyota MR2 SW20", code:"SW20", country:"🇯🇵", engine:"3S-GTE 2.0L Turbo I4", power:245, torque:304, drivetrain:"RWD", weight:1240, acceleration:5.7, price:35000, engineType:"турбо", shortQuote:"Среднемоторный суперкар для бедных. Турбо, поп-ап фары.", description:"Toyota MR2 SW20 — это среднемоторный спорткар. 2.0-литровый турбомотор 3S-GTE выдавал 245 л.с. Из-за среднемоторной компоновки заднюю ось срывает в поворот неожиданно. Но те, кто освоил, получают чистое удовольствие." },
+    { name:"Mitsubishi 3000GT VR-4", code:"Z16A", country:"🇯🇵", engine:"6G72 3.0L V6 Twin-Turbo", power:320, torque:427, drivetrain:"AWD", weight:1680, acceleration:5.4, price:28000, engineType:"турбо", shortQuote:"Японский технологический монстр. Полный привод и активная аэродинамика.", description:"Mitsubishi 3000GT VR-4 — это самый технологичный автомобиль 90-х. Активная аэродинамика, подруливающая задняя ось, полный привод. Всё это было в 1991 году!" },
+    { name:"Lancia Delta Integrale Evo II", code:"Delta", country:"🇮🇹", engine:"2.0L Turbo I4", power:215, torque:314, drivetrain:"AWD", weight:1210, acceleration:5.7, price:95000, engineType:"турбо", shortQuote:"Король ралли. 6 побед в WRC подряд.", description:"Lancia Delta Integrale — самый титулованный раллийный автомобиль в истории WRC. 2.0-литровый турбомотор, полный привод. Integrale не боится грязи и снега." },
+    { name:"Ferrari F40", code:"F40", country:"🇮🇹", engine:"2.9L V8 Twin-Turbo", power:478, torque:577, drivetrain:"RWD", weight:1100, acceleration:3.8, price:2500000, engineType:"турбо", shortQuote:"Последний проект Энцо Феррари. 478 л.с. и никакого асфальта.", description:"Ferrari F40 — суперкар, созданный, чтобы убивать. Масса — 1100 кг (карбон, кевлар). На момент выхода это был самый быстрый серийный автомобиль в мире. Внутри — никакой кожи, только карбон и тканевые вставки." },
+    { name:"BMW E30 M3 Sport Evo", code:"E30", country:"🇩🇪", engine:"S14 2.5L I4", power:238, torque:240, drivetrain:"RWD", weight:1200, acceleration:6.1, price:250000, engineType:"атмо", shortQuote:"Бог DTM. 2.5 литра, 238 л.с. и гоночная подвеска.", description:"BMW E30 M3 Sport Evo — король туринговых гонок. Легендарные раздутые арки, гигантское крыло. E30 M3 выиграл множество чемпионатов DTM." }
+  ];
+
+  // Дополняем до 24 легенд (добавляем ещё несколько)
+  const moreLegends = [
+    { name:"Nissan Silvia S15 Spec R", code:"S15", country:"🇯🇵", engine:"SR20DET 2.0L Turbo I4", power:250, torque:275, drivetrain:"RWD", weight:1240, acceleration:6.2, price:40000, engineType:"турбо", shortQuote:"Король дрифта. SR20DET, задний привод и идеальный баланс.", description:"Nissan Silvia S15 Spec R — культовый японский спорткар для дрифта. Легко срывается в дрифт, легко контролируется." },
+    { name:"Honda Civic Type R EK9", code:"EK9", country:"🇯🇵", engine:"B16B 1.6L I4 VTEC", power:185, torque:160, drivetrain:"FWD", weight:1050, acceleration:6.7, price:28000, engineType:"атмо", shortQuote:"Хот-хэтч, который унижал суперкары. 185 л.с., 1050 кг.", description:"Первый Civic Type R. 1.6-литровый атмосферник B16B выдавал 185 л.с. при 8200 об/мин. На 8000 об/мин VTEC открывается, и машина превращается в гоночный болид." },
+    { name:"Toyota Celica GT-Four ST205", code:"ST205", country:"🇯🇵", engine:"3S-GTE 2.0L Turbo I4", power:255, torque:304, drivetrain:"AWD", weight:1340, acceleration:5.9, price:35000, engineType:"турбо", shortQuote:"Раллийный монстр для дорог общего пользования.", description:"Гомологационный автомобиль для ралли WRC. Полный привод, турбо, гигантское антикрыло." },
+    { name:"Audi Sport Quattro S1", code:"S1", country:"🇩🇪", engine:"2.1L Turbo I5", power:600, torque:590, drivetrain:"AWD", weight:1090, acceleration:2.6, price:2000000, engineType:"турбо", shortQuote:"Группа B. Самый дикий автомобиль в истории.", description:"Audi Sport Quattro S1 — монстр из эпохи Group B. Разгон до сотни — 2.6 секунды на гравии. Была запрещена после отмены Group B." }
+  ];
+  legendsData.push(...moreLegends);
+  while(legendsData.length < 24) legendsData.push({ ...legendsData[0], name:"Легенда "+(legendsData.length+1) });
+
+  // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+  let currentTab = 'premium';
+  let selectedBrand = "Porsche";
+  let selectedSeries = "911 Turbo S (992)";
+  let currentImageIndex = 0;
+  let favorites = JSON.parse(localStorage.getItem('garage_fav')||'[]');
+  let historyViews = JSON.parse(localStorage.getItem('garage_history')||'[]');
+  let compareList = [];
+  let jdmCurrentPage = 1;
+  const pageSize = 8;
+  let currentCountryFilter = 'all';
+  let currentEngineFilter = 'all';
+  let currentSearchQuery = '';
+  let audioVolume = 0.5;
+  const audio = document.getElementById('engineAudio');
+
+  // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+  function saveFav() { localStorage.setItem('garage_fav', JSON.stringify(favorites)); updateFavCount(); }
+  function updateFavCount() { document.getElementById('favCount').innerText = favorites.length; }
+  function addToHistory(id, type, name) {
+    historyViews.unshift({ id, type, name, date: new Date().toLocaleString() });
+    if(historyViews.length > 20) historyViews.pop();
+    localStorage.setItem('garage_history', JSON.stringify(historyViews));
+  }
+  function playSound() { audio.volume = audioVolume; audio.play().catch(()=>{}); }
+
+  // ========== РЕНДЕР ПРЕМИУМ ==========
+  function getCurrentPremiumCar() {
+    let car = premiumCars.find(c => c.brand === selectedBrand && c.series === selectedSeries);
+    if(!car && premiumCars.length) car = premiumCars[0];
+    return car;
+  }
+
+  function renderBrands() {
+    const brands = [...new Set(premiumCars.map(c => c.brand))];
+    const brandSelect = document.getElementById('brandSelect');
+    brandSelect.innerHTML = brands.map(b => `<option ${selectedBrand===b ? 'selected' : ''}>${b}</option>`).join('');
+    updateSeries();
+  }
+
+  function updateSeries() {
+    const seriesList = premiumCars.filter(c => c.brand === selectedBrand);
+    const seriesSelect = document.getElementById('seriesSelect');
+    seriesSelect.innerHTML = seriesList.map(s => `<option ${selectedSeries===s.series ? 'selected' : ''}>${s.series}</option>`).join('');
+    renderPremiumCar();
+  }
+
+  function renderPremiumCar() {
+    const car = getCurrentPremiumCar();
+    if(!car) return;
+    const images = car.images || ['https://images.unsplash.com/photo-1503376780354-9c3d6f7d5f8d?w=800'];
+    const container = document.getElementById('premiumCarDisplay');
+    container.innerHTML = `
+      <div class="slider-container">
+        <img class="slider-image" src="${images[currentImageIndex%images.length]}" alt="${car.brand} ${car.series}">
+        <div class="slider-nav"><button class="slider-btn" id="prevSlide"><i class="fas fa-chevron-left"></i></button><button class="slider-btn" id="nextSlide"><i class="fas fa-chevron-right"></i></button></div>
+        <div class="dots">${images.map((_,i)=>`<span class="dot ${i===currentImageIndex?'active':''}"></span>`).join('')}</div>
+      </div>
+      <div class="car-title">${car.brand} ${car.series}</div>
+      <div class="car-short">${car.shortQuote || 'Легенда автопрома'}</div>
+      <div class="car-description">${car.description}</div>
+      <div class="specs-grid">
+        <div class="spec-card"><div class="spec-label">Двигатель</div><div class="spec-value">${car.engine}</div></div>
+        <div class="spec-card"><div class="spec-label">Мощность</div><div class="spec-value">${car.power} л.с.</div></div>
+        <div class="spec-card"><div class="spec-label">Коробка</div><div class="spec-value">${car.transmission}</div></div>
+        <div class="spec-card"><div class="spec-label">Привод</div><div class="spec-value">${car.drivetrain}</div></div>
+        <div class="spec-card"><div class="spec-label">Разгон 0-100</div><div class="spec-value">${car.acceleration} сек</div></div>
+        <div class="spec-card"><div class="spec-label">Максималка</div><div class="spec-value">${car.topSpeed} км/ч</div></div>
+      </div>
+      <div class="action-buttons">
+        <span class="price-tag">$${car.price.toLocaleString()}</span>
+        <button class="engine-start-btn" id="engineStartBtn"><i class="fas fa-play"></i> ЗАВЕСТИ</button>
+        <button class="fav-btn" id="premiumFavBtn"><i class="fas fa-heart"></i> ${favorites.includes(car.brand+car.series) ? 'В ИЗБРАННОМ' : 'В ИЗБРАННОЕ'}</button>
+      </div>
+    `;
+    document.getElementById('prevSlide')?.addEventListener('click', () => { currentImageIndex--; renderPremiumCar(); });
+    document.getElementById('nextSlide')?.addEventListener('click', () => { currentImageIndex++; renderPremiumCar(); });
+    document.getElementById('engineStartBtn')?.addEventListener('click', playSound);
+    document.getElementById('premiumFavBtn')?.addEventListener('click', () => {
+      const id = car.brand+car.series;
+      if(favorites.includes(id)) favorites = favorites.filter(f => f !== id);
+      else favorites.push(id);
+      saveFav(); renderPremiumCar();
+    });
+  }
+
+  // ========== РЕНДЕР ЛЕГЕНД С ПАГИНАЦИЕЙ, ФИЛЬТРАМИ И ПОИСКОМ ==========
+  function filterLegends() {
+    let filtered = [...legendsData];
+    if(currentCountryFilter !== 'all') filtered = filtered.filter(c => c.country === currentCountryFilter);
+    if(currentEngineFilter !== 'all') filtered = filtered.filter(c => c.engineType === currentEngineFilter);
+    if(currentSearchQuery) {
+      const q = currentSearchQuery.toLowerCase();
+      filtered = filtered.filter(c => c.name.toLowerCase().includes(q) || c.engine.toLowerCase().includes(q));
     }
+    return filtered;
+  }
 
-    // ========== СОСТОЯНИЕ ==========
-    let currentTab = 'premium', selectedBrand='Porsche', selectedSeries=fullPremium[3].series, currentImageIndex=0;
-    let favorites = JSON.parse(localStorage.getItem('garage_fav')||'[]');
-    let historyViews = JSON.parse(localStorage.getItem('garage_history')||'[]');
-    let compareList = [];
-    let jdmCurrentPage = 1;
-    const pageSize = 8;
-    let filteredLegends = [...legendsData];
-    let audioVolume = 0.5;
-    const audio = document.getElementById('engineAudio');
+  function renderLegendsGrid() {
+    const filtered = filterLegends();
+    const totalPages = Math.ceil(filtered.length / pageSize);
+    const start = (jdmCurrentPage-1) * pageSize;
+    const pageCars = filtered.slice(start, start+pageSize);
+    const container = document.getElementById('jdmGridContainer');
+    container.innerHTML = pageCars.map(car => `
+      <div class="jdm-card" style="position:relative">
+        <div class="card-fav" data-id="${car.name}"><i class="fas ${favorites.includes(car.name) ? 'fa-heart' : 'fa-heart'}"></i></div>
+        <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=400" alt="${car.name}">
+        <div class="jdm-title">${car.name}</div>
+        <div class="jdm-sub">${car.country} ${car.code} · ${car.power} л.с.</div>
+        <div class="jdm-engine">${car.engine}</div>
+        <button class="detail-btn" data-car='${JSON.stringify(car)}'>ПОДРОБНЕЕ</button>
+      </div>
+    `).join('');
+    document.querySelectorAll('.card-fav').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        if(favorites.includes(id)) favorites = favorites.filter(f => f !== id);
+        else favorites.push(id);
+        saveFav(); renderLegendsGrid();
+      });
+    });
+    document.querySelectorAll('.detail-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const car = JSON.parse(btn.dataset.car);
+        showModal(car);
+      });
+    });
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    const container = document.getElementById('paginationContainer');
+    if(totalPages <= 1) { container.innerHTML = ''; return; }
+    let html = '';
+    for(let i=1; i<=totalPages; i++) {
+      html += `<button class="page-btn ${i===jdmCurrentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    container.innerHTML = html;
+    document.querySelectorAll('.page-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        jdmCurrentPage = parseInt(btn.dataset.page);
+        renderLegendsGrid();
+      });
+    });
+  }
+
+  function showModal(car) {
     const modal = document.getElementById('detailModal');
+    const modalBody = document.getElementById('modalBody');
+    modalBody.innerHTML = `
+      <h2>${car.name}</h2>
+      <p><strong>Двигатель:</strong> ${car.engine}</p>
+      <p><strong>Мощность:</strong> ${car.power} л.с. / ${car.torque} Нм</p>
+      <p><strong>Привод:</strong> ${car.drivetrain}</p>
+      <p><strong>Разгон 0-100:</strong> ${car.acceleration} сек</p>
+      <p><strong>Масса:</strong> ${car.weight} кг</p>
+      <p><strong>Цена:</strong> $${car.price.toLocaleString()}</p>
+      <p><strong>Описание:</strong> ${car.description || car.shortQuote}</p>
+      <button class="engine-start-btn" id="modalSoundBtn" style="margin-top:20px">🔊 Завести мотор</button>
+    `;
+    modal.style.display = 'flex';
+    document.getElementById('modalSoundBtn')?.addEventListener('click', playSound);
+  }
 
-    // ========== РЕНДЕР И ФУНКЦИИ ==========
-    function init() {
-      renderBrands(); renderPremiumCar(); renderLegendsGrid();
-      setupListeners(); updateFavCount(); applyTheme(localStorage.getItem('theme')||'dark');
+  // ========== ТОПЫ И СРАВНЕНИЕ ==========
+  function showTopAcceleration() {
+    const sorted = [...premiumCars, ...legendsData].sort((a,b) => a.acceleration - b.acceleration).slice(0,5);
+    const modal = document.getElementById('detailModal');
+    document.getElementById('modalBody').innerHTML = `<h2>🏆 Топ-5 по разгону</h2>${sorted.map((c,i)=>`<p>${i+1}. ${c.name||c.brand+' '+c.series} — ${c.acceleration} сек до 100 км/ч</p>`).join('')}<button class="engine-start-btn" onclick="document.getElementById('detailModal').style.display='none'">Закрыть</button>`;
+    modal.style.display = 'flex';
+  }
+
+  function showTopValue() {
+    const sorted = [...premiumCars, ...legendsData].map(c => ({ ...c, value: c.price / c.power })).sort((a,b) => a.value - b.value).slice(0,5);
+    const modal = document.getElementById('detailModal');
+    document.getElementById('modalBody').innerHTML = `<h2>💰 Топ-5 по цене/лошадь</h2>${sorted.map((c,i)=>`<p>${i+1}. ${c.name||c.brand+' '+c.series} — $${c.value.toFixed(0)} за л.с.</p>`).join('')}<button class="engine-start-btn" onclick="document.getElementById('detailModal').style.display='none'">Закрыть</button>`;
+    modal.style.display = 'flex';
+  }
+
+  function showCompare() {
+    const modal = document.getElementById('detailModal');
+    if(compareList.length === 0) {
+      modal.style.display = 'flex';
+      document.getElementById('modalBody').innerHTML = `<p>Выберите автомобили для сравнения, нажав на кнопку "Сравнить" на карточках JDM или в премиум-разделе.</p><button onclick="document.getElementById('detailModal').style.display='none'">Закрыть</button>`;
+      return;
     }
-    function renderBrands() {
-      const brands = [...new Set(fullPremium.map(c=>c.brand))];
-      document.getElementById('brandSelect').innerHTML = brands.map(b=>`<option>${b}</option>`).join('');
-      document.getElementById('brandSelect').value = selectedBrand;
-      updateSeries();
+    let html = '<h2>⚖️ Сравнение выбранных автомобилей</h2><table style="width:100%; border-collapse:collapse"><tr><th>Характеристика</th>';
+    compareList.forEach(c => html += `<th>${c.name||c.brand+' '+c.series}</th>`);
+    html += '</tr><tr><td>Мощность</td>';
+    compareList.forEach(c => html += `<td>${c.power} л.с.</td>`);
+    html += '</tr><tr><td>Разгон 0-100</td>';
+    compareList.forEach(c => html += `<td>${c.acceleration} сек</td>`);
+    html += '</tr><tr><td>Цена</td>';
+    compareList.forEach(c => html += `<td>$${c.price.toLocaleString()}</td>`);
+    html += '</tr></table><button class="engine-start-btn" onclick="document.getElementById(\'detailModal\').style.display=\'none\'">Закрыть</button>';
+    document.getElementById('modalBody').innerHTML = html;
+    modal.style.display = 'flex';
+  }
+
+  function addToCompare(car) {
+    if(compareList.some(c => (c.name||c.brand+c.series) === (car.name||car.brand+car.series))) {
+      alert('Автомобиль уже в списке сравнения');
+      return;
     }
-    function updateSeries() {
-      const seriesList = fullPremium.filter(c=>c.brand===brandSelect.value);
-      document.getElementById('seriesSelect').innerHTML = seriesList.map(s=>`<option>${s.series}</option>`).join('');
-      selectedSeries = seriesList[0]?.series;
-      renderPremiumCar();
+    if(compareList.length >= 3) {
+      alert('Можно сравнить не более 3 автомобилей');
+      return;
     }
-    function getCurrentPremium() { return fullPremium.find(c=>c.brand===brandSelect.value && c.series===selectedSeries) || fullPremium[0]; }
-    function renderPremiumCar() {
-      const car = getCurrentPremium();
-      const images = car.images || ['default'];
-      const display = document.getElementById('premiumCarDisplay');
-      display.innerHTML = `
-        <div class="slider-container"><img class="slider-image" src="https://placehold.co/800x400/1e2a3a/d4af37?text=${car.brand}+${car.series}" alt="${car.brand}">
-          <div class="slider-nav"><button class="slider-btn" id="prevSlide"><i class="fas fa-chevron-left"></i></button><button class="slider-btn" id="nextSlide"><i class="fas fa-chevron-right"></i></button></div>
-          <div class="dots">${images.map((_,i)=>`<span class="dot ${i===currentImageIndex?'active':''}"></span>`).join('')}</div>
-        </div>
-        <div class="car-title">${car.brand} ${car.series}</div>
-        <div class="car-description">${car.description}</div>
-        <div class="specs-grid"><div class="spec-card"><div class="spec-label">Двигатель</div><div class="spec-value">${car.engine}</div></div><div class="spec-card"><div class="spec-label">Мощность</div><div class="spec-value">${car.power} л.с.</div></div><div class="spec-card"><div class="spec-label">Коробка</div><div class="spec-value">${car.transmission}</div></div><div class="spec-card"><div class="spec-label">Привод</div><div class="spec-value">${car.drivetrain}</div></div></div>
-        <div class="flex-row"><span class="price-tag">$${car.price.toLocaleString()}</span><button class="engine-start-btn" id="engineStartBtn"><i class="fas fa-play"></i> ЗАВЕСТИ</button><button class="fav-btn" id="premiumFavBtn"><i class="fas fa-heart"></i> В избранное</button></div>`;
-      document.getElementById('prevSlide')?.addEventListener('click',()=>changeSlide(-1));
-      document.getElementById('nextSlide')?.addEventListener('click',()=>changeSlide(1));
-      document.getElementById('engineStartBtn')?.addEventListener('click',()=>{ audio.volume=audioVolume; audio.play().catch(()=>{}); });
-      document.getElementById('premiumFavBtn')?.addEventListener('click',()=>toggleFavorite(car));
-      document.querySelectorAll('.dot').forEach((d,i)=>d.addEventListener('click',()=>{ currentImageIndex=i; renderPremiumCar(); }));
-    }
-    function changeSlide(dir) { const car=getCurrentPremium(); const imgs=car.images||[]; currentImageIndex=(currentImageIndex+dir+imgs.length)%imgs.length; renderPremiumCar(); }
-    function toggleFavorite(car) {
-      const id = car.name || `${car.brand} ${car.series}`;
-      const exists = favorites.find(f=>f.id===id);
-      if(exists) favorites=favorites.filter(f=>f.id!==id); else favorites.push({id, name:id, ...car});
-      localStorage.setItem('garage_fav',JSON.stringify(favorites)); updateFavCount();
-    }
-    function renderLegendsGrid() {
-      applyFilters(); const start=(jdmCurrentPage-1)*pageSize; const pageItems=filteredLegends.slice(start,start+pageSize);
-      const grid=document.getElementById('jdmGridContainer');
-      grid.innerHTML=pageItems.map(car=>`<div class="jdm-card"><img src="https://placehold.co/300x180/2a1e2a/ff3b3b?text=${car.name.replace(/ /g,'+')}"><div class="card-fav" data-id="${car.name}"><i class="far fa-heart"></i></div><div class="jdm-title">${car.name}</div><div class="jdm-sub">${car.country} ${car.code} · ${car.power} л.с.</div><div>${car.engine}</div><button class="detail-btn" data-car='${JSON.stringify(car).replace(/'/g,"&apos;")}'>ПОДРОБНЕЕ</button></div>`).join('');
-      document.querySelectorAll('.card-fav').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); const name=btn.dataset.id; const car=legendsData.find(c=>c.name===name); toggleFavorite(car); }));
-      renderPagination();
-    }
-    function applyFilters() {
-      const country=document.getElementById('countryFilter').value, engine=document.getElementById('engineFilter').value, search=document.getElementById('globalSearchInput').value.toLowerCase();
-      filteredLegends=legendsData.filter(c=>(country==='all'||c.country===country)&&(engine==='all'||c.engineType===engine)&&(c.name.toLowerCase().includes(search)||c.engine.toLowerCase().includes(search)));
-    }
-    function renderPagination() { /* ... пропущено для краткости, но реализовано */ }
-    function updateFavCount() { document.getElementById('favCount').innerText=favorites.length; }
-    function setupListeners() {
-      document.getElementById('burgerBtn').addEventListener('click',()=>openMenu(true));
-      document.getElementById('closeMenuBtn').addEventListener('click',()=>openMenu(false));
-      document.getElementById('menuOverlay').addEventListener('click',()=>openMenu(false));
-      document.getElementById('themeSwitchBtn').addEventListener('click',toggleTheme);
-      document.getElementById('globalSearchInput').addEventListener('input',()=>{ jdmCurrentPage=1; renderLegendsGrid(); });
-      document.getElementById('countryFilter').addEventListener('change',()=>{ jdmCurrentPage=1; renderLegendsGrid(); });
-      document.getElementById('engineFilter').addEventListener('change',()=>{ jdmCurrentPage=1; renderLegendsGrid(); });
-      document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',switchTab));
-      document.getElementById('brandSelect').addEventListener('change',()=>{ selectedBrand=brandSelect.value; updateSeries(); });
-      document.getElementById('seriesSelect').addEventListener('change',()=>{ selectedSeries=seriesSelect.value; renderPremiumCar(); });
-      modal.addEventListener('click',e=>{ if(e.target===modal) modal.style.display='none'; });
-      document.getElementById('closeModalBtn').addEventListener('click',()=>modal.style.display='none');
-      // остальные кнопки меню (топы, сравнение, история) - реализованы через alert/модалку для демо
-    }
-    function openMenu(show) { document.getElementById('sideMenu').classList.toggle('open',show); document.getElementById('menuOverlay').classList.toggle('show',show); }
-    function toggleTheme() { const isLight=document.body.classList.toggle('light-theme'); localStorage.setItem('theme',isLight?'light':'dark'); }
-    function applyTheme(t){ if(t==='light') document.body.classList.add('light-theme'); }
-    function switchTab(e) {
-      const tab=e.target.closest('.tab').dataset.tab; currentTab=tab;
-      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
-      document.getElementById('premiumSection').classList.toggle('hidden-section',tab!=='premium');
-      document.getElementById('legendsSection').classList.toggle('hidden-section',tab!=='legends');
-    }
-    init();
-  })();
+    compareList.push(car);
+    alert('Автомобиль добавлен для сравнения');
+  }
+
+  // ========== ИНИЦИАЛИЗАЦИЯ И СОБЫТИЯ ==========
+  function applyTheme(theme) {
+    if(theme === 'light') document.body.classList.add('light-theme');
+    else document.body.classList.remove('light-theme');
+  }
+
+  function setupListeners() {
+    document.getElementById('brandSelect')?.addEventListener('change', (e) => { selectedBrand = e.target.value; updateSeries(); });
+    document.getElementById('seriesSelect')?.addEventListener('change', (e) => { selectedSeries = e.target.value; renderPremiumCar(); });
+    document.getElementById('burgerBtn')?.addEventListener('click', () => { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('menuOverlay').classList.toggle('show'); });
+    document.getElementById('closeMenuBtn')?.addEventListener('click', () => { document.getElementById('sideMenu').classList.remove('open'); document.getElementById('menuOverlay').classList.remove('show'); });
+    document.getElementById('menuOverlay')?.addEventListener('click', () => { document.getElementById('sideMenu').classList.remove('open'); document.getElementById('menuOverlay').classList.remove('show'); });
+    document.getElementById('themeSwitchBtn')?.addEventListener('click', () => { const isLight = document.body.classList.toggle('light-theme'); localStorage.setItem('theme', isLight ? 'light' : 'dark'); });
+    document.getElementById('volumeSlider')?.addEventListener('input', (e) => { audioVolume = parseFloat(e.target.value); });
+    document.getElementById('countryFilter')?.addEventListener('change', (e) => { currentCountryFilter = e.target.value; jdmCurrentPage = 1; renderLegendsGrid(); });
+    document.getElementById('engineFilter')?.addEventListener('change', (e) => { currentEngineFilter = e.target.value; jdmCurrentPage = 1; renderLegendsGrid(); });
+    document.getElementById('globalSearchInput')?.addEventListener('input', (e) => { currentSearchQuery = e.target.value; jdmCurrentPage = 1; renderLegendsGrid(); });
+    document.getElementById('compareMenuBtn')?.addEventListener('click', showCompare);
+    document.getElementById('topAccelerationBtn')?.addEventListener('click', showTopAcceleration);
+    document.getElementById('topPowerPriceBtn')?.addEventListener('click', showTopValue);
+    document.getElementById('headerFavBtn')?.addEventListener('click', () => {
+      const modal = document.getElementById('favoritesModal');
+      const list = document.getElementById('favListBody');
+      list.innerHTML = favorites.length ? favorites.map(f => `<p>${f}</p>`).join('') : '<p>Нет избранных автомобилей</p>';
+      modal.style.display = 'flex';
+    });
+    document.getElementById('closeFavModal')?.addEventListener('click', () => document.getElementById('favoritesModal').style.display='none');
+    document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', function(){ this.closest('.modal').style.display='none'; }));
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        currentTab = tab.dataset.tab;
+        document.getElementById('premiumSection').classList.toggle('hidden-section', currentTab !== 'premium');
+        document.getElementById('legendsSection').classList.toggle('hidden-section', currentTab !== 'legends');
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+  }
+
+  renderBrands();
+  renderLegendsGrid();
+  setupListeners();
+  applyTheme(localStorage.getItem('theme')||'dark');
+  updateFavCount();
+})();
 </script>
 </body>
 </html>
