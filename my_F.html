@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌸 F.</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            width: 100vw;
+            height: 100dvh;
+            overflow: hidden;
+            background: linear-gradient(170deg, #fdf2f7 0%, #fce4ec 30%, #f8e8f0 60%, #fdf6f9 100%);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            position: relative;
+        }
+
+        /* Мягкие фоновые частицы */
+        .bg-particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatUp 12s ease-in infinite;
+            opacity: 0.25;
+        }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.35;
+            }
+            60% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Холст для рисования */
+        #drawingCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: crosshair;
+        }
+
+        /* Подсказка */
+        .hint {
+            position: absolute;
+            top: 18%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            color: #c2798f;
+            font-size: 1.1rem;
+            letter-spacing: 0.08em;
+            text-align: center;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            text-shadow: 0 1px 4px rgba(255, 255, 255, 0.7);
+        }
+        .hint.fade-out {
+            opacity: 0;
+        }
+
+        /* Контур-подсказка сердца */
+        .heart-hint {
+            position: absolute;
+            top: 38%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+        .heart-hint svg {
+            width: 90px;
+            height: 85px;
+            animation: pulseHint 2.4s ease-in-out infinite;
+        }
+        .heart-hint path {
+            fill: none;
+            stroke: #e0aebd;
+            stroke-width: 2;
+            stroke-dasharray: 8 6;
+            opacity: 0.7;
+        }
+        @keyframes pulseHint {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.55;
+            }
+            50% {
+                transform: scale(1.12);
+                opacity: 0.9;
+            }
+        }
+
+        /* Контейнер дерева */
+        #treeContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 15;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Текстовый блок */
+        #textBlock {
+            position: absolute;
+            bottom: 21%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            pointer-events: none;
+            text-align: center;
+            width: 88%;
+            max-width: 500px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+        #textBlock.visible {
+            display: flex;
+        }
+
+        .typed-line {
+            color: #9b5d73;
+            font-size: 1.05rem;
+            letter-spacing: 0.04em;
+            line-height: 1.65;
+            min-height: 1.65em;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(255, 240, 245, 0.8);
+            transition: opacity 1.2s ease;
+        }
+        .typed-line.fading {
+            opacity: 0.25;
+        }
+        .typed-line.final {
+            color: #7d4a5e;
+            font-size: 1.15rem;
+            font-style: italic;
+            letter-spacing: 0.05em;
+            opacity: 1;
+        }
+
+        /* Счётчик */
+        #counterBlock {
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            z-index: 20;
+            pointer-events: none;
+        }
+        #counterBlock.visible {
+            display: flex;
+        }
+        .counter-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 52px;
+        }
+        .counter-number {
+            font-size: 1.7rem;
+            font-weight: bold;
+            color: #b8657e;
+            letter-spacing: 0.03em;
+            line-height: 1;
+            text-shadow: 0 2px 6px rgba(184, 101, 126, 0.25);
+        }
+        .counter-label {
+            font-size: 0.68rem;
+            color: #c994a4;
+            letter-spacing: 0.07em;
+            text-transform: lowercase;
+            margin-top: 2px;
+        }
+        .counter-divider {
+            font-size: 1.6rem;
+            color: #dba4b5;
+            line-height: 1;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Фоновые частицы -->
+    <div id="bgParticles"></div>
+
+    <!-- Подсказка -->
+    <div class="hint" id="hintText">draw a heart</div>
+
+    <!-- Контур-подсказка -->
+    <div class="heart-hint" id="heartHint">
+        <svg viewBox="0 0 32 29.6">
+            <path d="M16 28 C16 28, 0 19, 0 10 C0 4, 5 0, 9 0 C12 0, 15 2, 16 5 C17 2, 20 0, 23 0 C27 0, 32 4, 32 10 C32 19, 16 28, 16 28Z" />
+        </svg>
+    </div>
+
+    <!-- Холст для рисования -->
+    <canvas id="drawingCanvas"></canvas>
+
+    <!-- Дерево (SVG + анимация) -->
+    <div id="treeContainer"></div>
+
+    <!-- Тексты -->
+    <div id="textBlock">
+        <div class="typed-line" id="line1"></div>
+        <div class="typed-line" id="line2"></div>
+        <div class="typed-line final" id="line3"></div>
+        <div id="counterBlock">
+            <div class="counter-item"><span class="counter-number" id="days">0</span><span class="counter-label">days</span></div>
+            <span class="counter-divider">:</span>
+            <div class="counter-item"><span class="counter-number" id="hours">0</span><span class="counter-label">hours</span></div>
+            <span class="counter-divider">:</span>
+            <div class="counter-item"><span class="counter-number" id="minutes">0</span><span class="counter-label">min</span></div>
+            <span class="counter-divider">:</span>
+            <div class="counter-item"><span class="counter-number" id="seconds">0</span><span class="counter-label">sec</span></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ─────────────────── DOM ───────────────────
+            const canvas = document.getElementById('drawingCanvas');
+            const ctx = canvas.getContext('2d');
+            const hintText = document.getElementById('hintText');
+            const heartHint = document.getElementById('heartHint');
+            const treeContainer = document.getElementById('treeContainer');
+            const textBlock = document.getElementById('textBlock');
+            const line1 = document.getElementById('line1');
+            const line2 = document.getElementById('line2');
+            const line3 = document.getElementById('line3');
+            const counterBlock = document.getElementById('counterBlock');
+
+            // ─────────────────── РАЗМЕРЫ ───────────────────
+            let W, H;
+
+            function resize() {
+                W = window.innerWidth;
+                H = window.innerHeight;
+                canvas.width = W;
+                canvas.height = H;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            // ─────────────────── ФОН.ЧАСТИЦЫ ───────────────────
+            const bgContainer = document.getElementById('bgParticles');
+            const particleColors = ['#f2ced8', '#e8c4cf', '#f7dbe3', '#edd2db', '#f0d5df', '#e5bfca'];
+            for (let i = 0; i < 28; i++) {
+                const p = document.createElement('div');
+                p.classList.add('bg-particle');
+                const size = Math.random() * 28 + 10;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = particleColors[Math.floor(Math.random() * particleColors.length)];
+                p.style.animationDuration = (Math.random() * 14 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                bgContainer.appendChild(p);
+            }
+
+            // ─────────────────── РИСОВАНИЕ ───────────────────
+            let drawing = false;
+            let path = [];
+            const MIN_POINTS = 18;
+
+            function getPos(e) {
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX, y: clientY };
+            }
+
+            function startDraw(e) {
+                if (treeContainer.style.display === 'block') return;
+                e.preventDefault();
+                drawing = true;
+                path = [];
+                const p = getPos(e);
+                path.push(p);
+                ctx.clearRect(0, 0, W, H);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            }
+
+            function moveDraw(e) {
+                if (!drawing) return;
+                e.preventDefault();
+                const p = getPos(e);
+                path.push(p);
+                ctx.lineWidth = 4.5;
+                ctx.strokeStyle = '#e8a0b5';
+                ctx.shadowColor = '#f7c6d4';
+                ctx.shadowBlur = 16;
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            }
+
+            function endDraw(e) {
+                if (!drawing) return;
+                drawing = false;
+                ctx.shadowBlur = 0;
+                if (path.length < MIN_POINTS) {
+                    ctx.clearRect(0, 0, W, H);
+                    return;
+                }
+                if (isHeartShape(path)) {
+                    triggerTree();
+                } else {
+                    ctx.clearRect(0, 0, W, H);
+                }
+            }
+
+            // ─────────────────── РАСПОЗНАВАНИЕ СЕРДЦА ───────────────────
+            function isHeartShape(points) {
+                if (points.length < MIN_POINTS) return false;
+                const bbox = getBBox(points);
+                const bw = bbox.maxX - bbox.minX;
+                const bh = bbox.maxY - bbox.minY;
+                if (bw < 35 || bh < 35) return false;
+                if (bw / bh < 0.55 || bw / bh > 1.8) return false;
+
+                const cx = (bbox.minX + bbox.maxX) / 2;
+                const cy = (bbox.minY + bbox.maxY) / 2;
+                let topCount = 0;
+                let bottomCount = 0;
+                const midY = cy;
+                points.forEach(p => {
+                    if (p.y < midY - bh * 0.08) topCount++;
+                    if (p.y > midY + bh * 0.08) bottomCount++;
+                });
+                if (topCount < 4 || bottomCount < 6) return false;
+
+                const first = points[0];
+                const last = points[points.length - 1];
+                const distStartEnd = Math.hypot(last.x - first.x, last.y - first.y);
+                const diag = Math.hypot(bw, bh);
+                if (distStartEnd > diag * 0.7) return false;
+
+                let leftCount = 0;
+                let rightCount = 0;
+                points.forEach(p => {
+                    if (p.x < cx - bw * 0.04) leftCount++;
+                    if (p.x > cx + bw * 0.04) rightCount++;
+                });
+                if (leftCount < 3 || rightCount < 3) return false;
+
+                let crossCount = 0;
+                for (let i = 5; i < points.length - 5; i++) {
+                    if (points[i].x < cx && points[i + 1].x >= cx) crossCount++;
+                    if (points[i].x >= cx && points[i + 1].x < cx) crossCount++;
+                }
+                if (crossCount < 3) return false;
+
+                return true;
+            }
+
+            function getBBox(points) {
+                let minX = Infinity,
+                    minY = Infinity,
+                    maxX = -Infinity,
+                    maxY = -Infinity;
+                points.forEach(p => {
+                    if (p.x < minX) minX = p.x;
+                    if (p.y < minY) minY = p.y;
+                    if (p.x > maxX) maxX = p.x;
+                    if (p.y > maxY) maxY = p.y;
+                });
+                return { minX, minY, maxX, maxY };
+            }
+
+            // ─────────────────── СОБЫТИЯ ───────────────────
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', moveDraw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseleave', endDraw);
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', moveDraw, { passive: false });
+            canvas.addEventListener('touchend', endDraw);
+            canvas.addEventListener('touchcancel', endDraw);
+
+            // ─────────────────── АНИМАЦИЯ ДЕРЕВА ───────────────────
+            function triggerTree() {
+                canvas.style.pointerEvents = 'none';
+                hintText.classList.add('fade-out');
+                heartHint.style.opacity = '0';
+                ctx.clearRect(0, 0, W, H);
+
+                setTimeout(() => {
+                    hintText.style.display = 'none';
+                    heartHint.style.display = 'none';
+                }, 900);
+
+                treeContainer.style.display = 'block';
+                treeContainer.innerHTML = '';
+                const treeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                treeSvg.setAttribute('viewBox', '0 0 400 420');
+                treeSvg.setAttribute('width', '100%');
+                treeSvg.setAttribute('height', '100%');
+                treeSvg.style.position = 'absolute';
+                treeSvg.style.bottom = '26%';
+                treeSvg.style.left = '50%';
+                treeSvg.style.transform = 'translateX(-50%)';
+                treeSvg.style.maxWidth = '380px';
+                treeSvg.style.pointerEvents = 'none';
+                treeContainer.appendChild(treeSvg);
+
+                // Ствол
+                const trunk = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                trunk.setAttribute('d', 'M195 330 Q190 270 188 230 Q185 190 190 155 L210 155 Q215 190 212 230 Q210 270 205 330 Z');
+                trunk.setAttribute('fill', '#c49a8c');
+                trunk.setAttribute('opacity', '0');
+                treeSvg.appendChild(trunk);
+                animateAttr(trunk, 'opacity', 0, 0.9, 600);
+
+                // Ветви
+                const branches = [
+                    { d: 'M200 170 Q160 130 120 110', sw: 7 },
+                    { d: 'M200 160 Q240 120 280 100', sw: 7 },
+                    { d: 'M200 185 Q150 150 100 140', sw: 5.5 },
+                    { d: 'M200 180 Q250 145 300 135', sw: 5.5 },
+                    { d: 'M198 200 Q160 175 80 175', sw: 4.5 },
+                    { d: 'M202 200 Q240 175 320 175', sw: 4.5 },
+                    { d: 'M197 215 Q160 200 110 210', sw: 3.5 },
+                    { d: 'M203 215 Q240 200 290 210', sw: 3.5 },
+                    { d: 'M196 175 Q180 140 170 100', sw: 6 },
+                    { d: 'M204 175 Q220 140 230 100', sw: 6 },
+                ];
+                branches.forEach((br, i) => {
+                    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    p.setAttribute('d', br.d);
+                    p.setAttribute('stroke', '#c49a8c');
+                    p.setAttribute('stroke-width', br.sw);
+                    p.setAttribute('fill', 'none');
+                    p.setAttribute('stroke-linecap', 'round');
+                    p.setAttribute('opacity', '0');
+                    treeSvg.appendChild(p);
+                    setTimeout(() => animateAttr(p, 'opacity', 0, 0.75, 500), 250 + i * 70);
+                });
+
+                // Сердечки-листья + падающие + улетающие
+                const heartPositions = [
+                    { cx: 120, cy: 108, s: 0.9 },
+                    { cx: 280, cy: 98, s: 1.0 },
+                    { cx: 100, cy: 138, s: 0.85 },
+                    { cx: 300, cy: 133, s: 0.95 },
+                    { cx: 80, cy: 173, s: 0.8 },
+                    { cx: 320, cy: 173, s: 0.9 },
+                    { cx: 108, cy: 208, s: 0.75 },
+                    { cx: 290, cy: 208, s: 0.8 },
+                    { cx: 170, cy: 98, s: 0.9 },
+                    { cx: 230, cy: 98, s: 0.9 },
+                ];
+
+                const heartPath =
+                    'M0 0 C0 -6, -5 -10, -8 -10 C-12 -10, -14 -6, -14 0 C-14 8, 0 16, 0 16 C0 16, 14 8, 14 0 C14 -6, 12 -10, 8 -10 C5 -10, 0 -6, 0 0Z';
+
+                heartPositions.forEach((hp, i) => {
+                    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    g.setAttribute('transform', `translate(${hp.cx},${hp.cy}) scale(${hp.s})`);
+                    g.setAttribute('opacity', '0');
+                    const hPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    hPath.setAttribute('d', heartPath);
+                    hPath.setAttribute('fill', '#e6a2b8');
+                    g.appendChild(hPath);
+                    treeSvg.appendChild(g);
+                    setTimeout(() => {
+                        animateAttr(g, 'opacity', 0, 1, 500);
+                        // лёгкое дыхание
+                        g.style.transformOrigin = `${hp.cx}px ${hp.cy}px`;
+                        g.style.animation = `breathe ${2.8 + Math.random()*2}s ease-in-out infinite`;
+                        g.style.animationDelay = Math.random() * 2 + 's';
+                    }, 500 + i * 80);
+                });
+
+                // Падающие сердечки (под дерево)
+                for (let i = 0; i < 22; i++) {
+                    createFallingHeart(treeSvg, 'fall');
+                }
+                // Улетающие сердечки (ветер)
+                for (let i = 0; i < 18; i++) {
+                    createFallingHeart(treeSvg, 'fly');
+                }
+
+                // Запуск текста
+                setTimeout(() => {
+                    textBlock.classList.add('visible');
+                    startTyping();
+                }, 1400);
+            }
+
+            function animateAttr(el, attr, from, to, duration) {
+                const start = performance.now();
+
+                function step(ts) {
+                    const progress = Math.min((ts - start) / duration, 1);
+                    const val = from + (to - from) * progress;
+                    el.setAttribute(attr, val);
+                    if (progress < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            }
+
+            function createFallingHeart(svg, type) {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                const heartPath = 'M0 0 C0 -5, -4 -8, -7 -8 C-10 -8, -12 -5, -12 0 C-12 6, 0 13, 0 13 C0 13, 12 6, 12 0 C12 -5, 10 -8, 7 -8 C4 -8, 0 -5, 0 0Z';
+                const h = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                h.setAttribute('d', heartPath);
+                const colors = ['#f0bcc9', '#e8a5b7', '#f5cdd8', '#deb4c2', '#f9d7e1', '#e6b8c5'];
+                h.setAttribute('fill', colors[Math.floor(Math.random() * colors.length)]);
+                h.setAttribute('opacity', '0.85');
+                const scale = 0.4 + Math.random() * 0.7;
+                g.setAttribute('transform', `translate(${160 + Math.random()*80},${280 + Math.random()*50}) scale(${scale})`);
+                g.appendChild(h);
+                svg.appendChild(g);
+
+                const duration = type === 'fall' ? (2.5 + Math.random() * 4) : (4 + Math.random() * 6);
+                const delay = Math.random() * 7;
+
+                if (type === 'fall') {
+                    g.style.animation = `fallDown ${duration}s ${delay}s ease-in forwards`;
+                } else {
+                    g.style.animation = `flyAway ${duration}s ${delay}s ease-out forwards`;
+                }
+            }
+
+            // Анимации для сердечек
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = `
+                @keyframes breathe {
+                    0%,100% { transform: scale(1); }
+                    50% { transform: scale(1.12); }
+                }
+                @keyframes fallDown {
+                    0% { transform: translate(0,0) rotate(0deg); opacity: 0.9; }
+                    100% { transform: translate(${Math.random()*40-20}px, ${80+Math.random()*60}px) rotate(${Math.random()*60-30}deg); opacity: 0; }
+                }
+                @keyframes flyAway {
+                    0% { transform: translate(0,0) rotate(0deg); opacity: 0.85; }
+                    100% { transform: translate(${(Math.random()-0.5)*200}px, ${-120-Math.random()*100}px) rotate(${Math.random()*120-60}deg); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+
+            // ─────────────────── ПЕЧАТЬ ТЕКСТА ───────────────────
+            const TEXT1 = "Look at this tree. This is what happened the moment you walked into my life.";
+            const TEXT2 = "You didn't just make things better. You made them bloom.";
+            const TEXT3 = "Not a single day has passed without the world being more beautiful simply because you exist, F.";
+
+            function typeText(el, text, speed, callback) {
+                let i = 0;
+                el.textContent = '';
+                el.style.opacity = '1';
+                el.classList.remove('fading');
+
+                function tick() {
+                    if (i < text.length) {
+                        el.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(tick, speed);
+                    } else if (callback) {
+                        setTimeout(callback, 900);
+                    }
+                }
+                tick();
+            }
+
+            function startTyping() {
+                typeText(line1, TEXT1, 48, () => {
+                    setTimeout(() => {
+                        line1.classList.add('fading');
+                        typeText(line2, TEXT2, 48, () => {
+                            setTimeout(() => {
+                                line2.classList.add('fading');
+                                typeText(line3, TEXT3, 48, () => {
+                                    line3.classList.add('final');
+                                    setTimeout(() => {
+                                        counterBlock.classList.add('visible');
+                                        startCounter();
+                                    }, 600);
+                                });
+                            }, 700);
+                        });
+                    }, 600);
+                });
+            }
+
+            // ─────────────────── СЧЁТЧИК ───────────────────
+            const START_DATE = new Date('2023-04-12T22:00:00');
+
+            function startCounter() {
+                function update() {
+                    const now = new Date();
+                    let diffMs = now - START_DATE;
+                    if (diffMs < 0) diffMs = 0;
+                    const totalSec = Math.floor(diffMs / 1000);
+                    const d = Math.floor(totalSec / 86400);
+                    const h = Math.floor((totalSec % 86400) / 3600);
+                    const m = Math.floor((totalSec % 3600) / 60);
+                    const s = totalSec % 60;
+
+                    document.getElementById('days').textContent = d;
+                    document.getElementById('hours').textContent = h;
+                    document.getElementById('minutes').textContent = m;
+                    document.getElementById('seconds').textContent = s;
+                }
+                update();
+                setInterval(update, 1000);
+            }
+
+        })();
+    </script>
+</body>
+</html>
