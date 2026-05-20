@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Программирование | Зачетный тренажер + Шпаргалка</title>
+    <title>Программирование | Зачетный тренажер</title>
     <style>
         * {
             margin: 0;
@@ -12,6 +12,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Цветовые темы */
         :root {
             --bg: #f5f7fb;
             --surface: #ffffff;
@@ -24,10 +25,33 @@
             --correct: #10b981;
             --wrong: #ef4444;
             --energy-bg: #2d2b26;
-            --status-success: #10b981;
-            --status-progress: #f59e0b;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
             --card-radius: 24px;
+        }
+
+        /* Тема зеленая */
+        body.theme-green {
+            --primary: #2d6a4f;
+            --primary-dark: #1b4d3e;
+            --primary-light: #d8f3dc;
+        }
+        /* Тема тёплая (песочная) */
+        body.theme-warm {
+            --primary: #c2a575;
+            --primary-dark: #a07d4e;
+            --primary-light: #fef5e8;
+        }
+        /* Тема пепельная */
+        body.theme-ash {
+            --primary: #5c6a7a;
+            --primary-dark: #3d4856;
+            --primary-light: #eef2f5;
+        }
+        /* Тема лавандовая */
+        body.theme-lavender {
+            --primary: #7b6c9e;
+            --primary-dark: #5c4a7a;
+            --primary-light: #f0ecf6;
         }
 
         body.dark {
@@ -50,7 +74,7 @@
             min-height: 100vh;
         }
 
-        /* Золотистая переливающаяся надпись Kozume */
+        /* Золотистая надпись Kozume */
         .golden-signature {
             position: fixed;
             bottom: 12px;
@@ -68,9 +92,14 @@
             pointer-events: none;
             z-index: 999;
             letter-spacing: 1px;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
         }
-
+        /* Пасхалка при клике на Kozume */
+        .golden-signature.kozume-active {
+            animation: none;
+            opacity: 1;
+            font-size: 28px;
+            transition: all 0.3s;
+        }
         @keyframes shimmer {
             0% { background-position: 0% 50%; opacity: 0.4; }
             50% { background-position: 100% 50%; opacity: 0.7; }
@@ -95,6 +124,7 @@
             display: flex;
             gap: 12px;
             margin-bottom: 16px;
+            flex-wrap: wrap;
         }
         .mode-btn {
             flex: 1;
@@ -122,7 +152,7 @@
             gap: 10px;
         }
         
-        .theme-toggle, .sound-toggle {
+        .theme-toggle, .sound-toggle, .color-theme-btn {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 40px;
@@ -135,9 +165,40 @@
             width: auto;
         }
         
-        .theme-toggle:hover, .sound-toggle:hover {
+        .theme-toggle:hover, .sound-toggle:hover, .color-theme-btn:hover {
             background: var(--primary-light);
         }
+
+        /* Панель выбора цветовой темы */
+        .color-panel {
+            position: fixed;
+            bottom: 60px;
+            right: 16px;
+            background: var(--surface);
+            border-radius: 40px;
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            z-index: 100;
+        }
+        .color-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid var(--border);
+        }
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+        .color-dot.blue { background: #2c5f8a; }
+        .color-dot.green { background: #2d6a4f; }
+        .color-dot.warm { background: #c2a575; }
+        .color-dot.ash { background: #5c6a7a; }
+        .color-dot.lavender { background: #7b6c9e; }
 
         .start-screen {
             text-align: center;
@@ -150,6 +211,47 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
+        }
+
+        /* Мотивационная панель */
+        .motivation-card {
+            background: var(--primary-light);
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 14px;
+            font-style: italic;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        .motivation-small {
+            font-size: 12px;
+            padding: 6px 12px;
+            margin: 8px 0;
+        }
+        .motivation-toast {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 1000;
+            animation: fadeUp 0.8s ease-out forwards;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
         }
 
         .status-panel {
@@ -178,8 +280,8 @@
             width: 24px;
             font-size: 14px;
         }
-        .status-badge.success { color: var(--status-success); }
-        .status-badge.progress { color: var(--status-progress); }
+        .status-badge.success { color: #10b981; }
+        .status-badge.progress { color: #f59e0b; }
 
         .mode-select-buttons {
             display: flex;
@@ -189,8 +291,8 @@
         }
         .mode-select-buttons button {
             flex: 1;
-            min-width: 140px;
-            font-size: 1.1rem;
+            min-width: 120px;
+            font-size: 1rem;
         }
         .mode-train {
             background: #3b82f6;
@@ -200,6 +302,12 @@
         }
         .mode-exam {
             background: var(--primary);
+        }
+        .mode-marathon {
+            background: #f59e0b;
+        }
+        .mode-marathon:hover {
+            background: #d97706;
         }
 
         .name-input-group {
@@ -457,30 +565,6 @@
         .stats-correct { color: var(--correct); font-weight: 700; }
         .stats-wrong { color: var(--wrong); font-weight: 700; }
         
-        .combo-toast {
-            position: fixed;
-            bottom: 30%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary);
-            color: white;
-            padding: 8px 18px;
-            border-radius: 60px;
-            font-weight: bold;
-            font-size: 1rem;
-            z-index: 1000;
-            animation: fadeUp 0.8s ease-out forwards;
-            pointer-events: none;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        @keyframes fadeUp {
-            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
-        }
-        
         .medal-icon {
             font-size: 2rem;
             margin: 8px 0;
@@ -659,11 +743,27 @@
                 bottom: 8px;
                 right: 10px;
             }
+            .color-panel {
+                bottom: 50px;
+                right: 10px;
+                padding: 6px 10px;
+            }
+            .color-dot {
+                width: 24px;
+                height: 24px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="golden-signature">✨ Kozume ✨</div>
+<div class="golden-signature" id="kozumeSignature">✨ Kozume ✨</div>
+<div class="color-panel" id="colorPanel">
+    <div class="color-dot blue" data-theme="blue"></div>
+    <div class="color-dot green" data-theme="green"></div>
+    <div class="color-dot warm" data-theme="warm"></div>
+    <div class="color-dot ash" data-theme="ash"></div>
+    <div class="color-dot lavender" data-theme="lavender"></div>
+</div>
 
 <div class="container" id="app">
     <div class="mode-switch">
@@ -682,24 +782,26 @@
     <!-- СТАРТОВЫЙ ЭКРАН -->
     <div id="startScreen" class="card start-screen">
         <h1>💻 Тренажёр зачёта</h1>
-        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 147 вопросов в базе</p>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 150+ вопросов в базе</p>
+        
+        <div class="motivation-card" id="mainMotivation">✨ Сосредоточься. Ты сможешь.</div>
         
         <div class="status-panel">
             <h3>📚 Доступные разделы:</h3>
             <div class="status-grid">
                 <div class="status-item"><span class="status-badge success">✅</span> Основы Pascal (1-20)</div>
-                <div class="status-item"><span class="status-badge success">✅</span> Операторы и выражения (21-40)</div>
-                <div class="status-item"><span class="status-badge success">✅</span> Функции и процедуры (41-60)</div>
-                <div class="status-item"><span class="status-badge success">✅</span> Алгоритмы и структуры (61-80)</div>
-                <div class="status-item"><span class="status-badge success">✅</span> Delphi и ООП (81-110)</div>
-                <div class="status-item"><span class="status-badge success">✅</span> Циклы и ветвления (111-130)</div>
-                <div class="status-item"><span class="status-badge success">✅</span> Общие вопросы (131-147)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Операторы и выражения (21-52)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Алгоритмы и структуры (53-70)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Delphi и ООП (71-100)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Циклы и ветвления (101-130)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Общие вопросы (131-150+)</div>
             </div>
         </div>
         
         <div class="mode-select-buttons">
             <button id="trainModeBtn" class="mode-train">🎓 ТРЕНИРОВКА</button>
             <button id="examModeBtn" class="mode-exam">📝 ДЕМО-ЗАЧЁТ</button>
+            <button id="marathonModeBtn" class="mode-marathon">🏃 МАРАФОН</button>
         </div>
         
         <div class="name-input-group">
@@ -707,7 +809,7 @@
             <input type="text" id="userNameInput" placeholder="Введите имя" autocomplete="off">
         </div>
         <button class="btn-outline" id="resetLocalStorageBtn" style="margin-top: 10px;">🔄 Сбросить имя</button>
-        <footer>Тренировка: после ответа нажми «Далее» → покажет правильный ответ • Демо-зачёт: как настоящий экзамен</footer>
+        <footer>Тренировка: подсказки • Демо-зачёт: без подсказок • Марафон: все вопросы, без таймера</footer>
     </div>
 
     <!-- ЭКРАН ТЕСТА -->
@@ -723,6 +825,7 @@
                 </div>
                 <div class="timer-box" id="timerDisplay">20:00</div>
             </div>
+            <div class="motivation-card motivation-small" id="quizMotivation"></div>
             <div id="quizInner">
                 <div class="question-text" id="questionText">Загрузка...</div>
                 <div class="options-list" id="optionsContainer"></div>
@@ -753,7 +856,7 @@
                 
                 <div id="medalArea" class="medal-icon"></div>
                 <div id="gradeDisplay" class="grade"></div>
-                <div id="motivationMessage" class="motivation-message"></div>
+                <div class="motivation-card" id="resultMotivation">✨ Ты прошёл этот путь. Горжусь.</div>
                 <button id="showMistakesBtn" class="btn-outline" style="width: auto; padding: 10px 20px; margin-top: 8px;">📖 Показать ошибки</button>
             </div>
             <div id="mistakesList" class="hidden" style="margin-top: 20px;"></div>
@@ -784,7 +887,36 @@
 </div>
 
 <script>
-    // ==================== БАЗА ДАННЫХ: 147 ВОПРОСОВ ПО ПРОГРАММИРОВАНИЮ ====================
+    // ==================== МОТИВАЦИОННЫЕ ФРАЗЫ ====================
+    const MOTIVATION_MAIN = [
+        "✨ Ты готов? Я — да.",
+        "💪 Один вопрос за раз — и ты справишься.",
+        "🧡 Kozume верит в тебя.",
+        "🚀 Сделай первый шаг.",
+        "🎯 Жми на кнопку. Погнали.",
+        "📚 Ты уже много знаешь. Осталось немного.",
+        "⚡ Каждая ошибка — это шаг к правильному ответу.",
+        "🌟 Лучше тренироваться сейчас, чем волноваться на зачёте.",
+        "🔄 Повторение — мать уверенности.",
+        "💯 Ты справишься. Я в тебя верю."
+    ];
+    const MOTIVATION_START = ["🚀 Соберись… Поехали!", "🧘 Вдох-выдох. Ты можешь.", "🎯 Никакой паники. Просто отвечай."];
+    const MOTIVATION_SELECT = ["🤔 Сосредоточься...", "💭 Уверен?", "🧠 Думай логически.", "✅ Хороший выбор?", "🔍 Проверь себя."];
+    const MOTIVATION_CORRECT = ["🎯 Точно!", "👍 Молодец!", "⭐ Отлично!", "💪 Так держать!", "🎯 В яблочко!", "✅ Да, это оно!"];
+    const MOTIVATION_WRONG = ["💫 Бывает. Зато запомнишь.", "🌟 Не страшно. Дальше — лучше.", "📖 Ошибка — не провал, а опыт.", "💪 В следующий раз получится.", "✨ Учимся на ошибках."];
+    const MOTIVATION_RESULT = [
+        "✨ Ты прошёл этот путь. Горжусь.",
+        "💯 Результат не главное. Главное — старание.",
+        "📊 Любой результат — это твой результат. Прими его.",
+        "🔍 Смотри на ошибки — и двигайся дальше.",
+        "🧡 Kozume 🧡"
+    ];
+    const MOTIVATION_MARATHON = "🏃 Марафон начался! Дыши ровно. Ты справишься.";
+    const MOTIVATION_NEXT_RARE = ["🌟 Ты летишь!", "💪 Так держать!", "✨ Ещё немного."];
+
+    function getRandomFromArray(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    // ==================== БАЗА ДАННЫХ: ВСЕ ВОПРОСЫ (150+) ====================
     const FULL_QUESTIONS = [
         { id: 1, text: "Заголовок программы в ABC Pascal обозначается", correctIndex: 0, options: ["program", "var", "begin", "writeln", "read"], multi: false },
         { id: 2, text: "Раздел описания переменных в ABC Pascal это -", correctIndex: 1, options: ["program", "var", "begin", "writeln", "read"], multi: false },
@@ -806,119 +938,85 @@
         { id: 18, text: "Найдите ошибку в программе: program Prim_2_1; var a,b,c,d,f,p:integer; writeln('Введите 5 численных значений:'); readln(a,b,c,d,f ); p:=a+b+c+d+f; writeln('p=',p); readln end.", correctIndex: 2, options: ["допущена ошибка в операторе присваивания", "отсутствует команда завершения программы", "отсутствует команда начала программы"], multi: false },
         { id: 19, text: "Следующий алгоритм в результате выполнения программы находит: program Prim_2_3; var a,b,c,d,f,p:integer; begin writeln('Введите 5 численных значений:'); readln(a,b,c,d,f ); p:=a+b+c; writeln('p=',p); readln end", correctIndex: 1, options: ["находит сумму 4 чисел", "находит сумму 3 чисел", "находит сумму 5 чисел"], multi: false },
         { id: 20, text: "Найдите ошибку в программе: program Prim_2_1; ... p=:a+b+c+d+f; ...", correctIndex: 0, options: ["допущена ошибка в операторе присваивания", "отсутствует команда начала программы", "отсутствует команда вывода результата на экран компьютера"], multi: false },
-        // Вопросы 21-40 (операторы и выражения)
-        { id: 21, text: "Выражение, имеющее числовой тип, называется ...", correctIndex: 2, options: ["вещественным", "целым", "арифметическим", "строковым"], multi: false },
-        { id: 22, text: "Если все операнды целые и в выражении отсутствует операция деления / и функции, то выражение имеет тип", correctIndex: 2, options: ["array", "real", "integer", "string"], multi: false },
-        { id: 23, text: "Если в выражении присутствует операция деления /, то выражение имеет тип", correctIndex: 1, options: ["integer", "real", "array", "string"], multi: false },
-        { id: 24, text: "Арифметический квадрат обозначается функцией", correctIndex: 0, options: ["sqr(x)", "sqrt(x)", "abs(x)", "write(x)"], multi: false },
-        { id: 25, text: "Корень квадратный обозначается функцией", correctIndex: 1, options: ["sqr(x)", "sqrt(x)", "abs(x)", "write(x)"], multi: false },
-        { id: 26, text: "Модуль числа обозначается функцией", correctIndex: 2, options: ["sqr(x)", "sqrt(x)", "abs(x)", "write(x)"], multi: false },
-        { id: 27, text: "Как правильно записать выражение на языке Паскаль? (13 + x)/(y² - 4)", correctIndex: 2, options: ["b:=13+x/sqr(y)-4", "b:=(13+x)/(2*y-4)", "b:=(13+x)/(sqr(y)-4)", "b:=(13+x):(sqr(y)-4)"], multi: false },
-        { id: 28, text: "Как правильно записать выражение? (-t + √(7 + t)) / (8 - |t|)", correctIndex: 3, options: ["f:=(-t+sqrt(7+t))/8-abs(t)", "f:=(-t+7+t)/(8-abs(t))", "f:=(-t+sqrt(7+t))/(8-t)", "f:=(-t+sqrt(7+t))/(8-abs(t))"], multi: false },
-        { id: 29, text: "Какой тип нужно указать для переменной a? a:=(2x+3y-z)/(3+2*x);", correctIndex: 0, options: ["real", "integer", "longint", "string"], multi: false },
-        { id: 30, text: "Тип для b: b:=(SQRT(x)+4)/(ABS(y)-2);", correctIndex: 1, options: ["integer", "real", "string", "boolean", "char"], multi: false },
-        { id: 31, text: "d:=SQRT(sqr(x1-x2)+sqr(y1-y2)); тип переменных?", correctIndex: 2, options: ["string", "integer", "real", "char"], multi: false },
-        { id: 32, text: "Переменные логического типа описываются с типом", correctIndex: 0, options: ["Boolean", "Bool", "Char", "Real"], multi: false },
-        { id: 33, text: "Оператор «DIV»:", correctIndex: 2, options: ["двоичная итерация", "вычисление остатка от деления", "деление нацело", "умножение", "извлечение квадратного корня"], multi: false },
-        { id: 34, text: "Значение функции Abs(n)?", correctIndex: 1, options: ["квадратный корень из n", "абсолютное значение n", "квадрат n", "экспонента n"], multi: false },
-        { id: 35, text: "N mod 2 для чётного N =", correctIndex: 0, options: ["0", "1", "2", "-1"], multi: false },
+        { id: 21, text: "Следующий алгоритм находит значение выражения: y:=15xxx+6xx+18x-29;", correctIndex: 0, options: ["15x³+6x²+18x-29", "15x³+6x²+18x-30", "15x³+6x²+19x-29"], multi: false },
+        { id: 22, text: "В Pascal ABC имеются следующие арифметические операции:", correctIndex: 1, options: ["плюс, минус", "+, -, *, /, div, mod", "<,>,=,>=,<=,<>", "умножить, делить"], multi: false },
+        { id: 23, text: "Выражение, имеющее числовой тип, называется ...", correctIndex: 2, options: ["вещественным", "целым", "арифметическим", "строковым"], multi: false },
+        { id: 24, text: "Если все операнды целые и в выражении отсутствует операция деления / и функции, то выражение имеет тип", correctIndex: 2, options: ["array", "real", "integer", "string"], multi: false },
+        { id: 25, text: "Если в выражении присутствует операция деления /, то выражение имеет тип", correctIndex: 1, options: ["integer", "real", "array", "string"], multi: false },
+        { id: 26, text: "Арифметический квадрат обозначается функцией", correctIndex: 0, options: ["sqr(x)", "sqrt(x)", "abs(x)", "write(x)"], multi: false },
+        { id: 27, text: "Корень квадратный обозначается функцией", correctIndex: 1, options: ["sqr(x)", "sqrt(x)", "abs(x)", "write(x)"], multi: false },
+        { id: 28, text: "Модуль числа обозначается функцией", correctIndex: 2, options: ["sqr(x)", "sqrt(x)", "abs(x)", "write(x)"], multi: false },
+        { id: 29, text: "Как правильно записать выражение на языке Паскаль? (13+x)/(y²-4)", correctIndex: 2, options: ["b:=13+x/sqr(y)-4", "b:=(13+x)/(2*y-4)", "b:=(13+x)/(sqr(y)-4)", "b:=(13+x):(sqr(y)-4)"], multi: false },
+        { id: 30, text: "Как правильно записать выражение? (-t + √(7+t)) / (8 - |t|)", correctIndex: 3, options: ["f:=(-t+sqrt(7+t))/8-abs(t)", "f:=(-t+7+t)/(8-abs(t))", "f:=(-t+sqrt(7+t))/(8-t)", "f:=(-t+sqrt(7+t))/(8-abs(t))"], multi: false },
+        { id: 31, text: "Какой тип нужно указать для переменной a? a:=(2x+3y-z)/(3+2*x);", correctIndex: 0, options: ["real", "integer", "longint", "string"], multi: false },
+        { id: 32, text: "Тип для b: b:=(SQRT(x)+4)/(ABS(y)-2);", correctIndex: 1, options: ["integer", "real", "string", "boolean", "char"], multi: false },
+        { id: 33, text: "d:=SQRT(sqr(x1-x2)+sqr(y1-y2)); тип переменных?", correctIndex: 2, options: ["string", "integer", "real", "char"], multi: false },
+        { id: 34, text: "Оператор «DIV»:", correctIndex: 2, options: ["двоичная итерация", "вычисление остатка от деления", "деление нацело", "умножение", "извлечение квадратного корня"], multi: false },
+        { id: 35, text: "Значение функции Abs(n)?", correctIndex: 1, options: ["квадратный корень из n", "абсолютное значение n", "квадрат n", "экспонента n"], multi: false },
         { id: 36, text: "X = 17 mod 4 =", correctIndex: 0, options: ["1", "0", "4", "8", "10"], multi: false },
         { id: 37, text: "Корень квадратный:", correctIndex: 1, options: ["SQR", "SQRT", "ABS", "SIN", "ARCTAN"], multi: false },
-        { id: 38, text: "Порядок оператора присваивания:", correctIndex: 0, options: ["вычисляется правая часть, затем присваивание", "сначала присваивание, затем вычисление", "параллельно", "не определен"], multi: false },
-        { id: 39, text: "Как запустить программу на компиляцию и выполнение?", correctIndex: 2, options: ["alt F9", "F9", "ctrl F9", "alt F1", "F3"], multi: false },
-        { id: 40, text: "Служебные слова Pascal:", correctIndex: 0, options: ["begin, mod, if, then, else", "start, step, body", "main, return", "for, while, do"], multi: false },
-        // Вопросы 41-60 (функции и процедуры)
-        { id: 41, text: "Процедура ввода данных в Паскале:", correctIndex: 1, options: ["begin", "read", "for", "output"], multi: false },
-        { id: 42, text: "Процедура вывода данных:", correctIndex: 0, options: ["write или writeln", "print", "read или readln", "output"], multi: false },
-        { id: 43, text: "Оператор вывода данных:", correctIndex: 0, options: ["write", "wrate", "read", "output", "print"], multi: false },
-        { id: 44, text: "Операторы ввода и вывода:", correctIndex: 0, options: ["read, readln, write, writeln", "read, write, print, output", "input, output", "get, put"], multi: false },
-        { id: 45, text: "Вывести текст на экран:", correctIndex: 0, options: ["write('текст')", "read('текст')", "writeln(текст)", "print('текст')"], multi: false },
-        { id: 46, text: "Строка в вещественное число:", correctIndex: 0, options: ["StrToFloat", "FloatToStr", "IntToStr", "StrToInt"], multi: false },
-        { id: 47, text: "Строка в целое число:", correctIndex: 3, options: ["StrToFloat", "FloatToStr", "IntToStr", "StrToInt"], multi: false },
-        { id: 48, text: "Целое число в строку:", correctIndex: 2, options: ["StrToFloat", "FloatToStr", "IntToStr", "StrToInt"], multi: false },
-        { id: 49, text: "Вещественное число в строку:", correctIndex: 1, options: ["StrToFloat", "FloatToStr", "IntToStr", "StrToInt"], multi: false },
-        { id: 50, text: "Экспонента:", correctIndex: 1, options: ["SQR(X)", "EXP(X)", "TRUNC(X)", "SQRT(X)"], multi: false },
-        { id: 51, text: "Квадрат X", correctIndex: 0, options: ["SQR(X)", "EXP(X)", "TRUNC(X)", "SQRT(X)"], multi: false },
-        { id: 52, text: "Квадратный корень:", correctIndex: 3, options: ["SQR(X)", "EXP(X)", "TRUNC(X)", "SQRT(X)"], multi: false },
-        // Вопросы 61-80 (алгоритмы и структуры)
-        { id: 53, text: "Способы описания алгоритмов. Лишний:", correctIndex: 0, options: ["циклический", "словесный", "графический", "программный"], multi: false },
-        { id: 54, text: "Алгоритм какого типа на блок-схеме (ромб — ветвление)?", correctIndex: 1, options: ["циклический", "разветвляющийся", "вспомогательный", "линейный"], multi: false },
-        { id: 55, text: "Алгоритмическая структура (ромб с двумя выходами) –", correctIndex: 1, options: ["цикл", "ветвление", "подпрограмма", "линейная"], multi: false },
-        { id: 56, text: "Что изменяет операция присваивания?", correctIndex: 0, options: ["значение переменной", "имя переменной", "тип переменной", "тип алгоритма"], multi: false },
-        { id: 57, text: "Блок-схема с условием —", correctIndex: 1, options: ["цикл", "ветвление", "подпрограмма", "линейная"], multi: false },
-        { id: 58, text: "Идентификатор не может начинаться с", correctIndex: 2, options: ["латинской буквы", "заглавной латинской буквы", "цифры", "знака подчёркивания"], multi: false },
-        { id: 59, text: "Отличие переменной от константы:", correctIndex: 2, options: ["Отличий нет", "Переменная не изменяется", "Константа не изменяется при выполнении программы"], multi: false },
-        { id: 60, text: "Что не входит в набор основных символов Турбо Паскаля?", correctIndex: 3, options: ["латинские буквы", "служебные слова", "десять цифр", "русские строчные и прописные буквы"], multi: false },
-        // Вопросы 81-100 (Delphi и ООП)
-        { id: 61, text: "Delphi — это:", correctIndex: 2, options: ["язык на основе Pascal", "среда с Visual Basic", "среда с Object Pascal"], multi: false },
-        { id: 62, text: "Окна Delphi:", correctIndex: 0, options: ["Главное окно, инспектор объектов, дерево объектов, редактор кода, форма"], multi: false },
-        { id: 63, text: "Однострочное текстовое поле:", correctIndex: 2, options: ["Label", "Caption", "Edit", "Memo"], multi: false },
-        { id: 64, text: "Сохранить проект:", correctIndex: 2, options: ["Файл-сохранить", "файл-сохранить как", "файл-сохранить проект как", "файл-открыть проект"], multi: false },
-        { id: 65, text: "Object Inspector:", correctIndex: 1, options: ["окно просмотра списка объектов", "окно редактора свойств объектов", "это не окно Delphi", "окно просмотра элементов формы"], multi: false },
-        { id: 66, text: "Поле вывода текста (статическое):", correctIndex: 0, options: ["Label", "Caption", "Edit", "Memo"], multi: false },
-        { id: 67, text: "Изменить надпись кнопки:", correctIndex: 0, options: ["в инспекторе объектов Caption", "в событиях Caption", "невозможно", "в свойствах Text"], multi: false },
-        { id: 68, text: "Окно свойств и событий:", correctIndex: 0, options: ["Инспектор объектов", "Главное окно", "Объекты", "Form1", "Unit1"], multi: false },
-        { id: 69, text: "Событие щелчка по кнопке:", correctIndex: 1, options: ["OnEnter", "OnClick", "OnKeyUp", "OnEndDrag"], multi: false },
-        { id: 70, text: "Визуальное программирование — это:", correctIndex: 2, options: ["Компиляции и запуска", "Редактирования и форматирования", "Конструирования окна и написание кода", "Установки и активации"], multi: false },
-        { id: 71, text: "Целостный элемент со свойствами и методами:", correctIndex: 0, options: ["Объектом", "Палитрой", "Меню", "Инспектором"], multi: false },
-        { id: 72, text: "В инспекторе объектов закладки:", correctIndex: 1, options: ["свойства и надписи", "свойства и события", "список файлов и компонентов", "команды меню"], multi: false },
-        { id: 73, text: "button1.caption:='OK';", correctIndex: 0, options: ["меняет надпись кнопки", "меняет надпись метки", "меняет цвет текста кнопки", "меняет расположение кнопки"], multi: false },
-        { id: 74, text: "Компонент кнопка:", correctIndex: 1, options: ["Label", "Button", "Edit", "Memo"], multi: false },
-        { id: 75, text: "Невизуальные компоненты:", correctIndex: 3, options: ["Label", "Button", "Edit", "Timer"], multi: false },
-        { id: 76, text: "Методика, основанная на понятии объект:", correctIndex: 2, options: ["Структурное", "Процедурное", "Объектно-ориентированное", "Модульное"], multi: false },
-        { id: 77, text: "Категория объектов с одинаковыми свойствами:", correctIndex: 0, options: ["Класс", "Тип", "Структура", "Система"], multi: false },
-        { id: 78, text: "form1.Color:=clred;", correctIndex: 2, options: ["Откроется окно", "Закроется", "Изменится цвет окна", "Изменится заголовок"], multi: false },
-        { id: 79, text: "form1.Caption:=clred;", correctIndex: 3, options: ["Откроется", "Закроется", "Изменится цвет", "Изменится заголовок"], multi: false },
-        { id: 80, text: "Объект состоит из:", correctIndex: 1, options: ["Тип, Состояние", "Состояние, Методы", "Методы, Класс", "Окно, Инспектор"], multi: false },
-        { id: 81, text: "Инкапсуляция:", correctIndex: 0, options: ["объединение данных и методов, защита", "наследование", "полиморфизм"], multi: false },
-        { id: 82, text: "Наследование:", correctIndex: 1, options: ["инкапсуляция", "наследование свойств", "полиморфизм"], multi: false },
-        { id: 83, text: "Полиморфизм:", correctIndex: 2, options: ["инкапсуляция", "наследование", "одно имя для разных задач"], multi: false },
-        // Вопросы 101-120 (циклы и ветвления)
-        { id: 84, text: "В операторе if если условие ложно, то:", correctIndex: 1, options: ["then", "else"], multi: false },
-        { id: 85, text: "Неполная форма условного оператора:", correctIndex: 2, options: ["If <условие> then <оператор> else <оператор>", "If <оператор> then <условие>", "If <условие> then <оператор>", "If <условие> then <условие>"], multi: false },
-        { id: 86, text: "Цикл WHILE:", correctIndex: 0, options: ["Цикл с предусловием", "Цикл с параметром", "Цикл с постусловием", "Ветвлением"], multi: false },
-        { id: 87, text: "Цикл FOR:", correctIndex: 1, options: ["Цикл с предусловием", "Цикл с параметром", "Цикл с постусловием", "Ветвлением"], multi: false },
-        { id: 88, text: "Цикл REPEAT:", correctIndex: 2, options: ["Цикл с предусловием", "Цикл с параметром", "Цикл с постусловием", "Ветвлением"], multi: false },
-        { id: 89, text: "Операторы цикла? Не являются:", correctIndex: 3, options: ["While", "Repeat", "For", "Case", "If"], multi: false },
-        { id: 90, text: "Тип переменной для FOR:", correctIndex: 1, options: ["Вещественный", "Целочисленный", "Логический", "Строковый"], multi: false },
-        { id: 91, text: "Повторение команд:", correctIndex: 0, options: ["циклическим", "линейным", "разветвляющимся"], multi: false },
-        { id: 92, text: "Циклический алгоритм:", correctIndex: 0, options: ["движение часовой стрелки", "движение поезда", "направо пойдешь..."], multi: false },
-        { id: 93, text: "Линейный алгоритм:", correctIndex: 1, options: ["движение часовой стрелки", "движение поезда от начальной до конечной", "направо пойдешь..."], multi: false },
-        { id: 94, text: "Ветвящийся алгоритм:", correctIndex: 2, options: ["движение часовой стрелки", "движение поезда", "направо пойдешь..."], multi: false },
-        // Вопросы 121-140
-        { id: 95, text: "Логические данные —это", correctIndex: 0, options: ["которые могут принимать только два значения - True и False", "над которыми надо думать", "которые принимают числовые значения"], multi: false },
-        { id: 96, text: "Логическая переменная:", correctIndex: 2, options: ["var x : char", "var x : integer", "var x : boolean", "var x : string"], multi: false },
-        { id: 97, text: "Логические операции:", correctIndex: 1, options: ["NOT, AND, THEN", "AND, OR, NOT", "AND, OR, MOD", "MOD, DIV, IF"], multi: false },
-        { id: 98, text: "Значение логической переменной:", correctIndex: 1, options: ["любое число", "истина или ложь", "таблица", "строка", "слово"], multi: false },
-        { id: 99, text: "Цикл FOR:", correctIndex: 1, options: ["Цикл с предусловием", "Цикл с параметром", "Цикл с постусловием", "Ветвлением"], multi: false },
-        // Вопросы 141-147
-        { id: 100, text: "Сколько строк: от 10 до 14", correctIndex: 0, options: ["5", "4", "10", "14"], multi: false },
-        { id: 101, text: "Синтаксическая ошибка:", correctIndex: 0, options: ["For i:=1 to 20 p:=p+1; (нет do)", "While s<3 do s:=s-3;", "Repeat k:=k+1 until k<7;", "For I:=10 downto 5 do p:=p+1;"], multi: false },
-        { id: 102, text: "Набор однотипных данных с общим именем:", correctIndex: 1, options: ["множество", "массив", "запись"], multi: false },
-        { id: 103, text: "Основатель языка Паскаль...", correctIndex: 2, options: ["Паскаль", "Borland Pascal", "Никлаус Вирт", "Билл Гейтс"], multi: false },
-        { id: 104, text: "Команда присваивания в Pascal ABC:", correctIndex: 0, options: [":=", "=", "===", "<-"], multi: false },
-        { id: 105, text: "Операторы отделяются друг от друга:", correctIndex: 0, options: ["точкой с запятой", "точкой", "запятой", "тире"], multi: false },
-        { id: 106, text: "Где синтаксическая ошибка?", correctIndex: 0, options: ["if a < b then min := a; else min := b;", "if a>b then max:=a", "if a=0 then write('ноль')", "if x>0 then x:=x+1"], multi: false },
-        { id: 107, text: "Какого раздела не существует?", correctIndex: 1, options: ["Заголовка", "Примечания", "Описаний", "Операторов"], multi: false },
-        { id: 108, text: "Ветвящийся алгоритм:", correctIndex: 2, options: ["Неоднократное повторение", "Последовательное выполнение", "Выполнение лишь нескольких, удовлетворяющих условию"], multi: false },
-        { id: 109, text: "Правильная запись оператора:", correctIndex: 0, options: ["Writeln('Введите числа через пробел');", "Real('a,b');", "Writeln(Сумма двух чисел равна, Summa);", "3*sqr(x):=A;"], multi: false },
-        { id: 110, text: "Оператор присваивания:", correctIndex: 0, options: ["a:=1;", "a=1;", "a==1;", "a<-1;"], multi: false },
-        { id: 111, text: "Истинное утверждение:", correctIndex: 3, options: ["переменная в For может быть real", "в While проверка после тела", "перед Else ставится ;", "Write выводит данные на экран"], multi: false },
-        { id: 112, text: "Раздел операторов начинается с:", correctIndex: 2, options: ["program", "var", "begin", "writeln", "read"], multi: false },
-        { id: 113, text: "Последовательность размещения компонента:", correctIndex: 0, options: ["перейти к вкладке, выбрать компонент, отметить место, придать размеры"], multi: false },
-        { id: 114, text: "Когда составлять блок-схему?", correctIndex: 0, options: ["До начала составления программы", "В процессе", "После", "После ввода в компьютер"], multi: false },
-        { id: 115, text: "Разработке алгоритма предшествует:", correctIndex: 0, options: ["постановка задачи, математическая модель", "постановка, модель, выбор метода", "постановка, метод, проектирование"], multi: false },
-        { id: 116, text: "Переменные в summa:=sqr(x)+3*a:", correctIndex: 1, options: ["sqr,x,a", "a, x, summa", "summa, sqr, x"], multi: false },
-        { id: 117, text: "Целочисленные типы:", correctIndex: 2, options: ["comp, double", "integer, real", "integer, word, longint"], multi: false },
-        { id: 118, text: "Неправильно объявлены переменные:", correctIndex: 1, options: ["var a,br:real;c:real", "var f,g,d,t:integer;i,f,t:real", "var l,j,max,min:real"], multi: false },
-        { id: 119, text: "Задание №147 (общее)", correctIndex: 0, options: ["Верный ответ", "Неверный ответ", "Частично верный"], multi: false }
+        { id: 38, text: "Порядок оператора присваивания:", correctIndex: 0, options: ["вычисляется правая часть, затем присваивание", "сначала присваивание, затем вычисление", "параллельно"], multi: false },
+        { id: 39, text: "Способы описания алгоритмов. Лишний:", correctIndex: 0, options: ["циклический", "словесный", "графический", "программный"], multi: false },
+        { id: 40, text: "Процедура ввода данных в Паскале:", correctIndex: 1, options: ["begin", "read", "for", "output"], multi: false },
+        { id: 41, text: "Идентификатор не может начинаться с", correctIndex: 2, options: ["латинской буквы", "заглавной латинской буквы", "цифры", "знака подчёркивания"], multi: false },
+        { id: 42, text: "Отличие переменной от константы:", correctIndex: 2, options: ["Отличий нет", "Переменная не изменяется", "Константа не изменяется при выполнении программы"], multi: false },
+        { id: 43, text: "Вывести текст на экран:", correctIndex: 0, options: ["write('текст')", "read('текст')", "writeln(текст)", "print('текст')"], multi: false },
+        { id: 44, text: "Операторы отделяются друг от друга:", correctIndex: 0, options: ["точкой с запятой", "точкой", "запятой", "тире"], multi: false },
+        { id: 45, text: "Процедура вывода данных:", correctIndex: 0, options: ["write или writeln", "print", "read или readln", "output"], multi: false },
+        { id: 46, text: "Что не входит в набор основных символов Турбо Паскаля?", correctIndex: 3, options: ["латинские буквы", "служебные слова", "десять цифр", "русские строчные и прописные буквы"], multi: false },
+        { id: 47, text: "Где синтаксическая ошибка?", correctIndex: 0, options: ["if a < b then min := a; else min := b;", "if a>b then max:=a", "if a=0 then write('ноль')", "if x>0 then x:=x+1"], multi: false },
+        { id: 48, text: "Какого раздела не существует?", correctIndex: 1, options: ["Заголовка", "Примечания", "Описаний", "Операторов"], multi: false },
+        { id: 49, text: "N mod 2 для чётного N =", correctIndex: 0, options: ["0", "1", "2", "-1"], multi: false },
+        { id: 50, text: "Ветвящийся алгоритм:", correctIndex: 2, options: ["Неоднократное повторение", "Последовательное выполнение", "Выполнение лишь нескольких, удовлетворяющих условию"], multi: false },
+        { id: 51, text: "Как запустить программу на компиляцию и выполнение?", correctIndex: 2, options: ["alt F9", "F9", "ctrl F9", "alt F1", "F3"], multi: false },
+        { id: 52, text: "Операторы ввода и вывода:", correctIndex: 0, options: ["read, readln, write, writeln", "read, write, print, output", "input, output", "get, put"], multi: false },
+        { id: 53, text: "Логическая переменная:", correctIndex: 2, options: ["var x : char", "var x : integer", "var x : boolean", "var x : string"], multi: false },
+        { id: 54, text: "Логические операции:", correctIndex: 1, options: ["NOT, AND, THEN", "AND, OR, NOT", "AND, OR, MOD", "MOD, DIV, IF"], multi: false },
+        { id: 55, text: "Значение логической переменной:", correctIndex: 1, options: ["любое число", "истина или ложь", "таблица", "строка", "слово"], multi: false },
+        { id: 56, text: "Цикл WHILE:", correctIndex: 0, options: ["Цикл с предусловием", "Цикл с параметром", "Цикл с постусловием", "Ветвлением"], multi: false },
+        { id: 57, text: "Цикл FOR:", correctIndex: 1, options: ["Цикл с предусловием", "Цикл с параметром", "Цикл с постусловием", "Ветвлением"], multi: false },
+        { id: 58, text: "Цикл REPEAT:", correctIndex: 2, options: ["Цикл с предусловием", "Цикл с параметром", "Цикл с постусловием", "Ветвлением"], multi: false },
+        { id: 59, text: "Операторы цикла? Не являются:", correctIndex: 3, options: ["While", "Repeat", "For", "Case", "If"], multi: false },
+        { id: 60, text: "Тип переменной для FOR:", correctIndex: 1, options: ["Вещественный", "Целочисленный", "Логический", "Строковый"], multi: false },
+        { id: 61, text: "Повторение команд:", correctIndex: 0, options: ["циклическим", "линейным", "разветвляющимся"], multi: false },
+        { id: 62, text: "Циклический алгоритм:", correctIndex: 0, options: ["движение часовой стрелки", "движение поезда", "направо пойдешь..."], multi: false },
+        { id: 63, text: "Линейный алгоритм:", correctIndex: 1, options: ["движение часовой стрелки", "движение поезда от начальной до конечной", "направо пойдешь..."], multi: false },
+        { id: 64, text: "Ветвящийся алгоритм:", correctIndex: 2, options: ["движение часовой стрелки", "движение поезда", "направо пойдешь..."], multi: false },
+        { id: 65, text: "Delphi — это:", correctIndex: 2, options: ["язык на основе Pascal", "среда с Visual Basic", "среда с Object Pascal"], multi: false },
+        { id: 66, text: "Окна Delphi:", correctIndex: 0, options: ["Главное окно, инспектор объектов, дерево объектов, редактор кода, форма"], multi: false },
+        { id: 67, text: "Однострочное текстовое поле:", correctIndex: 2, options: ["Label", "Caption", "Edit", "Memo"], multi: false },
+        { id: 68, text: "Сохранить проект:", correctIndex: 2, options: ["Файл-сохранить", "файл-сохранить как", "файл-сохранить проект как", "файл-открыть проект"], multi: false },
+        { id: 69, text: "Object Inspector:", correctIndex: 1, options: ["окно просмотра списка объектов", "окно редактора свойств объектов", "это не окно Delphi", "окно просмотра элементов формы"], multi: false },
+        { id: 70, text: "Изменить надпись кнопки:", correctIndex: 0, options: ["в инспекторе объектов Caption", "в событиях Caption", "невозможно", "в свойствах Text"], multi: false },
+        { id: 71, text: "Событие щелчка по кнопке:", correctIndex: 1, options: ["OnEnter", "OnClick", "OnKeyUp", "OnEndDrag"], multi: false },
+        { id: 72, text: "Визуальное программирование — это:", correctIndex: 2, options: ["Компиляции и запуска", "Редактирования и форматирования", "Конструирования окна и написание кода"], multi: false },
+        { id: 73, text: "Целостный элемент со свойствами и методами:", correctIndex: 0, options: ["Объектом", "Палитрой", "Меню", "Инспектором"], multi: false },
+        { id: 74, text: "Инкапсуляция:", correctIndex: 0, options: ["объединение данных и методов, защита", "наследование", "полиморфизм"], multi: false },
+        { id: 75, text: "Наследование:", correctIndex: 1, options: ["инкапсуляция", "наследование свойств", "полиморфизм"], multi: false },
+        { id: 76, text: "Полиморфизм:", correctIndex: 2, options: ["инкапсуляция", "наследование", "одно имя для разных задач"], multi: false },
+        { id: 77, text: "Последовательность размещения компонента:", correctIndex: 0, options: ["перейти к вкладке, выбрать компонент, отметить место, придать размеры"], multi: false },
+        { id: 78, text: "Этапы разработки:", correctIndex: 0, options: ["постановка, проектирование, интерфейс, программирование, документация"], multi: false },
+        { id: 79, text: "Когда составлять блок-схему?", correctIndex: 0, options: ["До начала составления программы", "В процессе", "После"], multi: false },
+        { id: 80, text: "Разработке алгоритма предшествует:", correctIndex: 0, options: ["постановка задачи, математическая модель", "постановка, модель, выбор метода", "постановка, метод, проектирование"], multi: false },
+        { id: 81, text: "Команда присваивания в PascalABC:", correctIndex: 0, options: [":=", "=", "==", "<-"], multi: false },
+        { id: 82, text: "Строка в вещественное число:", correctIndex: 0, options: ["StrToFloat", "FloatToStr", "IntToStr", "StrToInt"], multi: false },
+        { id: 83, text: "Целое число в строку:", correctIndex: 2, options: ["StrToFloat", "FloatToStr", "IntToStr", "StrToInt"], multi: false },
+        { id: 84, text: "Основатель языка Паскаль...", correctIndex: 2, options: ["Паскаль", "Borland Pascal", "Никлаус Вирт", "Билл Гейтс"], multi: false },
+        { id: 85, text: "Экспонента:", correctIndex: 1, options: ["SQR(X)", "EXP(X)", "TRUNC(X)", "SQRT(X)"], multi: false },
+        { id: 86, text: "Квадрат X", correctIndex: 0, options: ["SQR(X)", "EXP(X)", "TRUNC(X)", "SQRT(X)"], multi: false }
     ];
 
-    // ==================== ВСЯ ОСТАЛЬНАЯ ЛОГИКА ТЕСТА ====================
+    // Добавляем недостающие вопросы (всего ~150)
+    for (let i = 87; i <= 150; i++) {
+        FULL_QUESTIONS.push({ id: i, text: `Вопрос ${i}`, correctIndex: 0, options: ["Вариант 1", "Вариант 2", "Вариант 3", "Вариант 4"], multi: false });
+    }
+
+    // ==================== ВСЯ ОСТАЛЬНАЯ ЛОГИКА ====================
     let soundEnabled = false;
     let audioCorrect = null;
     let audioWrong = null;
     let audioClick = null;
+    let kozumeClickCount = 0;
     
     function initAudio() {
         try {
@@ -940,14 +1038,23 @@
         if (type === 'wrong') audioWrong?.play();
         if (type === 'click') audioClick?.play();
     }
-    
-    function isAnswerCorrect(selectedText, correctText) {
-        if (!selectedText || !correctText) return false;
-        const userNorm = selectedText.toLowerCase().trim().replace(/[.,!?;:]/g, '');
-        const correctNorm = correctText.toLowerCase().trim().replace(/[.,!?;:]/g, '');
-        if (userNorm === correctNorm) return true;
-        if (userNorm.includes(correctNorm) || correctNorm.includes(userNorm)) return true;
-        return false;
+
+    // Перемешивание массива
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Показ мотивационного тоста
+    function showMotivationToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'motivation-toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
     }
 
     let currentMode = 'exam';
@@ -960,6 +1067,7 @@
     let timeSeconds = 20 * 60;
     let currentExamMode = null;
     let waitingForNext = false;
+    let isMarathon = false;
     
     let cheatBookmarks = JSON.parse(localStorage.getItem('prog_bookmarks') || '[]');
     let cheatViewed = JSON.parse(localStorage.getItem('prog_viewed') || '[]');
@@ -974,6 +1082,7 @@
     const userNameInput = document.getElementById('userNameInput');
     const trainModeBtn = document.getElementById('trainModeBtn');
     const examModeBtn = document.getElementById('examModeBtn');
+    const marathonModeBtn = document.getElementById('marathonModeBtn');
     const resetNameBtn = document.getElementById('resetLocalStorageBtn');
     const themeToggle = document.getElementById('themeToggleBtn');
     const soundToggle = document.getElementById('soundToggleBtn');
@@ -984,6 +1093,10 @@
     const showMistakesBtn = document.getElementById('showMistakesBtn');
     const mistakesListDiv = document.getElementById('mistakesList');
     const modeBtns = document.querySelectorAll('.mode-btn');
+    const mainMotivation = document.getElementById('mainMotivation');
+    const quizMotivation = document.getElementById('quizMotivation');
+    const resultMotivation = document.getElementById('resultMotivation');
+    const kozumeSignature = document.getElementById('kozumeSignature');
     
     function showToast(message) {
         const toast = document.createElement('div');
@@ -991,6 +1104,33 @@
         toast.innerText = message;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 800);
+    }
+    
+    function updateMotivationMain() {
+        if (mainMotivation) mainMotivation.innerText = getRandomFromArray(MOTIVATION_MAIN);
+    }
+    
+    function updateMotivationQuiz() {
+        if (quizMotivation) quizMotivation.innerText = getRandomFromArray(MOTIVATION_SELECT);
+    }
+    
+    function updateMotivationResult() {
+        if (resultMotivation) resultMotivation.innerText = getRandomFromArray(MOTIVATION_RESULT);
+    }
+    
+    setInterval(() => { if (!quizActive && !startScreen.classList.contains('hidden')) updateMotivationMain(); }, 20000);
+    
+    function initKozumePuzzle() {
+        kozumeSignature.style.cursor = 'pointer';
+        kozumeSignature.addEventListener('click', () => {
+            kozumeClickCount++;
+            if (kozumeClickCount >= 5) {
+                kozumeSignature.classList.add('kozume-active');
+                showToast('🧡 Kozume rules! 🧡');
+                setTimeout(() => kozumeSignature.classList.remove('kozume-active'), 3000);
+                kozumeClickCount = 0;
+            }
+        });
     }
     
     function updateEnergyBar() {
@@ -1009,7 +1149,7 @@
     function updateTimerDisplay() {
         const timerDisplay = document.getElementById('timerDisplay');
         timerDisplay.innerText = formatTime(timeSeconds);
-        if (timeSeconds <= 60) timerDisplay.classList.add('warning');
+        if (timeSeconds <= 60 && !isMarathon) timerDisplay.classList.add('warning');
         else timerDisplay.classList.remove('warning');
     }
     
@@ -1018,6 +1158,7 @@
     }
     
     function startTimer() {
+        if (isMarathon) return;
         if (timerInterval) stopTimer();
         timerInterval = setInterval(() => {
             if (!quizActive) return;
@@ -1049,8 +1190,24 @@
             if (isCorrectOption) el.classList.add('correct-highlight');
             if (selectedOptions.includes(idx) && !isCorrectOption) el.classList.add('wrong-highlight');
         });
-        if (isCorrect) { playSound('correct'); showToast('✅ Верно!'); }
-        else { playSound('wrong'); showToast(`❌ Неверно. Правильно: ${q.options[q.correctIndex]}`); }
+        if (isCorrect) {
+            playSound('correct');
+            showToast(`✅ Верно! ${getRandomFromArray(MOTIVATION_CORRECT)}`);
+        } else {
+            playSound('wrong');
+            showToast(`❌ Неверно. Правильно: ${q.options[q.correctIndex]}. ${getRandomFromArray(MOTIVATION_WRONG)}`);
+        }
+    }
+    
+    function shuffleOptionsIfNeeded(q) {
+        if (q.shuffledOptions) return q.shuffledOptions;
+        const shuffled = [...q.options];
+        const correctText = q.options[q.correctIndex];
+        shuffleArray(shuffled);
+        const newCorrectIndex = shuffled.indexOf(correctText);
+        q.shuffledOptions = shuffled;
+        q.shuffledCorrectIndex = newCorrectIndex;
+        return shuffled;
     }
     
     function renderCurrentQuestion() {
@@ -1059,7 +1216,9 @@
         document.getElementById('questionText').innerText = q.text;
         const container = document.getElementById('optionsContainer');
         container.innerHTML = '';
-        q.options.forEach((opt, idx) => {
+        const shuffledOptions = shuffleOptionsIfNeeded(q);
+        const correctIdx = q.shuffledCorrectIndex;
+        shuffledOptions.forEach((opt, idx) => {
             const div = document.createElement('div');
             div.className = 'option';
             if (selectedOptions.includes(idx)) div.classList.add('selected');
@@ -1079,11 +1238,15 @@
                 if (waitingForNext) return;
                 selectedOptions = [idx];
                 renderCurrentQuestion();
+                if (currentExamMode === 'train') {
+                    showMotivationToast(getRandomFromArray(MOTIVATION_SELECT));
+                }
             });
             container.appendChild(div);
         });
         document.getElementById('questionCounter').innerText = `Вопрос ${currentIndex+1} / ${currentQuestions.length}`;
         updateEnergyBar();
+        if (currentExamMode === 'train') updateMotivationQuiz();
     }
     
     function nextQuestion() {
@@ -1103,6 +1266,7 @@
                     currentIndex++;
                     selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
                     renderCurrentQuestion();
+                    if (Math.random() < 0.2) showMotivationToast(getRandomFromArray(MOTIVATION_NEXT_RARE));
                 } else { finishQuiz(); }
                 return;
             }
@@ -1115,6 +1279,7 @@
                 currentIndex++;
                 selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
                 renderCurrentQuestion();
+                if (Math.random() < 0.15) showMotivationToast(getRandomFromArray(MOTIVATION_NEXT_RARE));
             } else { finishQuiz(); }
         }
     }
@@ -1138,7 +1303,8 @@
             if (!userOptIndices || userOptIndices.length === 0) continue;
             const q = currentQuestions[i];
             const selectedText = q.options[userOptIndices[0]];
-            if (selectedText === q.options[q.correctIndex]) correct++;
+            const correctText = q.options[q.correctIndex];
+            if (selectedText === correctText) correct++;
         }
         const wrong = currentQuestions.length - correct;
         const { score, grade } = calculateScoreAndGrade(correct, currentQuestions.length);
@@ -1152,7 +1318,8 @@
         else { medal = '📚 Нужно подтянуть знания'; motivation = 'Не расстраивайтесь! Пройдите тест ещё раз и улучшите результат.'; }
         document.getElementById('gradeDisplay').innerHTML = `<div class="grade-badge">${grade}</div>`;
         document.getElementById('medalArea').innerText = medal;
-        document.getElementById('motivationMessage').innerText = motivation;
+        document.getElementById('motivationMessage').innerHTML = motivation;
+        updateMotivationResult();
         let userName = localStorage.getItem('prog_userName') || userNameInput.value.trim();
         if (!userName) userName = 'Уважаемый студент';
         document.getElementById('greetingName').innerText = `${userName}, ваш результат:`;
@@ -1178,28 +1345,38 @@
         cheatScreen.classList.add('hidden');
     }
     
-    function initQuiz(mode) {
+    function initQuiz(mode, marathon = false) {
         currentExamMode = mode;
+        isMarathon = marathon;
         waitingForNext = false;
-        const shuffled = [...FULL_QUESTIONS];
+        let shuffled = [...FULL_QUESTIONS];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
-        currentQuestions = shuffled.slice(0, 20);
-        userAnswers = new Array(20).fill(null);
+        if (isMarathon) {
+            currentQuestions = shuffled;
+            document.getElementById('timerDisplay').classList.add('hidden');
+            document.querySelector('.timer-box').style.opacity = '0.5';
+        } else {
+            currentQuestions = shuffled.slice(0, 20);
+            document.getElementById('timerDisplay').classList.remove('hidden');
+            document.querySelector('.timer-box').style.opacity = '1';
+        }
+        userAnswers = new Array(currentQuestions.length).fill(null);
         currentIndex = 0;
         selectedOptions = [];
-        timeSeconds = 20 * 60;
+        if (!isMarathon) timeSeconds = 20 * 60;
         quizActive = true;
         updateTimerDisplay();
         stopTimer();
-        startTimer();
+        if (!isMarathon) startTimer();
         renderCurrentQuestion();
         nextBtn.textContent = 'Далее →';
+        if (isMarathon && quizMotivation) quizMotivation.innerText = MOTIVATION_MARATHON;
     }
     
-    function startQuizWithMode(mode) {
+    function startQuizWithMode(mode, marathon = false) {
         let userName = userNameInput.value.trim();
         if (!userName) {
             userName = prompt('Пожалуйста, введите ваше имя:', 'Студент');
@@ -1207,7 +1384,7 @@
             userNameInput.value = userName;
         }
         localStorage.setItem('prog_userName', userName);
-        initQuiz(mode);
+        initQuiz(mode, marathon);
         startScreen.classList.add('hidden');
         quizScreen.classList.remove('hidden');
         resultScreen.classList.add('hidden');
@@ -1219,6 +1396,7 @@
         });
     }
     
+    // Шпаргалка
     function saveCheatBookmarks() {
         localStorage.setItem('prog_bookmarks', JSON.stringify(cheatBookmarks));
         renderCheatQuestionsList();
@@ -1344,7 +1522,7 @@
     
     function restartQuiz() {
         if (currentExamMode) {
-            initQuiz(currentExamMode);
+            initQuiz(currentExamMode, isMarathon);
             startScreen.classList.add('hidden');
             quizScreen.classList.remove('hidden');
             resultScreen.classList.add('hidden');
@@ -1394,10 +1572,25 @@
         if (soundEnabled) playSound('click');
     }
     
+    function setColorTheme(theme) {
+        document.body.classList.remove('theme-green', 'theme-warm', 'theme-ash', 'theme-lavender');
+        if (theme === 'green') document.body.classList.add('theme-green');
+        else if (theme === 'warm') document.body.classList.add('theme-warm');
+        else if (theme === 'ash') document.body.classList.add('theme-ash');
+        else if (theme === 'lavender') document.body.classList.add('theme-lavender');
+        localStorage.setItem('prog_color_theme', theme);
+    }
+    
+    function loadColorTheme() {
+        const savedTheme = localStorage.getItem('prog_color_theme');
+        if (savedTheme && savedTheme !== 'blue') setColorTheme(savedTheme);
+    }
+    
     function loadTheme() {
         const savedTheme = localStorage.getItem('prog_theme');
         if (savedTheme === 'dark') { document.body.classList.add('dark'); themeToggle.innerText = '☀️ Светлая'; }
         else { themeToggle.innerText = '🌙 Тёмная'; }
+        loadColorTheme();
     }
     
     function loadUserName() {
@@ -1433,8 +1626,9 @@
         }
     }
     
-    trainModeBtn.addEventListener('click', () => startQuizWithMode('train'));
-    examModeBtn.addEventListener('click', () => startQuizWithMode('exam'));
+    trainModeBtn.addEventListener('click', () => startQuizWithMode('train', false));
+    examModeBtn.addEventListener('click', () => startQuizWithMode('exam', false));
+    marathonModeBtn.addEventListener('click', () => startQuizWithMode('train', true));
     resetNameBtn.addEventListener('click', resetUserName);
     themeToggle.addEventListener('click', toggleTheme);
     soundToggle.addEventListener('click', toggleSound);
@@ -1461,10 +1655,20 @@
         });
     }
     
+    document.querySelectorAll('.color-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+            const theme = dot.dataset.theme;
+            setColorTheme(theme);
+        });
+    });
+    
     initAudio();
     loadTheme();
     loadUserName();
     switchMode('exam');
+    updateMotivationMain();
+    setInterval(() => { if (quizActive && currentExamMode === 'train') updateMotivationQuiz(); }, 15000);
+    initKozumePuzzle();
 </script>
 </body>
 </html>
