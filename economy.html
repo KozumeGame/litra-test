@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Экономика отрасли | Зачетный тренажер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #475569;
+            --border: #e2e8f0;
+            --primary: #2c5f8a;
+            --primary-dark: #1e405e;
+            --primary-light: #e6f0f7;
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --energy-bg: #2d2b26;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --card-radius: 24px;
+        }
+
+        body.theme-green {
+            --primary: #2d6a4f;
+            --primary-dark: #1b4d3e;
+            --primary-light: #d8f3dc;
+        }
+        body.theme-warm {
+            --primary: #c2a575;
+            --primary-dark: #a07d4e;
+            --primary-light: #fef5e8;
+        }
+        body.theme-ash {
+            --primary: #5c6a7a;
+            --primary-dark: #3d4856;
+            --primary-light: #eef2f5;
+        }
+        body.theme-lavender {
+            --primary: #7b6c9e;
+            --primary-dark: #5c4a7a;
+            --primary-light: #f0ecf6;
+        }
+        body.theme-coral {
+            --primary: #e67e22;
+            --primary-dark: #b85e0a;
+            --primary-light: #fef3e2;
+        }
+        body.theme-mint {
+            --primary: #14b8a6;
+            --primary-dark: #0d9488;
+            --primary-light: #ccfbf1;
+        }
+        body.theme-rose {
+            --primary: #ec4899;
+            --primary-dark: #db2777;
+            --primary-light: #fce7f3;
+        }
+        body.theme-cherry {
+            --primary: #9b2c2c;
+            --primary-dark: #7f1d1d;
+            --primary-light: #fef2f2;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #cbd5e1;
+            --border: #334155;
+            --primary-light: #1e2a3a;
+            --energy-bg: #3a3226;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 16px 12px 40px;
+            transition: background 0.2s, color 0.2s;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow);
+            padding: 20px 18px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .theme-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .theme-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 40px;
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            z-index: 200;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 200px;
+        }
+        .theme-dropdown-content.show {
+            display: flex;
+        }
+        .color-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid var(--border);
+        }
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+        .color-dot.blue { background: #2c5f8a; }
+        .color-dot.green { background: #2d6a4f; }
+        .color-dot.warm { background: #c2a575; }
+        .color-dot.ash { background: #5c6a7a; }
+        .color-dot.lavender { background: #7b6c9e; }
+        .color-dot.coral { background: #e67e22; }
+        .color-dot.mint { background: #14b8a6; }
+        .color-dot.rose { background: #ec4899; }
+        .color-dot.cherry { background: #9b2c2c; }
+
+        .mode-switch {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .mode-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            padding: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .theme-toggle, .sound-toggle, .color-theme-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+            width: auto;
+        }
+        
+        .theme-toggle:hover, .sound-toggle:hover, .color-theme-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-screen h1 {
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary), #4a90c4);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .motivation-card {
+            background: var(--primary-light);
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 14px;
+            font-style: italic;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        .motivation-small {
+            font-size: 12px;
+            padding: 6px 12px;
+            margin: 8px 0;
+        }
+
+        .status-panel {
+            background: var(--primary-light);
+            border-radius: 20px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .status-panel h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+        .status-item {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-badge {
+            width: 24px;
+            font-size: 14px;
+        }
+        .status-badge.success { color: #10b981; }
+        .status-badge.progress { color: #f59e0b; }
+
+        .mode-select-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .mode-select-buttons button {
+            flex: 1;
+            min-width: 120px;
+            font-size: 1rem;
+        }
+        .mode-train {
+            background: #3b82f6;
+        }
+        .mode-train:hover {
+            background: #2563eb;
+        }
+        .mode-exam {
+            background: var(--primary);
+        }
+        .mode-marathon {
+            background: #f59e0b;
+        }
+        .mode-marathon:hover {
+            background: #d97706;
+        }
+
+        .name-input-group {
+            margin: 24px 0 20px;
+            text-align: left;
+        }
+        
+        .name-input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 95, 138, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            margin-top: 12px;
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-area {
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .energy-bar-bg {
+            background: var(--energy-bg);
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .energy-fill {
+            background: linear-gradient(90deg, #f39c12, #eab308, #10b981);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 40px;
+        }
+        
+        .timer-box {
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        
+        .timer-box.warning {
+            background: #fee2e2;
+            color: #b91c1c;
+            animation: pulse 1s infinite;
+        }
+        
+        body.dark .timer-box.warning {
+            background: #7f1a1a;
+            color: #ffcdcd;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1);}
+            50% { opacity: 0.8; transform: scale(1.02);}
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 16px 0 20px;
+            animation: fadeSlide 0.3s ease;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .option {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .option:hover {
+            background: var(--primary-light);
+            transform: scale(0.99);
+        }
+        
+        .option.selected {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(44, 95, 138, 0.2);
+        }
+
+        .option.correct-highlight {
+            background: #10b98120;
+            border-color: var(--correct);
+        }
+
+        .option.wrong-highlight {
+            background: #ef444420;
+            border-color: var(--wrong);
+        }
+        
+        .option input {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--primary);
+            pointer-events: none;
+        }
+        
+        .option-label {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.3;
+            cursor: pointer;
+        }
+        
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .result-stats {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .grade {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 12px 0;
+        }
+        
+        .grade-badge {
+            background: #10b98120;
+            padding: 8px 24px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        
+        .circle-chart {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+            position: relative;
+        }
+        .donut {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            position: relative;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body.dark .donut {
+            background: #334155;
+        }
+        .donut-inner {
+            width: 120px;
+            height: 120px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 28px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 2;
+        }
+        .donut-inner span {
+            font-size: 12px;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+        .donut-inner .score-value {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .stats-text {
+            margin-top: 12px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stats-correct { color: var(--correct); font-weight: 700; }
+        .stats-wrong { color: var(--wrong); font-weight: 700; }
+        
+        .medal-icon {
+            font-size: 2rem;
+            margin: 8px 0;
+        }
+        
+        .mistake-item {
+            background: var(--surface);
+            border-left: 5px solid var(--wrong);
+            padding: 14px;
+            margin-bottom: 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+        
+        .mistake-question {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .mistake-detail {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .action-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .motivation-message {
+            margin: 16px 0 8px;
+            padding: 12px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .cheat-sheet {
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+        .cheat-search {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .cheat-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cheat-questions-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .cheat-question-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 12px;
+            margin-bottom: 4px;
+        }
+        .cheat-question-item:hover {
+            background: var(--primary-light);
+        }
+        .cheat-question-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        .cheat-question-text {
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cheat-star {
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0.6;
+            padding: 4px;
+        }
+        .cheat-star.active {
+            color: #f59e0b;
+            opacity: 1;
+        }
+        .cheat-options {
+            margin-top: 20px;
+        }
+        .cheat-option {
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        .cheat-option.correct {
+            background: #10b98120;
+            border-color: var(--correct);
+        }
+        .cheat-badge {
+            background: var(--correct);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        
+        .combo-toast {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 1000;
+            animation: fadeUp 0.8s ease-out forwards;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+        }
+        
+        @media (max-width: 550px) {
+            body {
+                padding: 12px 10px 30px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+            .option {
+                padding: 12px 14px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+            .donut {
+                width: 130px;
+                height: 130px;
+            }
+            .donut-inner {
+                width: 95px;
+                height: 95px;
+                font-size: 24px;
+            }
+            .donut-inner .score-value {
+                font-size: 26px;
+            }
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            .theme-dropdown-content {
+                width: 180px;
+                right: 0;
+                left: auto;
+            }
+            .color-dot {
+                width: 28px;
+                height: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="mode-switch">
+        <button class="mode-btn" data-mode="exam">📝 Зачёт (тест)</button>
+        <button class="mode-btn" data-mode="cheat">📖 Шпаргалка</button>
+    </div>
+    
+    <div class="header-bar">
+        <div style="font-weight: 600; font-size: 14px;">📊 ЭКОНОМИКА ОТРАСЛИ | ЗАЧЕТ</div>
+        <div style="display: flex; gap: 8px;">
+            <div class="theme-dropdown">
+                <button class="color-theme-btn" id="colorThemeBtn">🎨 Тема</button>
+                <div class="theme-dropdown-content" id="themeDropdown">
+                    <div class="color-dot blue" data-theme="blue"></div>
+                    <div class="color-dot green" data-theme="green"></div>
+                    <div class="color-dot warm" data-theme="warm"></div>
+                    <div class="color-dot ash" data-theme="ash"></div>
+                    <div class="color-dot lavender" data-theme="lavender"></div>
+                    <div class="color-dot coral" data-theme="coral"></div>
+                    <div class="color-dot mint" data-theme="mint"></div>
+                    <div class="color-dot rose" data-theme="rose"></div>
+                    <div class="color-dot cherry" data-theme="cherry"></div>
+                </div>
+            </div>
+            <button class="sound-toggle" id="soundToggleBtn">🔇 Звук выкл</button>
+            <button class="theme-toggle" id="themeToggleBtn">🌙 Тёмная</button>
+        </div>
+    </div>
+
+    <!-- СТАРТОВЫЙ ЭКРАН -->
+    <div id="startScreen" class="card start-screen">
+        <h1>📊 Тренажёр зачёта</h1>
+        <p style="margin: 12px 0 8px; font-size: 14px;">20 случайных вопросов • 20 минут • 73 вопроса в базе</p>
+        
+        <div class="motivation-card" id="mainMotivation">✨ Сосредоточься. Ты сможешь.</div>
+        
+        <div class="status-panel">
+            <h3>📚 Разделы:</h3>
+            <div class="status-grid">
+                <div class="status-item"><span class="status-badge success">✅</span> Основы экономики (1-10)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Предприятия и организации (11-25)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Производство и ресурсы (26-40)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Рынок и конкуренция (41-50)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Финансы и налоги (51-65)</div>
+                <div class="status-item"><span class="status-badge success">✅</span> Кредит и банки (66-73)</div>
+            </div>
+        </div>
+        
+        <div class="mode-select-buttons">
+            <button id="trainModeBtn" class="mode-train">🎓 ТРЕНИРОВКА</button>
+            <button id="examModeBtn" class="mode-exam">📝 ДЕМО-ЗАЧЁТ</button>
+            <button id="marathonModeBtn" class="mode-marathon">🏃 МАРАФОН</button>
+        </div>
+        
+        <div class="name-input-group">
+            <label>👤 Ваше имя</label>
+            <input type="text" id="userNameInput" placeholder="Введите имя" autocomplete="off">
+        </div>
+        <button class="btn-outline" id="resetLocalStorageBtn" style="margin-top: 10px;">🔄 Сбросить имя</button>
+        <footer>Тренировка: подсказки • Демо-зачёт: без подсказок • Марафон: все вопросы, без таймера</footer>
+    </div>
+
+    <!-- ЭКРАН ТЕСТА -->
+    <div id="quizScreen" class="hidden">
+        <div class="card">
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <div class="flex-between">
+                        <span id="questionCounter">Вопрос 1 / 20</span>
+                        <span id="answeredCount">✅ 0 отвечено</span>
+                    </div>
+                    <div class="energy-bar-bg"><div class="energy-fill" id="energyFill"></div></div>
+                </div>
+                <div class="timer-box" id="timerDisplay">20:00</div>
+            </div>
+            <div class="motivation-card motivation-small" id="quizMotivation"></div>
+            <div id="quizInner">
+                <div class="question-text" id="questionText">Загрузка...</div>
+                <div class="options-list" id="optionsContainer"></div>
+                <button id="nextQuestionBtn" class="next-btn">Далее →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultScreen" class="hidden">
+        <div class="card">
+            <div class="result-stats">
+                <h2 style="font-size: 1.5rem;">📋 Результат</h2>
+                <div id="greetingName" style="font-size: 1.1rem; margin: 8px 0;"></div>
+                
+                <div class="circle-chart">
+                    <div class="donut" id="donutChart">
+                        <div class="donut-inner">
+                            <div class="score-value" id="centerScore">0</div>
+                            <span>баллов</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-text">
+                    <span>✅ <span id="correctCount">0</span> правильных</span>
+                    <span>❌ <span id="wrongCount">0</span> ошибок</span>
+                </div>
+                
+                <div id="medalArea" class="medal-icon"></div>
+                <div id="gradeDisplay" class="grade"></div>
+                <div class="motivation-card" id="resultMotivation">✨ Ты прошёл этот путь.</div>
+                <button id="showMistakesBtn" class="btn-outline" style="width: auto; padding: 10px 20px; margin-top: 8px;">📖 Показать ошибки</button>
+            </div>
+            <div id="mistakesList" class="hidden" style="margin-top: 20px;"></div>
+            <div class="action-buttons">
+                <button id="shareResultBtn">📤 Поделиться</button>
+                <button id="mainMenuBtn">🏠 Главный экран</button>
+                <button id="restartQuizBtn">🔄 Пройти заново</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ШПАРГАЛКА -->
+    <div id="cheatScreen" class="hidden">
+        <div class="cheat-sheet">
+            <input type="text" id="cheatSearch" class="cheat-search" placeholder="🔍 Поиск по вопросам...">
+            <div class="cheat-stats">
+                <span>📋 Всего: <strong id="cheatTotal">0</strong></span>
+                <span>⭐ Закладки: <strong id="cheatBookmarkCount">0</strong></span>
+                <span>👁️ Просмотрено: <strong id="cheatViewedCount">0</strong></span>
+            </div>
+            <div class="cheat-questions-list" id="cheatQuestionsList"></div>
+            <div id="cheatCurrentQuestion">
+                <div class="question-text" id="cheatQuestionText">Выберите вопрос из списка</div>
+                <div class="cheat-options" id="cheatOptionsContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== МОТИВАЦИОННЫЕ ФРАЗЫ ====================
+    const MOTIVATION_MAIN = [
+        "✨ Сосредоточься. Ты сможешь.",
+        "💪 Один вопрос за раз — и ты справишься.",
+        "🚀 Сделай первый шаг.",
+        "📚 Ты уже много знаешь. Осталось немного.",
+        "⚡ Каждая ошибка — это шаг к правильному ответу.",
+        "🌟 Лучше тренироваться сейчас, чем волноваться на зачёте.",
+        "🔄 Повторение — мать уверенности.",
+        "💯 Ты справишься. Я в тебя верю."
+    ];
+    const MOTIVATION_RESULT_5 = [
+        "🎉 Идеально! Даже не придраться.",
+        "🍀 Пятёрка! Можно выдохнуть.",
+        "🏆 Отлично! Теперь можешь отдыхать.",
+        "🌟 Ты разобрался в теме на все сто. Горжусь!",
+        "💯 Прекрасный результат! Так держать."
+    ];
+    const MOTIVATION_RESULT_4 = [
+        "💪 Хороший результат! Есть куда расти, но ты молодец!",
+        "📘 Твёрдая четвёрка. Так держать!",
+        "🍀 Неплохо! Совсем немного до отличия.",
+        "🚀 Ты на правильном пути. Ещё немного — и отлично!",
+        "🎯 До пятёрки один шаг. В следующий раз получится!"
+    ];
+    const MOTIVATION_RESULT_3 = [
+        "🍀 Главное, что сдал!",
+        "😊 Ну, хотя бы не двойка.",
+        "📚 Тройка — это тоже победа. Есть над чем работать.",
+        "✅ Зачёт есть зачёт. Выдыхай.",
+        "🌿 Нормально. В следующий раз будет лучше."
+    ];
+    const MOTIVATION_RESULT_2 = [
+        "🍫 Не расстраивайся, попробуй ещё поучить, а пока что держи шоколадку 🍫",
+        "🌱 Бывает. Все мы с чего-то начинали.",
+        "💪 Не беда. Вторая попытка — твоя.",
+        "📖 Двойка — не приговор. Это просто повод начать учить.",
+        "🌟 Не вешай нос. Ошибки — лучшие учителя."
+    ];
+
+    function getRandomFromArray(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    // ==================== БАЗА ДАННЫХ: 73 ВОПРОСА ПО ЭКОНОМИКЕ ОТРАСЛИ ====================
+    const FULL_QUESTIONS = [
+        { id: 1, text: "... - это хозяйственный строй общества, совокупность производственных отношений:", correctIndex: 1, options: ["Производство", "Экономика", "Общество"], multi: false },
+        { id: 2, text: "Макроэкономика изучает", correctIndex: 0, options: ["Функционирование экономики страны в целом", "Функционирование деятельности предприятий, фирм", "Контроль за мировыми экономическими процессами"], multi: false },
+        { id: 3, text: "Микроэкономика изучает:", correctIndex: 1, options: ["Функционирование экономики страны в целом", "Функционирование деятельности предприятий, фирм", "Контроль за мировыми экономическими процессами"], multi: false },
+        { id: 4, text: "К какой сфере экономики относятся отрасли, создающие материальные блага:", correctIndex: 0, options: ["Производственная сфера", "Непроизводственная сфера", "Оба ответа верные"], multi: false },
+        { id: 5, text: "Какая из видов экономик оперирует такими понятиями как инфляция, безработица, бюджетный дефицит", correctIndex: 1, options: ["Микроэкономика", "Макроэкономика", "Мировая экономика"], multi: false },
+        { id: 6, text: "... - самостоятельный хозяйствующий субъект с правом юридического лица, созданный для производства продукции, выполнения работ и оказания услуг в целях удовлетворения потребностей общества:", correctIndex: 0, options: ["Предприятие", "Личное подсобное хозяйство", "Филиал обособленного подразделения"], multi: false },
+        { id: 7, text: "Что является главной целью создания и функционирования коммерческого предприятия:", correctIndex: 1, options: ["Получение выручки", "Получение прибыли", "Коммерческая деятельность"], multi: false },
+        { id: 8, text: "ЗАО - акционерное общество, акции которого:", correctIndex: 1, options: ["Могут отчуждать принадлежащие им акции без согласия других акционеров", "Распределяются только среди его учредителей или заранее определенного круга лиц", "Решение принимает вышестоящая организация"], multi: false },
+        { id: 9, text: "ОАО - акционерное общество, акции которого:", correctIndex: 0, options: ["Могут отчуждать принадлежащие им акции без согласия других акционеров", "Распределяются только среди его учредителей или заранее определенного круга лиц", "Решение принимает вышестоящая организация"], multi: false },
+        { id: 10, text: "Как называется прибыль, которую получают владельцы акций:", correctIndex: 0, options: ["Дивиденды", "Дисиденды", "Выручка"], multi: false },
+        { id: 11, text: "Что является первоочередным при создании предприятия:", correctIndex: 2, options: ["Собрание учредителей", "Утверждение Устава", "Принятие соответствующего решения владельцем капитала"], multi: false },
+        { id: 12, text: "Кто производит первоначальную регистрацию предприятия:", correctIndex: 1, options: ["Налоговые органы", "Районная или городская администрация по месту нахождения предприятия", "Пенсионный фонд"], multi: false },
+        { id: 13, text: "Куда включается зарегистрированное предприятие в первую очередь:", correctIndex: 0, options: ["Единый государственный реестр юридических лиц (ЕГРЮЛ)", "Общероссийский классификатор предприятий и организаций (ОКПО)", "Общероссийский классификатор отраслей народного хозяйства (ОКОНХ)"], multi: false },
+        { id: 14, text: "При ликвидации предприятия какие претензии удовлетворяются в первую очередь:", correctIndex: 1, options: ["Претензии налоговых органов", "Претензии по оплате труда перед персоналом", "Имущественные и денежные претензии перед кредиторами"], multi: false },
+        { id: 15, text: "Кто принимает решение о банкротстве предприятия:", correctIndex: 1, options: ["Вышестоящие органы", "Судебные органы", "Налоговые органы"], multi: false },
+        { id: 16, text: "Как классифицируются предприятия по целям деятельности:", correctIndex: 1, options: ["Малые, средние, крупные", "Коммерческие и некоммерческие", "Совместные и иностранные"], multi: false },
+        { id: 17, text: "Как называются организации, уставный фонд которых состоит из иностранного капитала или с долей отечественных партнеров:", correctIndex: 2, options: ["Малые, средние, крупные", "Коммерческие и некоммерческие", "Совместные и иностранные"], multi: false },
+        { id: 18, text: "К средним относятся коммерческие организации со средней численностью работников:", correctIndex: 0, options: ["От 100 до 250 человек", "От 15 до 50 чел", "Свыше 500 человек"], multi: false },
+        { id: 19, text: "Как называется прибыль, которая определяется как превышение выручки от реализации над себестоимостью реализованной продукции:", correctIndex: 0, options: ["Балансовая прибыль", "Рентабельность", "Чистая прибыль"], multi: false },
+        { id: 20, text: "Как называется прибыль, остающаяся в распоряжении предприятия после уплаты налога на прибыль:", correctIndex: 2, options: ["Балансовая прибыль", "Рентабельность", "Чистая прибыль"], multi: false },
+        { id: 21, text: "Как называется численность работников предприятия, включающая всех работников, принятых по трудовому договору на постоянную, временную или сезонную работу:", correctIndex: 0, options: ["Списочная", "Явочная", "Дневная"], multi: false },
+        { id: 22, text: "Как рассчитывается коэффициент приема кадров:", correctIndex: 1, options: ["Отношение уволенных работников к общей численности", "Отношение принятых работников к общей численности", "Отношение принятых и уволенных работников к общей численности"], multi: false },
+        { id: 23, text: "Как рассчитывается коэффициент выбытия (текучести) кадров:", correctIndex: 0, options: ["Отношение уволенных работников к общей численности", "Отношение принятых работников к общей численности", "Отношение принятых и уволенных работников к общей численности"], multi: false },
+        { id: 24, text: "Что относится к основному производственному процессу:", correctIndex: 0, options: ["Процессы, прямым результатом которых является изготовление продукции предприятия", "Процессы, в ходе которых создаются условия для нормальной деятельности основного производства", "Охватывают процессы переработки отходов и их утилизация"], multi: false },
+        { id: 25, text: "Что относится к вспомогательному производству:", correctIndex: 1, options: ["Процессы, прямым результатом которых является изготовление продукции предприятия", "Процессы, в ходе которых создаются условия для нормальной деятельности основного производства", "Охватывают процессы переработки отходов и их утилизация"], multi: false },
+        { id: 26, text: "Что является основой рыночных отношений:", correctIndex: 1, options: ["Общественное разделение труда", "Спрос, предложение и цена", "Свобода предпринимательства"], multi: false },
+        { id: 27, text: "Что понимается под спросом в системе рыночных отношений:", correctIndex: 1, options: ["Количество экономического блага, которое продавцы готовы предложить потребителю по определенной цене", "Желание и возможность потребителя купить определенное количество товара по определенной цене", "То количество денег, которое потребитель готов оплатить, а продавец готов продать за единицу изделия"], multi: false },
+        { id: 28, text: "Что понимается под предложением в системе рыночных отношений:", correctIndex: 0, options: ["Количество экономического блага, которое продавцы готовы предложить потребителю по определенной цене", "Желание и возможность потребителя купить определенное количество товара по определенной цене", "То количество денег, которое потребитель готов оплатить, а продавец готов продать за единицу изделия"], multi: false },
+        { id: 29, text: "Что такое цена товара:", correctIndex: 2, options: ["Количество экономического блага, которое продавцы готовы предложить потребителю по определенной цене", "Желание и возможность потребителя купить определенное количество товара по определенной цене", "То количество денег, которое потребитель готов оплатить, а продавец готов продать за единицу изделия"], multi: false },
+        { id: 30, text: "Что значит равновесие на рынке (равновесная цена):", correctIndex: 2, options: ["Количество предложенных товаров больше чем спрос", "Количество предложенных товаров меньше чем спрос", "Количество товара, предложенное продавцом, совпадает со спросом на этот товар"], multi: false },
+        { id: 31, text: "Что значит совершенная конкуренция:", correctIndex: 0, options: ["Множество производителей на рынке, производящих один и тот же товар", "Несколько фирм, производящих одну и ту же продукцию", "Одна фирма, производящая уникальную продукцию"], multi: false },
+        { id: 32, text: "Что значит несовершенная конкуренция:", correctIndex: 1, options: ["Множество производителей на рынке, производящих один и тот же товар", "Несколько фирм, производящих одну и ту же продукцию", "Одна фирма, производящая уникальную продукцию"], multi: false },
+        { id: 33, text: "Что значит монополия:", correctIndex: 2, options: ["Множество производителей на рынке, производящих один и тот же товар", "Несколько фирм, производящих одну и ту же продукцию", "Одна фирма, производящая уникальную продукцию"], multi: false },
+        { id: 34, text: "Что такое производственный цикл на предприятии:", correctIndex: 1, options: ["Время, затраченное на межцеховые перемещения", "Время от начала производственного процесса и до выхода готовой продукции", "Время, затраченное на упаковку, маркировку и перевозку товаров"], multi: false },
+        { id: 35, text: "Ремонтное хозяйство это:", correctIndex: 2, options: ["Подразделения, занятые приобретением, проектированием, изготовлением и восстановлением технологической оснастки (инструментов)", "Подразделения, занятые обеспечением бесперебойного снабжения предприятия всеми видами энергии", "Подразделения, занятые осуществлением мероприятий по надзору за состоянием оборудования, ухода за ним и ремонта"], multi: false },
+        { id: 36, text: "Что входит в понятие 'Основные средства':", correctIndex: 0, options: ["Средства труда, которые неоднократно участвуют в производственном процессе, переносят свою стоимость на готовый продукт частями в виде амортизационных отчислений", "Предметы труда, которые участвуют в производственном процессе и переносят свою стоимость на продукцию полностью в течение одного производственного цикла", "Долгосрочные активы"], multi: false },
+        { id: 37, text: "Амортизация основных фондов это:", correctIndex: 0, options: ["Процесс перенесения стоимости основных средств на себестоимость готовой продукции", "Расходы на содержание основных фондов", "Моральный износ основных средств"], multi: false },
+        { id: 38, text: "Физический износ основных средств определяет:", correctIndex: 0, options: ["Материальное изнашивание основных средств, потеря потребительских свойств", "Уменьшение стоимости вследствие появления новых более совершенных средств труда"], multi: false },
+        { id: 39, text: "Основные средства в денежном выражении могут учитываться в:", correctIndex: 1, options: ["Натуральном и стоимостном выражении", "Первоначальной, восстановительной и остаточной стоимости", "Ценах приобретения и списания основных средств"], multi: false },
+        { id: 40, text: "Вознаграждение, полученное работником в зависимости от качества и количества затраченного им труда:", correctIndex: 1, options: ["Выручка", "Заработная плата", "Премия"], multi: false },
+        { id: 41, text: "Себестоимость продукции это:", correctIndex: 0, options: ["Совокупность затрат предприятия на производство и реализацию продукции в денежном выражении", "Капитальные затраты на расширенное воспроизводство", "Затраты на каждом рабочем месте"], multi: false },
+        { id: 42, text: "Маркетинг - это", correctIndex: 0, options: ["Комплексное изучение рынка", "Комплексное изучение процесса производства", "Комплексное планирование процесса производства"], multi: false },
+        { id: 43, text: "Что значит инновационные процессы на предприятии:", correctIndex: 1, options: ["Процесс переработки отходов", "Процесс использования новшеств, связанный с его реализацией в материальной сфере общества", "Процесс перераспределения материальных благ"], multi: false },
+        { id: 44, text: "МРОТ (Минимальный размер оплаты труда) устанавливается:", correctIndex: 1, options: ["Самим предприятием", "Государством в виде Федеральных Законов", "Муниципальными органами"], multi: false },
+        { id: 45, text: "Менеджмент это -", correctIndex: 1, options: ["Контроль предприятием", "Управление предприятием", "Финансовые службы"], multi: false },
+        { id: 46, text: "Экспорт - это", correctIndex: 0, options: ["Вывоз товаров за границу с таможенной территории страны", "Ввоз товаров на таможенную территорию страны из-за границы", "Перемещение товаров внутри страны"], multi: false },
+        { id: 47, text: "Импорт - это", correctIndex: 1, options: ["Вывоз товаров за границу с таможенной территории страны", "Ввоз товаров на таможенную территорию страны из-за границы", "Перемещение товаров внутри страны"], multi: false },
+        { id: 48, text: "Свободная экономическая зона - это", correctIndex: 0, options: ["Специально выделенные территории с льготными таможенными, налоговыми и валютными режимами для привлечения иностранного капитала", "Специально выделенные территории для хранения товаров", "Для свободного перемещения грузов и населения"], multi: false },
+        { id: 49, text: "Инструментальное хозяйство это:", correctIndex: 0, options: ["Подразделения, занятые приобретением, проектированием, изготовлением и восстановлением технологической оснастки (инструментов)", "Подразделения, занятые обеспечением бесперебойного снабжения предприятия всеми видами энергии", "Подразделения, занятые осуществлением мероприятий по надзору за состоянием оборудования, ухода за ним и ремонта"], multi: false },
+        { id: 50, text: "Энергетическое хозяйство это:", correctIndex: 1, options: ["Подразделения, занятые приобретением, проектированием, изготовлением и восстановлением технологической оснастки (инструментов)", "Подразделения, занятые обеспечением бесперебойного снабжения предприятия всеми видами энергии", "Подразделения, занятые осуществлением мероприятий по надзору за состоянием оборудования, ухода за ним и ремонта"], multi: false },
+        { id: 51, text: "Транспортное хозяйство это:", correctIndex: 2, options: ["Подразделения, занятые приобретением, проектированием, изготовлением и восстановлением технологической оснастки (инструментов)", "Подразделения, занятые обеспечением бесперебойного снабжения предприятия всеми видами энергии", "Подразделения, занятые осуществлением мероприятий по транспортировке продукции как внутри предприятия, так и за его пределами"], multi: false },
+        { id: 52, text: "Аренда - это:", correctIndex: 0, options: ["Вид предпринимательской деятельности, при которой собственник имущества передает его во временное владение другому лицу на определенный срок и за определенную плату", "Вид предпринимательской деятельности, при которой собственник имущества продает его другому лицу за определенную плату", "Продажа имущества в кредит"], multi: false },
+        { id: 53, text: "Какие из ниже перечисленных налогов относятся к федеральным:", correctIndex: 1, options: ["Налог на имущество организаций, налог на недвижимость, налог на игорный бизнес, дорожный и транспортный налог", "Налог на добавленную стоимость (НДС), Акцизы, Налог на доходы физических лиц (НДФЛ), Налог на прибыль", "Земельный налог, Налог на имущество физических лиц, налог на рекламу"], multi: false },
+        { id: 54, text: "Какие из ниже перечисленных налогов относятся к региональным:", correctIndex: 0, options: ["Налог на имущество организаций, налог на недвижимость, налог на игорный бизнес, дорожный и транспортный налог", "Налог на добавленную стоимость (НДС), Акцизы, Налог на доходы физических лиц (НДФЛ), Налог на прибыль", "Земельный налог, Налог на имущество физических лиц, налог на рекламу"], multi: false },
+        { id: 55, text: "Какие из ниже перечисленных налогов относятся к местным:", correctIndex: 2, options: ["Налог на имущество организаций, налог на недвижимость, налог на игорный бизнес, дорожный и транспортный налог", "Налог на добавленную стоимость (НДС), Акцизы, Налог на доходы физических лиц (НДФЛ), Налог на прибыль", "Земельный налог, Налог на имущество физических лиц, налог на рекламу"], multi: false },
+        { id: 56, text: "Как называется цена, которая не регулируется государством и складывается воздействием спроса и предложения:", correctIndex: 1, options: ["Фиксированная", "Свободная", "Регулируемая"], multi: false },
+        { id: 57, text: "Как называется цена, по которой товар приобретается населением у торговых предприятий и является ценой конечного потребления:", correctIndex: 1, options: ["Оптовая", "Розничная", "Закупочная"], multi: false },
+        { id: 58, text: "Синоним слова инновация:", correctIndex: 0, options: ["Нововведение", "Секреты фирмы", "Вложения"], multi: false },
+        { id: 59, text: "Какой документ регулирует экспортно-импортные отношения РФ:", correctIndex: 0, options: ["Таможенный кодекс", "Уголовный кодекс", "Административный кодекс"], multi: false },
+        { id: 60, text: "К пассивной части основных фондов относятся:", correctIndex: 2, options: ["Рабочие машины и оборудование", "Производственные транспортные средства", "Здания и сооружения"], multi: false },
+        { id: 61, text: "По видам различают зарплату:", correctIndex: 2, options: ["Бестарифную и рейтинговую", "Реальную и нормированную", "Сдельную и повременную"], multi: false },
+        { id: 62, text: "Мотивация труда это:", correctIndex: 1, options: ["Научная организация и интенсивность труда", "Побуждение себя и других к деятельности для достижения личных целей и целей предприятия", "Внедрение новых поколений высокоэффективной техники"], multi: false },
+        { id: 63, text: "Производство продукции в расчете на одного работника в единицу времени есть:", correctIndex: 2, options: ["Качество продукции", "Себестоимость продукции", "Производительность труда"], multi: false },
+        { id: 64, text: "МРОТ с 01.01.2026 составляет", correctIndex: 1, options: ["19242 рубля", "27093 рублей", "21500 рублей"], multi: false },
+        { id: 65, text: "Эмиссия денег", correctIndex: 0, options: ["Выпуск денег", "Обмен денег", "Ликвидация денег"], multi: false },
+        { id: 66, text: "Лицензия ЦБ кредитным организациям:", correctIndex: 1, options: ["Решение о ликвидации банка", "Разрешение на осуществление кредитной деятельности", "Решение о приостановке деятельности"], multi: false },
+        { id: 67, text: "Кредитная история - это ...", correctIndex: 1, options: ["финансовая организация, предоставляющая денежные средства под проценты на определённый срок", "информация о том, какие займы выдавались заемщику, соблюдал ли он свои кредитные обязательства", "человек или организация, принимающие денежные средства на условиях возврата"], multi: false },
+        { id: 68, text: "Верно ли утверждение: в случае непогашения кредита в срок банк имеет право начислить штрафные проценты на сумму просроченной задолженности.", correctIndex: 0, options: ["верно", "неверно", "возможно"], multi: false },
+        { id: 69, text: "ЦБ осуществляет:", correctIndex: 0, options: ["эмиссию денег", "операции с акционерными компаниями", "привлечение денежных сбережений населения"], multi: false },
+        { id: 70, text: "Кредит -- это:", correctIndex: 1, options: ["финансирование государственных экономических программ", "ссуды на условиях возвратности и платности", "доверие кредитора заемщику"], multi: false },
+        { id: 71, text: "Уменьшение учётной ставки ЦБ, скорее всего, приведёт:", correctIndex: 0, options: ["к снижению процентов по кредитам", "к увеличению процентов по кредитам", "никак не скажется на ссудном проценте"], multi: false },
+        { id: 72, text: "Увеличение учётной ставки ЦБ, скорее всего, приведёт:", correctIndex: 1, options: ["к снижению процентов по кредитам", "к увеличению процентов по кредитам", "никак не скажется на ссудном проценте"], multi: false },
+        { id: 73, text: "Процентная ставка, под которую ЦБ выдает кредит коммерческим банкам:", correctIndex: 2, options: ["норма обязательных резервов", "разность между процентными ставками по кредиту и депозиту", "учетная ставка ЦБ"], multi: false }
+    ];
+
+    // ==================== ОСНОВНАЯ ЛОГИКА ТЕСТА ====================
+    let soundEnabled = false;
+    let audioCorrect = null;
+    let audioWrong = null;
+    let audioClick = null;
+    
+    function initAudio() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                audioCorrect = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 880; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5); osc.stop(ctx.currentTime + 0.5); } };
+                audioWrong = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 440; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.6); osc.stop(ctx.currentTime + 0.6); } };
+                audioClick = { play: () => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 660; gain.gain.value = 0.1; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.2); osc.stop(ctx.currentTime + 0.2); } };
+            } else {
+                audioCorrect = audioWrong = audioClick = { play: () => {} };
+            }
+        } catch(e) { console.log("Audio not supported"); }
+    }
+    
+    function playSound(type) {
+        if (!soundEnabled) return;
+        if (type === 'correct') audioCorrect?.play();
+        if (type === 'wrong') audioWrong?.play();
+        if (type === 'click') audioClick?.play();
+    }
+    
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    
+    let currentMode = 'exam';
+    let currentQuestions = [];
+    let userAnswers = [];
+    let currentIndex = 0;
+    let selectedOptions = [];
+    let quizActive = false;
+    let timerInterval = null;
+    let timeSeconds = 20 * 60;
+    let currentExamMode = null;
+    let waitingForNext = false;
+    let isMarathon = false;
+    
+    let cheatBookmarks = JSON.parse(localStorage.getItem('econ_bookmarks') || '[]');
+    let cheatViewed = JSON.parse(localStorage.getItem('econ_viewed') || '[]');
+    let cheatSearchQuery = '';
+    let cheatCurrentId = 1;
+    let cheatFilteredIds = [];
+    
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const cheatScreen = document.getElementById('cheatScreen');
+    const userNameInput = document.getElementById('userNameInput');
+    const trainModeBtn = document.getElementById('trainModeBtn');
+    const examModeBtn = document.getElementById('examModeBtn');
+    const marathonModeBtn = document.getElementById('marathonModeBtn');
+    const resetNameBtn = document.getElementById('resetLocalStorageBtn');
+    const themeToggle = document.getElementById('themeToggleBtn');
+    const soundToggle = document.getElementById('soundToggleBtn');
+    const nextBtn = document.getElementById('nextQuestionBtn');
+    const restartBtn = document.getElementById('restartQuizBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
+    const shareBtn = document.getElementById('shareResultBtn');
+    const showMistakesBtn = document.getElementById('showMistakesBtn');
+    const mistakesListDiv = document.getElementById('mistakesList');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const mainMotivation = document.getElementById('mainMotivation');
+    const quizMotivation = document.getElementById('quizMotivation');
+    const resultMotivation = document.getElementById('resultMotivation');
+    const colorThemeBtn = document.getElementById('colorThemeBtn');
+    const themeDropdown = document.getElementById('themeDropdown');
+    
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'combo-toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+    
+    function updateMotivationMain() {
+        if (mainMotivation) mainMotivation.innerText = getRandomFromArray(MOTIVATION_MAIN);
+    }
+    
+    function updateMotivationQuiz() {
+        if (quizMotivation) quizMotivation.innerText = getRandomFromArray(MOTIVATION_MAIN);
+    }
+    
+    function setResultMotivation(score) {
+        if (!resultMotivation) return;
+        if (score >= 85) resultMotivation.innerText = getRandomFromArray(MOTIVATION_RESULT_5);
+        else if (score >= 70) resultMotivation.innerText = getRandomFromArray(MOTIVATION_RESULT_4);
+        else if (score >= 50) resultMotivation.innerText = getRandomFromArray(MOTIVATION_RESULT_3);
+        else resultMotivation.innerText = getRandomFromArray(MOTIVATION_RESULT_2);
+    }
+    
+    setInterval(() => { if (!quizActive && !startScreen.classList.contains('hidden')) updateMotivationMain(); }, 20000);
+    
+    function updateEnergyBar() {
+        const answered = userAnswers.filter(a => a !== undefined && a !== null && a.length > 0).length;
+        const percent = (answered / currentQuestions.length) * 100;
+        document.getElementById('energyFill').style.width = `${percent}%`;
+        document.getElementById('answeredCount').innerText = `✅ ${answered} отвечено`;
+    }
+    
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    function updateTimerDisplay() {
+        const timerDisplay = document.getElementById('timerDisplay');
+        timerDisplay.innerText = formatTime(timeSeconds);
+        if (timeSeconds <= 60 && !isMarathon) timerDisplay.classList.add('warning');
+        else timerDisplay.classList.remove('warning');
+    }
+    
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    
+    function startTimer() {
+        if (isMarathon) return;
+        if (timerInterval) stopTimer();
+        timerInterval = setInterval(() => {
+            if (!quizActive) return;
+            if (timeSeconds <= 0) {
+                stopTimer();
+                if (quizActive) { alert('Время вышло! Тест завершается.'); finishQuiz(); }
+            } else {
+                timeSeconds--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+    
+    function checkAnswerForCurrentQuestion() {
+        if (selectedOptions.length === 0) return false;
+        const q = currentQuestions[currentIndex];
+        const selectedText = q.options[selectedOptions[0]];
+        return selectedText === q.options[q.correctIndex];
+    }
+    
+    function showHighlightAndExplanation() {
+        if (selectedOptions.length === 0) return;
+        const q = currentQuestions[currentIndex];
+        const isCorrect = checkAnswerForCurrentQuestion();
+        const optionElements = document.querySelectorAll('#optionsContainer .option');
+        optionElements.forEach((el, idx) => {
+            el.classList.remove('correct-highlight', 'wrong-highlight');
+            const isCorrectOption = (idx === q.correctIndex);
+            if (isCorrectOption) el.classList.add('correct-highlight');
+            if (selectedOptions.includes(idx) && !isCorrectOption) el.classList.add('wrong-highlight');
+        });
+        if (isCorrect) {
+            playSound('correct');
+            showToast('✅ Верно!');
+        } else {
+            playSound('wrong');
+            showToast(`❌ Неверно. Правильно: ${q.options[q.correctIndex]}`);
+        }
+    }
+    
+    function shuffleOptionsIfNeeded(q) {
+        if (q.shuffledOptions) return q.shuffledOptions;
+        const shuffled = [...q.options];
+        const correctText = q.options[q.correctIndex];
+        shuffleArray(shuffled);
+        const newCorrectIndex = shuffled.indexOf(correctText);
+        q.shuffledOptions = shuffled;
+        q.shuffledCorrectIndex = newCorrectIndex;
+        return shuffled;
+    }
+    
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length || currentIndex >= currentQuestions.length) return;
+        const q = currentQuestions[currentIndex];
+        document.getElementById('questionText').innerText = q.text;
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+        const shuffledOptions = shuffleOptionsIfNeeded(q);
+        shuffledOptions.forEach((opt, idx) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            if (selectedOptions.includes(idx)) div.classList.add('selected');
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'question';
+            input.value = idx;
+            input.checked = selectedOptions.includes(idx);
+            const label = document.createElement('span');
+            label.className = 'option-label';
+            label.innerText = opt;
+            div.appendChild(input);
+            div.appendChild(label);
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                if (!quizActive) return;
+                if (waitingForNext) return;
+                selectedOptions = [idx];
+                renderCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+        document.getElementById('questionCounter').innerText = `Вопрос ${currentIndex+1} / ${currentQuestions.length}`;
+        updateEnergyBar();
+        if (currentExamMode === 'train') updateMotivationQuiz();
+    }
+    
+    function nextQuestion() {
+        if (!quizActive) return;
+        if (currentExamMode === 'train') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            if (!waitingForNext) {
+                waitingForNext = true;
+                showHighlightAndExplanation();
+                userAnswers[currentIndex] = [...selectedOptions];
+                nextBtn.textContent = 'Следующий вопрос →';
+                return;
+            } else {
+                waitingForNext = false;
+                nextBtn.textContent = 'Далее →';
+                if (currentIndex + 1 < currentQuestions.length) {
+                    currentIndex++;
+                    selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                    renderCurrentQuestion();
+                } else { finishQuiz(); }
+                return;
+            }
+        }
+        if (currentExamMode === 'exam') {
+            if (selectedOptions.length === 0) { alert('Пожалуйста, выберите вариант ответа!'); return; }
+            playSound('click');
+            userAnswers[currentIndex] = [...selectedOptions];
+            if (currentIndex + 1 < currentQuestions.length) {
+                currentIndex++;
+                selectedOptions = (userAnswers[currentIndex] && userAnswers[currentIndex].length) ? [...userAnswers[currentIndex]] : [];
+                renderCurrentQuestion();
+            } else { finishQuiz(); }
+        }
+    }
+    
+    function calculateScoreAndGrade(correct, maxScore) {
+        const totalPoints = correct * 5;
+        let grade = '';
+        if (totalPoints >= 85) grade = '5 (Отлично)';
+        else if (totalPoints >= 70) grade = '4 (Хорошо)';
+        else if (totalPoints >= 50) grade = '3 (Удовлетворительно)';
+        else grade = '2 (Неудовлетворительно)';
+        return { score: totalPoints, grade };
+    }
+    
+    function finishQuiz() {
+        quizActive = false;
+        stopTimer();
+        let correct = 0;
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) continue;
+            const q = currentQuestions[i];
+            const selectedText = q.options[userOptIndices[0]];
+            if (selectedText === q.options[q.correctIndex]) correct++;
+        }
+        const wrong = currentQuestions.length - correct;
+        const { score, grade } = calculateScoreAndGrade(correct, currentQuestions.length);
+        document.getElementById('correctCount').innerText = correct;
+        document.getElementById('wrongCount').innerText = wrong;
+        document.getElementById('centerScore').innerText = score;
+        let medal = '', motivation = '';
+        if (score >= 85) { medal = '🏆 Золотая медаль'; motivation = 'Превосходный результат! Вы отлично знаете материал.'; }
+        else if (score >= 70) { medal = '🥈 Серебряная медаль'; motivation = 'Хороший результат! Так держать.'; }
+        else if (score >= 50) { medal = '🥉 Бронзовая медаль'; motivation = 'Зачёт сдан. Рекомендуется повторить некоторые темы.'; }
+        else { medal = '📚 Нужно подтянуть знания'; motivation = 'Не расстраивайтесь! Пройдите тест ещё раз и улучшите результат.'; }
+        document.getElementById('gradeDisplay').innerHTML = `<div class="grade-badge">${grade}</div>`;
+        document.getElementById('medalArea').innerText = medal;
+        document.getElementById('motivationMessage').innerHTML = motivation;
+        setResultMotivation(score);
+        let userName = localStorage.getItem('econ_userName') || userNameInput.value.trim();
+        if (!userName) userName = 'Уважаемый студент';
+        document.getElementById('greetingName').innerText = `${userName}, ваш результат:`;
+        const donut = document.getElementById('donutChart');
+        const correctPercent = (correct / currentQuestions.length) * 360;
+        donut.style.background = `conic-gradient(var(--correct) 0deg ${correctPercent}deg, var(--wrong) ${correctPercent}deg 360deg)`;
+        window.mistakes = [];
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userOptIndices = userAnswers[i];
+            if (!userOptIndices || userOptIndices.length === 0) {
+                window.mistakes.push({ question: currentQuestions[i].text, userAnswer: 'Нет ответа', correctAnswer: currentQuestions[i].options[currentQuestions[i].correctIndex] });
+                continue;
+            }
+            const q = currentQuestions[i];
+            const selectedText = q.options[userOptIndices[0]];
+            if (selectedText !== q.options[q.correctIndex]) {
+                window.mistakes.push({ question: q.text, userAnswer: selectedText, correctAnswer: q.options[q.correctIndex] });
+            }
+        }
+        startScreen.classList.add('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+        cheatScreen.classList.add('hidden');
+    }
+    
+    function initQuiz(mode, marathon = false) {
+        currentExamMode = mode;
+        isMarathon = marathon;
+        waitingForNext = false;
+        let shuffled = [...FULL_QUESTIONS];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        if (isMarathon) {
+            currentQuestions = shuffled;
+            document.getElementById('timerDisplay').style.display = 'none';
+        } else {
+            currentQuestions = shuffled.slice(0, 20);
+            document.getElementById('timerDisplay').style.display = 'block';
+        }
+        userAnswers = new Array(currentQuestions.length).fill(null);
+        currentIndex = 0;
+        selectedOptions = [];
+        if (!isMarathon) timeSeconds = 20 * 60;
+        quizActive = true;
+        updateTimerDisplay();
+        stopTimer();
+        if (!isMarathon) startTimer();
+        renderCurrentQuestion();
+        nextBtn.textContent = 'Далее →';
+        if (isMarathon && quizMotivation) quizMotivation.innerText = '🏃 Марафон начался! Дыши ровно. Ты справишься.';
+    }
+    
+    function startQuizWithMode(mode, marathon = false) {
+        let userName = userNameInput.value.trim();
+        if (!userName) {
+            userName = prompt('Пожалуйста, введите ваше имя:', 'Студент');
+            if (!userName) userName = 'Студент';
+            userNameInput.value = userName;
+        }
+        localStorage.setItem('econ_userName', userName);
+        initQuiz(mode, marathon);
+        startScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    function saveCheatBookmarks() {
+        localStorage.setItem('econ_bookmarks', JSON.stringify(cheatBookmarks));
+        renderCheatQuestionsList();
+        updateCheatStats();
+    }
+    
+    function saveCheatViewed() {
+        localStorage.setItem('econ_viewed', JSON.stringify(cheatViewed));
+        updateCheatStats();
+    }
+    
+    function markCheatAsViewed(id) {
+        if (!cheatViewed.includes(id)) {
+            cheatViewed.push(id);
+            saveCheatViewed();
+        }
+    }
+    
+    function getCheatFilteredIds() {
+        let ids = FULL_QUESTIONS.map(q => q.id);
+        if (cheatSearchQuery.trim()) {
+            const query = cheatSearchQuery.toLowerCase();
+            ids = ids.filter(id => {
+                const q = FULL_QUESTIONS.find(qq => qq.id === id);
+                return q.text.toLowerCase().includes(query) || q.options.some(opt => opt.toLowerCase().includes(query));
+            });
+        }
+        return ids;
+    }
+    
+    function renderCheatQuestionsList() {
+        cheatFilteredIds = getCheatFilteredIds();
+        const container = document.getElementById('cheatQuestionsList');
+        if (cheatFilteredIds.length === 0) {
+            container.innerHTML = '<div style="padding: 20px; text-align: center;">🤔 Ничего не найдено</div>';
+            return;
+        }
+        container.innerHTML = '';
+        cheatFilteredIds.forEach(id => {
+            const q = FULL_QUESTIONS.find(qq => qq.id === id);
+            const isBookmarked = cheatBookmarks.includes(id);
+            const div = document.createElement('div');
+            div.className = `cheat-question-item ${cheatCurrentId === id ? 'active' : ''}`;
+            div.innerHTML = `
+                <div class="cheat-question-text">
+                    <span>${id}. ${q.text.substring(0, 60)}${q.text.length > 60 ? '…' : ''}</span>
+                    <span class="cheat-star ${isBookmarked ? 'active' : ''}" data-id="${id}">${isBookmarked ? '⭐' : '☆'}</span>
+                </div>
+            `;
+            div.addEventListener('click', (e) => {
+                if (e.target.classList.contains('cheat-star')) return;
+                cheatCurrentId = id;
+                markCheatAsViewed(id);
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            const starSpan = div.querySelector('.cheat-star');
+            starSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (cheatBookmarks.includes(id)) {
+                    cheatBookmarks = cheatBookmarks.filter(b => b !== id);
+                    showToast(`❌ Вопрос ${id} удалён из закладок`);
+                } else {
+                    cheatBookmarks.push(id);
+                    showToast(`⭐ Вопрос ${id} добавлен в закладки`);
+                }
+                saveCheatBookmarks();
+                renderCheatQuestionsList();
+                renderCheatCurrentQuestion();
+            });
+            container.appendChild(div);
+        });
+    }
+    
+    function renderCheatCurrentQuestion() {
+        const q = FULL_QUESTIONS.find(qq => qq.id === cheatCurrentId);
+        if (!q) return;
+        document.getElementById('cheatQuestionText').innerHTML = `${q.id}. ${q.text}`;
+        const container = document.getElementById('cheatOptionsContainer');
+        container.innerHTML = '';
+        q.options.forEach((opt, idx) => {
+            const isCorrect = (idx === q.correctIndex);
+            const div = document.createElement('div');
+            div.className = `cheat-option ${isCorrect ? 'correct' : ''}`;
+            div.innerHTML = `
+                <span style="font-weight:700;">${String.fromCharCode(65 + idx)}.</span>
+                <span>${opt}</span>
+                ${isCorrect ? '<span class="cheat-badge">✓ Правильно</span>' : ''}
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    function updateCheatStats() {
+        document.getElementById('cheatTotal').innerText = FULL_QUESTIONS.length;
+        document.getElementById('cheatBookmarkCount').innerText = cheatBookmarks.length;
+        document.getElementById('cheatViewedCount').innerText = cheatViewed.length;
+    }
+    
+    function initCheat() {
+        cheatFilteredIds = getCheatFilteredIds();
+        if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+            cheatCurrentId = cheatFilteredIds[0];
+        }
+        renderCheatQuestionsList();
+        renderCheatCurrentQuestion();
+        updateCheatStats();
+    }
+    
+    function goToMainMenu() {
+        stopTimer();
+        quizActive = false;
+        startScreen.classList.remove('hidden');
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        cheatScreen.classList.add('hidden');
+        currentMode = 'exam';
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === 'exam') btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    
+    function restartQuiz() {
+        if (currentExamMode) {
+            initQuiz(currentExamMode, isMarathon);
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+        } else { goToMainMenu(); }
+    }
+    
+    function shareResult() {
+        const correct = parseInt(document.getElementById('correctCount').innerText);
+        const total = currentQuestions.length;
+        const userName = localStorage.getItem('econ_userName') || '';
+        const text = `${userName ? userName + ', ' : ''}результат зачёта по экономике отрасли: ${correct} из ${total}.`;
+        if (navigator.share) navigator.share({ title: 'Результат зачёта', text: text }).catch(() => alert(text));
+        else { alert('Результат: ' + text); navigator.clipboard?.writeText(text); }
+    }
+    
+    function toggleMistakes() {
+        if (mistakesListDiv.classList.contains('hidden')) {
+            if (window.mistakes && window.mistakes.length) {
+                mistakesListDiv.innerHTML = '<h3 style="margin-bottom: 12px;">📌 Ошибки</h3>';
+                window.mistakes.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'mistake-item';
+                    div.innerHTML = `<div class="mistake-question">❓ ${m.question}</div><div class="mistake-detail">✖ Ваш ответ: ${m.userAnswer}</div><div class="mistake-detail">✔ Правильно: ${m.correctAnswer}</div>`;
+                    mistakesListDiv.appendChild(div);
+                });
+            } else { mistakesListDiv.innerHTML = '<p>🎉 Отлично! Ошибок нет.</p>'; }
+            mistakesListDiv.classList.remove('hidden');
+            showMistakesBtn.innerText = '📖 Скрыть ошибки';
+        } else {
+            mistakesListDiv.classList.add('hidden');
+            showMistakesBtn.innerText = '📖 Показать ошибки';
+        }
+    }
+    
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        themeToggle.innerText = isDark ? '☀️ Светлая' : '🌙 Тёмная';
+        localStorage.setItem('econ_theme', isDark ? 'dark' : 'light');
+    }
+    
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        soundToggle.innerText = soundEnabled ? '🔊 Звук вкл' : '🔇 Звук выкл';
+        showToast(soundEnabled ? 'Звук включён' : 'Звук выключен');
+        if (soundEnabled) playSound('click');
+    }
+    
+    function setColorTheme(theme) {
+        document.body.classList.remove('theme-green', 'theme-warm', 'theme-ash', 'theme-lavender', 'theme-coral', 'theme-mint', 'theme-rose', 'theme-cherry');
+        if (theme === 'green') document.body.classList.add('theme-green');
+        else if (theme === 'warm') document.body.classList.add('theme-warm');
+        else if (theme === 'ash') document.body.classList.add('theme-ash');
+        else if (theme === 'lavender') document.body.classList.add('theme-lavender');
+        else if (theme === 'coral') document.body.classList.add('theme-coral');
+        else if (theme === 'mint') document.body.classList.add('theme-mint');
+        else if (theme === 'rose') document.body.classList.add('theme-rose');
+        else if (theme === 'cherry') document.body.classList.add('theme-cherry');
+        localStorage.setItem('econ_color_theme', theme);
+    }
+    
+    function loadColorTheme() {
+        const savedTheme = localStorage.getItem('econ_color_theme');
+        if (savedTheme && savedTheme !== 'blue') setColorTheme(savedTheme);
+    }
+    
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('econ_theme');
+        if (savedTheme === 'dark') { document.body.classList.add('dark'); themeToggle.innerText = '☀️ Светлая'; }
+        else { themeToggle.innerText = '🌙 Тёмная'; }
+        loadColorTheme();
+    }
+    
+    function loadUserName() {
+        const savedName = localStorage.getItem('econ_userName');
+        if (savedName) userNameInput.value = savedName;
+    }
+    
+    function resetUserName() {
+        localStorage.removeItem('econ_userName');
+        userNameInput.value = '';
+        showToast('Имя сброшено');
+    }
+    
+    function switchMode(mode) {
+        currentMode = mode;
+        modeBtns.forEach(btn => {
+            if (btn.dataset.mode === mode) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        if (mode === 'exam') {
+            startScreen.classList.remove('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.add('hidden');
+            if (timerInterval) stopTimer();
+        } else {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            cheatScreen.classList.remove('hidden');
+            if (timerInterval) stopTimer();
+            initCheat();
+        }
+    }
+    
+    trainModeBtn.addEventListener('click', () => startQuizWithMode('train', false));
+    examModeBtn.addEventListener('click', () => startQuizWithMode('exam', false));
+    marathonModeBtn.addEventListener('click', () => startQuizWithMode('train', true));
+    resetNameBtn.addEventListener('click', resetUserName);
+    themeToggle.addEventListener('click', toggleTheme);
+    soundToggle.addEventListener('click', toggleSound);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartQuiz);
+    mainMenuBtn.addEventListener('click', goToMainMenu);
+    shareBtn.addEventListener('click', shareResult);
+    showMistakesBtn.addEventListener('click', toggleMistakes);
+    
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+    });
+    
+    const cheatSearch = document.getElementById('cheatSearch');
+    if (cheatSearch) {
+        cheatSearch.addEventListener('input', (e) => {
+            cheatSearchQuery = e.target.value;
+            cheatFilteredIds = getCheatFilteredIds();
+            if (cheatFilteredIds.length > 0 && !cheatFilteredIds.includes(cheatCurrentId)) {
+                cheatCurrentId = cheatFilteredIds[0];
+            }
+            renderCheatQuestionsList();
+            renderCheatCurrentQuestion();
+        });
+    }
+    
+    colorThemeBtn.addEventListener('click', () => {
+        themeDropdown.classList.toggle('show');
+    });
+    document.querySelectorAll('.color-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+            const theme = dot.dataset.theme;
+            setColorTheme(theme);
+            themeDropdown.classList.remove('show');
+        });
+    });
+    document.addEventListener('click', (e) => {
+        if (!colorThemeBtn.contains(e.target) && !themeDropdown.contains(e.target)) {
+            themeDropdown.classList.remove('show');
+        }
+    });
+    
+    initAudio();
+    loadTheme();
+    loadUserName();
+    switchMode('exam');
+    updateMotivationMain();
+</script>
+</body>
+</html>
