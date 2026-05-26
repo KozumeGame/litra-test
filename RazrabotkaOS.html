@@ -1202,7 +1202,6 @@
         document.getElementById('questionText').innerText = q.text;
         const container = document.getElementById('optionsContainer');
         container.innerHTML = '';
-        const shuffledOptions = shuffleOptionsIfNeeded(q);
         const isMulti = q.multi === true;
         if (isMulti) {
             const hint = document.createElement('div');
@@ -1210,6 +1209,7 @@
             hint.innerText = '✓ Можно выбрать несколько вариантов';
             container.appendChild(hint);
         }
+        const shuffledOptions = shuffleOptionsIfNeeded(q);
         shuffledOptions.forEach((opt, idx) => {
             const div = document.createElement('div');
             div.className = 'option';
