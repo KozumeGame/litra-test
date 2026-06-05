@@ -3,375 +3,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Блок-схема ГОСТ — Визуальный тренажёр</title>
+    <title>ДЭ В3 — Интерактивный тренажёр | СтройМаркет</title>
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
         }
         body {
             background: #1a3a2a;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            margin: 0;
             padding: 12px;
         }
-        .container {
+        .app {
             max-width: 550px;
             margin: 0 auto;
-        }
-        /* карточки */
-        .card {
-            background: white;
-            border-radius: 24px;
-            margin-bottom: 20px;
+            background: #f5f7fa;
+            border-radius: 28px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        .card-header {
+        /* Шапка */
+        .header {
             background: #2c5e2e;
+            padding: 16px;
             color: white;
-            padding: 14px 18px;
-            font-weight: bold;
-            font-size: 1.2rem;
+            text-align: center;
         }
-        .card-body {
-            padding: 18px;
+        .header h1 {
+            font-size: 1.4rem;
         }
-        /* фигуры для блок-схемы */
-        .shape-grid {
+        /* Панель пользователя */
+        .user-bar {
+            background: #e9ecef;
+            padding: 12px 16px;
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+        }
+        .role-selector {
+            display: flex;
+            gap: 8px;
             flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin: 15px 0;
         }
-        .shape-item {
-            text-align: center;
-            width: 100px;
-        }
-        .shape-demo {
-            display: inline-block;
-            margin-bottom: 8px;
-        }
-        .oval {
-            background: #e8f5e9;
-            border-radius: 30px;
-            padding: 12px 20px;
-            border: 2px solid #2c5e2e;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .rect {
-            background: #e3f2fd;
-            padding: 12px 20px;
-            border: 2px solid #1565c0;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .diamond {
-            width: 0;
-            height: 0;
-            border-left: 30px solid transparent;
-            border-right: 30px solid transparent;
-            border-bottom: 50px solid #fff3e0;
-            border-top: 50px solid #fff3e0;
-            position: relative;
-            margin: 0 auto;
-        }
-        .diamond:before {
-            content: "Условие";
-            position: absolute;
-            top: -10px;
-            left: -25px;
-            font-size: 10px;
-            font-weight: bold;
-            color: #e65100;
-        }
-        /* простая SVG-фигура ромба */
-        .diamond-svg {
-            display: inline-block;
-        }
-        .parallelogram {
-            transform: skew(-20deg);
-            background: #fce4ec;
-            padding: 12px 20px;
-            border: 2px solid #c62828;
-            display: inline-block;
-            font-weight: bold;
-        }
-        .parallelogram span {
-            display: inline-block;
-            transform: skew(20deg);
-        }
-        .circle-connector {
-            background: #e8eaf6;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #3949ab;
-            font-weight: bold;
-            margin: 0 auto;
-        }
-        /* сама блок-схема */
-        .flowchart {
-            background: #fef9e6;
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 15px;
-            border: 1px solid #ffcd94;
-            overflow-x: auto;
-        }
-        .flow-node {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px 0;
-            position: relative;
-        }
-        .flow-arrow {
-            font-size: 24px;
-            color: #666;
-            margin: 2px 0;
-        }
-        .flow-shape {
-            min-width: 140px;
-            text-align: center;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
+        .role-btn {
             background: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .flow-start {
-            background: #c8e6c9;
+            border: none;
+            padding: 6px 12px;
             border-radius: 40px;
-            border: 1px solid #2e7d32;
-        }
-        .flow-process {
-            background: #bbdefb;
-            border: 1px solid #1565c0;
-        }
-        .flow-decision {
-            background: #ffe0b2;
-            border: 1px solid #e65100;
-            transform: skew(-10deg);
-            clip-path: polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%);
-        }
-        .flow-data {
-            background: #f8bbd0;
-            transform: skew(-15deg);
-            border: 1px solid #c62828;
-        }
-        .flow-end {
-            background: #c8e6c9;
-            border-radius: 40px;
-            border: 1px solid #2e7d32;
-        }
-        .branch-row {
-            display: flex;
-            justify-content: space-around;
-            gap: 20px;
-            margin-top: 8px;
-            margin-bottom: 8px;
-        }
-        .branch-item {
-            flex: 1;
-            text-align: center;
-            font-size: 12px;
-        }
-        /* инструкция */
-        .clickable {
-            background: #e3f2fd;
-            padding: 12px;
-            border-radius: 16px;
-            margin-top: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
             cursor: pointer;
         }
-        .step-img {
-            background: #263238;
-            color: #fff;
-            padding: 16px;
-            border-radius: 16px;
-            font-family: monospace;
-            font-size: 13px;
-            margin-top: 12px;
+        .role-btn.active {
+            background: #2c5e2e;
+            color: white;
         }
-        .badge {
-            background: #ff9800;
-            color: #1a3a2a;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: bold;
-            display: inline-block;
-            margin-right: 8px;
+        .user-name {
+            font-size: 0.8rem;
+            background: #2c3e66;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 40px;
         }
-        hr {
-            margin: 16px 0;
+        /* Кнопки действий (только админ) */
+        .admin-actions {
+            padding: 12px 16px;
+            background: white;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #ddd;
         }
-        button {
+        .btn {
             background: #2c5e2e;
             color: white;
             border: none;
-            padding: 10px 16px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            margin: 4px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            cursor: pointer;
         }
-        .finger-tip {
-            background: #ffecb3;
-            padding: 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            margin-top: 12px;
+        .btn-danger {
+            background: #c62828;
+        }
+        .btn-warning {
+            background: #e67e22;
+        }
+        /* Фильтры (видны менеджеру/админу) */
+        .filters {
+            padding: 12px 16px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .filters input, .filters select {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px solid #bbb;
+            font-size: 0.75rem;
+        }
+        /* Таблица товаров */
+        .products-section {
+            padding: 16px;
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+        th {
+            background: #2c5e2e;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            cursor: pointer;
+        }
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .stock-zero {
+            background-color: #ADD8E6 !important;
+        }
+        .high-discount {
+            background-color: #F4A460 !important;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: red;
+            margin-right: 6px;
+        }
+        .action-icons {
+            display: flex;
+            gap: 6px;
+        }
+        .action-icons span {
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        /* Форма редактирования */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 28px;
+            padding: 20px;
+        }
+        .modal-content input, .modal-content select, .modal-content textarea {
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid #ccc;
+        }
+        .close-modal {
+            background: #c62828;
+            margin-top: 10px;
+        }
+        .orders-panel {
+            margin-top: 20px;
+            border-top: 2px solid #ccc;
+            padding-top: 16px;
+        }
+        .small-btn {
+            font-size: 0.7rem;
+            padding: 4px 10px;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <!-- Карточка 1: Фигуры и их значение -->
-    <div class="card">
-        <div class="card-header">📐 Фигуры блок-схем (ГОСТ 19.701-90)</div>
-        <div class="card-body">
-            <div class="shape-grid">
-                <div class="shape-item">
-                    <div class="shape-demo oval">НАЧАЛО</div>
-                    <div style="font-size: 11px;">Терминатор<br>⭕ Начало/Конец</div>
-                </div>
-                <div class="shape-item">
-                    <div class="shape-demo rect">ПРОЦЕСС</div>
-                    <div style="font-size: 11px;">Процесс<br>📌 Действие</div>
-                </div>
-                <div class="shape-item">
-                    <div class="shape-demo">
-                        <svg width="70" height="50" viewBox="0 0 80 50">
-                            <polygon points="40,0 80,25 40,50 0,25" fill="#ffe0b2" stroke="#e65100" stroke-width="2"/>
-                            <text x="40" y="28" text-anchor="middle" font-size="8" fill="#e65100">Условие</text>
-                        </svg>
-                    </div>
-                    <div style="font-size: 11px;">Решение (ромб)<br>❓ Вопрос Да/Нет</div>
-                </div>
-                <div class="shape-item">
-                    <div class="shape-demo parallelogram"><span>ВВОД/ВЫВОД</span></div>
-                    <div style="font-size: 11px;">Данные<br>📥 Ввод/Вывод</div>
-                </div>
-                <div class="shape-item">
-                    <div class="shape-demo circle-connector">А</div>
-                    <div style="font-size: 11px;">Соединитель<br>🔗 Переход</div>
-                </div>
-            </div>
-            <div class="finger-tip">
-                👆 <strong>Запомни для экзамена:</strong> На блок-схеме <strong>обязательно</strong> должны быть стрелки, показывающие порядок действий. Если линия идёт слева направо или сверху вниз — стрелку можно не ставить [citation:1].
-            </div>
+<div class="app" id="app">
+    <div class="header">
+        <h1>🧱 СтройМаркет | ДЭ В3</h1>
+        <div style="font-size: 12px;">Интерактивный тренажёр — делай всё сам!</div>
+    </div>
+
+    <div class="user-bar">
+        <div class="role-selector" id="roleSelector">
+            <button class="role-btn" data-role="guest">👤 Гость</button>
+            <button class="role-btn" data-role="client">🚶 Клиент</button>
+            <button class="role-btn" data-role="manager">📋 Менеджер</button>
+            <button class="role-btn" data-role="admin">⚙️ Админ</button>
+        </div>
+        <div class="user-name" id="userNameDisplay">Гость</div>
+    </div>
+
+    <!-- Панель админа -->
+    <div id="adminPanel" style="display: none;">
+        <div class="admin-actions">
+            <button class="btn" id="addProductBtn">➕ Добавить товар</button>
+            <button class="btn btn-warning" id="manageRolesBtn">👥 Управление ролями</button>
         </div>
     </div>
 
-    <!-- Карточка 2: Готовая блок-схема для демоэкзамена В3 -->
-    <div class="card">
-        <div class="card-header">🖼️ Пример: Блок-схема авторизации (В3)</div>
-        <div class="card-body">
-            <div class="flowchart">
-                <!-- визуальная блок-схема -->
-                <div class="flow-node">
-                    <div class="flow-shape flow-start">▶️ СТАРТ</div>
-                    <div class="flow-arrow">▼</div>
-                </div>
-                <div class="flow-node">
-                    <div class="flow-shape flow-process">Открыть окно входа</div>
-                    <div class="flow-arrow">▼</div>
-                </div>
-                <div class="flow-node">
-                    <div class="flow-shape flow-data">Ввод логина/пароля</div>
-                    <div class="flow-arrow">▼</div>
-                </div>
-                <div class="flow-node">
-                    <div class="flow-shape flow-decision">Проверка в БД?</div>
-                    <div class="branch-row">
-                        <div class="branch-item">↘️ <strong>НЕТ</strong><br><span style="font-size:11px;">Ошибка → вернуться к вводу</span></div>
-                        <div class="branch-item">↙️ <strong>ДА</strong><br><span style="font-size:11px;">Определить роль</span></div>
-                    </div>
-                </div>
-                <div class="flow-node">
-                    <div class="flow-shape flow-process">Загрузить права (роль)</div>
-                    <div class="flow-arrow">▼</div>
-                </div>
-                <div class="flow-node">
-                    <div class="flow-shape flow-process">Показать главное окно</div>
-                    <div class="flow-arrow">▼</div>
-                </div>
-                <div class="flow-node">
-                    <div class="flow-shape flow-start">🏁 КОНЕЦ</div>
-                </div>
-            </div>
-            <div class="finger-tip">
-                🔍 <strong>Как читать:</strong> Ромб ("Проверка в БД?") — это условие. Из него выходят две стрелки: "Да" и "Нет". Если пароль неверный — возвращаемся назад.
-            </div>
+    <!-- Фильтры (для менеджера/админа) -->
+    <div id="filtersPanel" style="display: none;" class="filters">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск по всем полям...">
+        <select id="producerFilter">
+            <option value="all">🏭 Все производители</option>
+        </select>
+        <select id="sortSelect">
+            <option value="name">📋 По названию</option>
+            <option value="price_asc">💰 Цена ↑</option>
+            <option value="price_desc">💰 Цена ↓</option>
+        </select>
+    </div>
+
+    <!-- Товары -->
+    <div class="products-section">
+        <div class="section-title">📦 Товары на складе</div>
+        <div style="overflow-x: auto;">
+            <table id="productTable">
+                <thead>
+                    <tr><th>Фото</th><th>Товар</th><th>Производитель</th><th>Цена</th><th>Скидка</th><th>Остаток</th><th id="actionsHeader">Действия</th></tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Карточка 3: Пошаговая инструкция "КУДА НАЖИМАТЬ" -->
-    <div class="card">
-        <div class="card-header">🖱️ Куда нажимать: draw.io</div>
-        <div class="card-body">
-            <div class="step-img">
-                ⚡ <strong>draw.io (бесплатно, онлайн)</strong><br>
-                1️⃣ Перейти на <strong>draw.io</strong> → «Create New Diagram»<br>
-                2️⃣ Выбрать шаблон <strong>«Блок-схема» (Flowchart)</strong><br>
-                3️⃣ В левой панели выбрать фигуру:
-                    <span style="background:#2c5e2e; padding:2px 6px; border-radius:12px;">Терминатор</span>,
-                    <span style="background:#1565c0; padding:2px 6px; border-radius:12px;">Процесс</span>,
-                    <span style="background:#e65100; padding:2px 6px; border-radius:12px;">Ромб (Решение)</span><br>
-                4️⃣ Перетащить фигуру на поле → ввести текст<br>
-                5️⃣ Соединить стрелками (навести на фигуру → потянуть за стрелку)<br>
-                6️⃣ <strong>Файл → Экспорт → PDF</strong> (это для сдачи на экзамен)
-            </div>
-            <div class="finger-tip">
-                📌 <strong>В draw.io:</strong> Чтобы добавить стрелки — наведи на фигуру, появится серая стрелка, зажми и тяни к другой фигуре. Стрелка появится сама.
-            </div>
-            <hr>
-            <div class="step-img">
-                🎓 <strong>ГОСТ 19.701-90 (важно для эксперта):</strong><br>
-                • Циклы рисуются через ромб с возвратом стрелки вверх [citation:1]<br>
-                • Внутри фигур — текст (название действия)<br>
-                • Стрелку можно не рисовать только если поток сверху вниз или слева направо
-            </div>
-        </div>
-    </div>
-
-    <!-- Карточка 4: Альтернативные программы -->
-    <div class="card">
-        <div class="card-header">💻 Где ещё можно нарисовать?</div>
-        <div class="card-body">
-            <div class="shape-grid">
-                <div class="shape-item"><strong>🆓 draw.io</strong><br>Онлайн, бесплатно, экспорт PDF [citation:4]</div>
-                <div class="shape-item"><strong>📊 Visio</strong><br>Платный, но мощный</div>
-                <div class="shape-item"><strong>📝 Google Рисунки</strong><br>В Google Диске → Создать → Рисунок [citation:4]</div>
-                <div class="shape-item"><strong>🖍️ От руки</strong><br>Сфотографировать → вставить в Word → PDF</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Карточка 5: Быстрый чек-лист для экзамена -->
-    <div class="card">
-        <div class="card-header">✅ Чек-лист: готовность блок-схемы</div>
-        <div class="card-body">
-            <ul style="margin-left: 20px; font-size: 14px;">
-                <li>✔️ Есть начало и конец (овалы)</li>
-                <li>✔️ Все шаги соединены стрелками</li>
-                <li>✔️ Условия (ромбы) имеют два выхода («Да» и «Нет»)</li>
-                <li>✔️ Использованы правильные фигуры (процесс — прямоугольник, ввод/вывод — параллелограмм)</li>
-                <li>✔️ Экспорт в <strong>PDF</strong> (другие форматы не принимают)</li>
-                <li>✔️ Файл назван понятно (например, <code>Блок-схема_В3.pdf</code>)</li>
-            </ul>
-            <div class="finger-tip">
-                🚀 <strong>На экзамене:</strong> Модуль 2 длится 40 минут. У тебя есть время нарисовать схему и сохранить PDF. Не парься о красоте — главное, чтобы фигуры соответствовали ГОСТ и логика была верной.
-            </div>
+    <!-- Заказы (для менеджера/админа) -->
+    <div id="ordersSection" style="display: none; padding: 16px; border-top: 1px solid #ddd;">
+        <div class="section-title">📦 Заказы <button id="addOrderBtn" class="btn small-btn" style="margin-left: 10px;">+ Добавить заказ</button></div>
+        <div style="overflow-x: auto;">
+            <table id="ordersTable" style="width: 100%;">
+                <thead><tr><th>№</th><th>Статус</th><th>Адрес ПВЗ</th><th>Дата заказа</th><th>Действия</th></tr></thead>
+                <tbody id="ordersBody"></tbody>
+            </table>
         </div>
     </div>
 </div>
+
+<script>
+    // ----- НАЧАЛЬНЫЕ ДАННЫЕ (имитация БД) -----
+    let products = [
+        { id: 1, name: "Цемент М500", category: "Смеси", producer: "Евроцемент", supplier: "СтройТрейд", price: 450, oldPrice: null, stock: 25, discount: 5, image: "🧱" },
+        { id: 2, name: "Кирпич облицовочный", category: "Кирпич", producer: "Кирпичный завод", supplier: "СтройТрейд", price: 18, oldPrice: 24, stock: 0, discount: 20, image: "🧱" },
+        { id: 3, name: "Утеплитель Rockwool", category: "Утеплители", producer: "Rockwool", supplier: "ТеплоДом", price: 3200, oldPrice: 4100, stock: 15, discount: 22, image: "🪨" },
+        { id: 4, name: "Гипсокартон", category: "Отделка", producer: "Gyproc", supplier: "СтройТрейд", price: 550, oldPrice: null, stock: 0, discount: 10, image: "📄" },
+        { id: 5, name: "Песок строительный", category: "Сыпучие", producer: "ПесокСервис", supplier: "База №1", price: 1200, oldPrice: null, stock: 50, discount: 8, image: "⏳" }
+    ];
+
+    let orders = [
+        { id: 101, status: "Новый", address: "ул. Строителей 5", orderDate: "2025-05-20", dueDate: "2025-05-25" },
+        { id: 102, status: "В обработке", address: "пр. Мира 12", orderDate: "2025-05-18", dueDate: "2025-05-23" }
+    ];
+
+    let users = [
+        { id: 1, login: "admin", password: "admin", role: "admin", fio: "Администратор" },
+        { id: 2, login: "manager", password: "manager", role: "manager", fio: "Петрова А.В." },
+        { id: 3, login: "client1", password: "123", role: "client", fio: "Сергеев А.А." }
+    ];
+
+    let currentRole = "guest";
+    let currentUserFIO = "Гость";
+    let nextProductId = 6;
+    let nextOrderId = 103;
+
+    // ----- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ -----
+    function getProducers() { return [...new Set(products.map(p => p.producer))]; }
+
+    function updateProducerFilter() {
+        let select = document.getElementById("producerFilter");
+        if (!select) return;
+        let producers = getProducers();
+        select.innerHTML = '<option value="all">🏭 Все производители</option>';
+        producers.forEach(p => { let opt = document.createElement("option"); opt.value = p; opt.textContent = p; select.appendChild(opt); });
+    }
+
+    function getDiscountedPrice(p) { let base = p.oldPrice || p.price; return base * (1 - p.discount / 100); }
+
+    function renderProducts() {
+        let filtered = [...products];
+        let searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
+        let producerVal = document.getElementById("producerFilter")?.value || "all";
+        if (currentRole === "manager" || currentRole === "admin") {
+            if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm) || p.producer.toLowerCase().includes(searchTerm) || p.category.toLowerCase().includes(searchTerm));
+            if (producerVal !== "all") filtered = filtered.filter(p => p.producer === producerVal);
+            let sortVal = document.getElementById("sortSelect")?.value;
+            if (sortVal === "name") filtered.sort((a,b) => a.name.localeCompare(b.name));
+            if (sortVal === "price_asc") filtered.sort((a,b) => (a.oldPrice || a.price) - (b.oldPrice || b.price));
+            if (sortVal === "price_desc") filtered.sort((a,b) => (b.oldPrice || b.price) - (a.oldPrice || a.price));
+        }
+        let tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+        for (let p of filtered) {
+            let row = tbody.insertRow();
+            let outOfStock = (p.stock === 0);
+            let highDisc = p.discount > 12;
+            let rowClass = "";
+            if (outOfStock) rowClass = "stock-zero";
+            else if (highDisc) rowClass = "high-discount";
+            row.className = rowClass;
+            row.insertCell(0).innerText = p.image || "🖼️";
+            row.insertCell(1).innerText = p.name;
+            row.insertCell(2).innerText = p.producer;
+            let priceCell = row.insertCell(3);
+            if (p.oldPrice && p.oldPrice !== p.price) priceCell.innerHTML = `<span class="old-price">${p.oldPrice}₽</span> ${Math.round(getDiscountedPrice(p))}₽`;
+            else priceCell.innerText = `${p.price}₽`;
+            row.insertCell(4).innerText = `${p.discount}%`;
+            row.insertCell(5).innerText = p.stock;
+            let actionsCell = row.insertCell(6);
+            if (currentRole === "admin") {
+                actionsCell.innerHTML = `<span onclick="editProduct(${p.id})" style="cursor:pointer; margin-right:8px;">✏️</span><span onclick="deleteProduct(${p.id})" style="cursor:pointer;">🗑️</span>`;
+            } else { actionsCell.innerText = "—"; }
+        }
+    }
+
+    window.editProduct = function(id) {
+        let p = products.find(pr => pr.id === id);
+        if (!p) return;
+        let newName = prompt("Название товара:", p.name); if(newName && newName.trim()) p.name = newName.trim();
+        let newPrice = parseFloat(prompt("Цена:", p.price)); if(!isNaN(newPrice)) p.price = newPrice;
+        let newStock = parseInt(prompt("Количество:", p.stock)); if(!isNaN(newStock)) p.stock = newStock;
+        let newDiscount = parseFloat(prompt("Скидка %:", p.discount)); if(!isNaN(newDiscount)) p.discount = newDiscount;
+        let newProducer = prompt("Производитель:", p.producer); if(newProducer && newProducer.trim()) p.producer = newProducer.trim();
+        updateProducerFilter(); renderProducts();
+    };
+
+    window.deleteProduct = function(id) {
+        let p = products.find(pr => pr.id === id);
+        if (p && p.id === 2) { alert("❌ Ошибка: товар в заказе №101! Удаление невозможно."); return; }
+        if (confirm(`Удалить "${p.name}"?`)) { products = products.filter(pr => pr.id !== id); updateProducerFilter(); renderProducts(); }
+    };
+
+    function addProduct() {
+        let name = prompt("Название товара:"); if(!name) return;
+        let price = parseFloat(prompt("Цена:")); if(isNaN(price)) return;
+        let stock = parseInt(prompt("Количество:"));
+        let discount = parseFloat(prompt("Скидка %:"));
+        let producer = prompt("Производитель:") || "Неизвестный";
+        products.push({ id: nextProductId++, name: name, category: "Общая", producer: producer, supplier: "Поставщик", price: price, oldPrice: null, stock: isNaN(stock) ? 0 : stock, discount: isNaN(discount) ? 0 : discount, image: "🆕" });
+        updateProducerFilter(); renderProducts();
+    }
+
+    function renderOrders() {
+        let tbody = document.getElementById("ordersBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        for (let o of orders) {
+            let row = tbody.insertRow();
+            row.insertCell(0).innerText = o.id;
+            row.insertCell(1).innerText = o.status;
+            row.insertCell(2).innerText = o.address;
+            row.insertCell(3).innerText = o.orderDate;
+            let actionCell = row.insertCell(4);
+            if (currentRole === "admin") {
+                actionCell.innerHTML = `<span onclick="editOrder(${o.id})" style="cursor:pointer; margin-right:8px;">✏️</span><span onclick="deleteOrder(${o.id})" style="cursor:pointer;">🗑️</span>`;
+            } else { actionCell.innerText = "—"; }
+        }
+    }
+
+    window.editOrder = function(id) {
+        let o = orders.find(ord => ord.id === id);
+        if (!o) return;
+        let newStatus = prompt("Новый статус (Новый/В обработке/Выдан):", o.status);
+        if (newStatus) o.status = newStatus;
+        renderOrders();
+    };
+
+    window.deleteOrder = function(id) {
+        if (confirm("Удалить заказ?")) { orders = orders.filter(o => o.id !== id); renderOrders(); }
+    };
+
+    function addOrder() {
+        let status = prompt("Статус (Новый/В обработке/Выдан):", "Новый");
+        let address = prompt("Адрес ПВЗ:", "ул. Строителей");
+        let date = new Date().toISOString().slice(0,10);
+        orders.push({ id: nextOrderId++, status: status, address: address, orderDate: date, dueDate: date });
+        renderOrders();
+    }
+
+    function manageRoles() {
+        let roleList = users.map(u => `${u.login} (${u.role}) - ${u.fio}`).join("\n");
+        let newLogin = prompt("Добавить нового пользователя?\nВведи логин (или отмена):");
+        if (newLogin) {
+            let newPass = prompt("Пароль:");
+            let newRole = prompt("Роль (admin/manager/client):");
+            let newFio = prompt("ФИО:");
+            if (newLogin && newPass && newRole) users.push({ id: users.length+1, login: newLogin, password: newPass, role: newRole, fio: newFio });
+            alert("Пользователь добавлен! Сейчас в системе: \n" + users.map(u => `${u.login} (${u.role})`).join(", "));
+        }
+    }
+
+    function updateUI() {
+        let isAdmin = (currentRole === "admin");
+        let isManagerOrAdmin = (currentRole === "manager" || currentRole === "admin");
+        document.getElementById("adminPanel").style.display = isAdmin ? "block" : "none";
+        document.getElementById("filtersPanel").style.display = isManagerOrAdmin ? "flex" : "none";
+        document.getElementById("ordersSection").style.display = isManagerOrAdmin ? "block" : "none";
+        document.getElementById("actionsHeader").style.display = isAdmin ? "table-cell" : "none";
+        let displayName = currentUserFIO;
+        if (currentRole === "guest") displayName = "Гость (только просмотр)";
+        if (currentRole === "client") displayName = "Клиент: Сергеев А.А.";
+        if (currentRole === "manager") displayName = "Менеджер: Петрова А.В.";
+        if (currentRole === "admin") displayName = "Админ: Сидоров Д.М.";
+        document.getElementById("userNameDisplay").innerText = displayName;
+        renderProducts();
+        renderOrders();
+        updateProducerFilter();
+    }
+
+    // ----- СОБЫТИЯ -----
+    document.getElementById("addProductBtn")?.addEventListener("click", addProduct);
+    document.getElementById("manageRolesBtn")?.addEventListener("click", manageRoles);
+    document.getElementById("addOrderBtn")?.addEventListener("click", addOrder);
+    document.getElementById("searchInput")?.addEventListener("input", () => renderProducts());
+    document.getElementById("producerFilter")?.addEventListener("change", () => renderProducts());
+    document.getElementById("sortSelect")?.addEventListener("change", () => renderProducts());
+
+    document.querySelectorAll(".role-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            let role = btn.getAttribute("data-role");
+            currentRole = role;
+            if (role === "guest") currentUserFIO = "Гость";
+            if (role === "client") currentUserFIO = "Сергеев А.А.";
+            if (role === "manager") currentUserFIO = "Петрова А.В.";
+            if (role === "admin") currentUserFIO = "Сидоров Д.М.";
+            document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            updateUI();
+        });
+    });
+
+    // Установить гостя по умолчанию
+    document.querySelector(".role-btn[data-role='guest']").classList.add("active");
+    updateUI();
+</script>
 </body>
 </html>
