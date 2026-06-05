@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>ДЭ В3 — Интерактивный тренажёр | СтройМаркет</title>
+    <title>ДЭ В3 — Полный тренажёр с обучением</title>
     <style>
         * {
             box-sizing: border-box;
@@ -14,37 +14,59 @@
             margin: 0;
             padding: 12px;
         }
-        .app {
+        .container {
             max-width: 550px;
             margin: 0 auto;
+        }
+        /* Карточка обучения */
+        .tutorial-card {
+            background: #ffe0b2;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 6px solid #e67e22;
+        }
+        .tutorial-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+        }
+        .step-badge {
+            background: #2c5e2e;
+            color: white;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+        }
+        .instruction {
+            background: white;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        /* Основное приложение */
+        .app {
             background: #f5f7fa;
             border-radius: 28px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        /* Шапка */
         .header {
             background: #2c5e2e;
             padding: 16px;
             color: white;
             text-align: center;
         }
-        .header h1 {
-            font-size: 1.4rem;
-        }
-        /* Панель пользователя */
         .user-bar {
             background: #e9ecef;
             padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #ccc;
-        }
-        .role-selector {
-            display: flex;
-            gap: 8px;
             flex-wrap: wrap;
+            gap: 10px;
         }
         .role-btn {
             background: white;
@@ -52,21 +74,12 @@
             padding: 6px 12px;
             border-radius: 40px;
             font-size: 0.7rem;
-            font-weight: bold;
             cursor: pointer;
         }
         .role-btn.active {
             background: #2c5e2e;
             color: white;
         }
-        .user-name {
-            font-size: 0.8rem;
-            background: #2c3e66;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 40px;
-        }
-        /* Кнопки действий (только админ) */
         .admin-actions {
             padding: 12px 16px;
             background: white;
@@ -83,73 +96,108 @@
             font-size: 0.75rem;
             cursor: pointer;
         }
-        .btn-danger {
-            background: #c62828;
-        }
-        .btn-warning {
-            background: #e67e22;
-        }
-        /* Фильтры (видны менеджеру/админу) */
         .filters {
             padding: 12px 16px;
             background: white;
-            border-bottom: 1px solid #ddd;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
+            border-bottom: 1px solid #ddd;
         }
         .filters input, .filters select {
             flex: 1;
-            padding: 8px 12px;
+            padding: 8px;
             border-radius: 30px;
             border: 1px solid #bbb;
-            font-size: 0.75rem;
-        }
-        /* Таблица товаров */
-        .products-section {
-            padding: 16px;
-        }
-        .section-title {
-            font-size: 1rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
             font-size: 0.7rem;
         }
-        th {
-            background: #2c5e2e;
-            color: white;
-            padding: 8px;
-            text-align: left;
-            cursor: pointer;
+        /* Карточка товара — ТОЧНО КАК НА СКРИНШОТЕ */
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            margin: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 14px;
         }
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
+        .product-photo {
+            font-size: 48px;
+            width: 70px;
+            height: 70px;
+            background: #f0f0f0;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .stock-zero {
-            background-color: #ADD8E6 !important;
+        .product-info {
+            flex: 1;
         }
-        .high-discount {
-            background-color: #F4A460 !important;
+        .product-title {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .product-category {
+            font-size: 0.7rem;
+            color: #e67e22;
+        }
+        .product-description {
+            font-size: 0.7rem;
+            color: #555;
+            margin: 4px 0;
+        }
+        .product-meta {
+            font-size: 0.7rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 6px 0;
+        }
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 6px;
         }
         .old-price {
             text-decoration: line-through;
             color: red;
-            margin-right: 6px;
+            font-size: 0.8rem;
         }
-        .action-icons {
+        .current-price {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: black;
+        }
+        .discount-badge {
+            background: #F4A460;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        .stock-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        .stock-zero-badge {
+            background: #ADD8E6;
+        }
+        .admin-icons {
             display: flex;
-            gap: 6px;
+            gap: 12px;
+            margin-top: 8px;
         }
-        .action-icons span {
+        .admin-icons span {
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.2rem;
         }
-        /* Форма редактирования */
+        .orders-section {
+            padding: 16px;
+            border-top: 1px solid #ddd;
+            margin-top: 8px;
+        }
         .modal {
             position: fixed;
             top: 0;
@@ -176,255 +224,197 @@
             border-radius: 30px;
             border: 1px solid #ccc;
         }
-        .close-modal {
-            background: #c62828;
-            margin-top: 10px;
-        }
-        .orders-panel {
-            margin-top: 20px;
-            border-top: 2px solid #ccc;
-            padding-top: 16px;
-        }
-        .small-btn {
-            font-size: 0.7rem;
-            padding: 4px 10px;
-        }
     </style>
 </head>
 <body>
-<div class="app" id="app">
-    <div class="header">
-        <h1>🧱 СтройМаркет | ДЭ В3</h1>
-        <div style="font-size: 12px;">Интерактивный тренажёр — делай всё сам!</div>
-    </div>
-
-    <div class="user-bar">
-        <div class="role-selector" id="roleSelector">
-            <button class="role-btn" data-role="guest">👤 Гость</button>
-            <button class="role-btn" data-role="client">🚶 Клиент</button>
-            <button class="role-btn" data-role="manager">📋 Менеджер</button>
-            <button class="role-btn" data-role="admin">⚙️ Админ</button>
+<div class="container">
+    <!-- БЛОК ОБУЧЕНИЯ — пошаговые инструкции -->
+    <div class="tutorial-card" id="tutorialBox">
+        <span class="step-badge">📖 ШАГ 1 / 8</span>
+        <h3>👋 Привет! Сейчас научу тебя делать экзамен с нуля</h3>
+        <div id="tutorialText">
+            Это тренажёр, где ты САМ создаёшь товары, роли и заказы.<br>
+            <strong>👇 Нажми на кнопку "Начать обучение" ниже</strong>, и я буду вести тебя по шагам.
         </div>
-        <div class="user-name" id="userNameDisplay">Гость</div>
+        <div class="instruction" id="instructionPanel">
+            🎯 <strong>Прямо сейчас:</strong> Посмотри на список товаров ниже. Это пример. Потом ты научишься добавлять свои.
+        </div>
+        <button id="nextStepBtn" class="btn" style="margin-top: 12px; background:#e67e22;">➡️ Следующий шаг</button>
     </div>
 
-    <!-- Панель админа -->
-    <div id="adminPanel" style="display: none;">
-        <div class="admin-actions">
+    <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ (имитация экзамена) -->
+    <div class="app">
+        <div class="header">
+            <strong>🧱 СтройМаркет | Демоэкзамен В3</strong>
+        </div>
+        <div class="user-bar">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="role-btn" data-role="guest">👤 Гость</button>
+                <button class="role-btn" data-role="client">🚶 Клиент</button>
+                <button class="role-btn" data-role="manager">📋 Менеджер</button>
+                <button class="role-btn" data-role="admin">⚙️ Админ</button>
+            </div>
+            <div id="userNameDisplay" style="font-size:0.75rem; background:#2c3e66; color:white; padding:4px 12px; border-radius:40px;">Гость</div>
+        </div>
+
+        <div id="adminPanel" style="display:none;" class="admin-actions">
             <button class="btn" id="addProductBtn">➕ Добавить товар</button>
-            <button class="btn btn-warning" id="manageRolesBtn">👥 Управление ролями</button>
+            <button class="btn" id="manageRolesBtn" style="background:#e67e22;">👥 Управление ролями</button>
         </div>
-    </div>
 
-    <!-- Фильтры (для менеджера/админа) -->
-    <div id="filtersPanel" style="display: none;" class="filters">
-        <input type="text" id="searchInput" placeholder="🔍 Поиск по всем полям...">
-        <select id="producerFilter">
-            <option value="all">🏭 Все производители</option>
-        </select>
-        <select id="sortSelect">
-            <option value="name">📋 По названию</option>
-            <option value="price_asc">💰 Цена ↑</option>
-            <option value="price_desc">💰 Цена ↓</option>
-        </select>
-    </div>
-
-    <!-- Товары -->
-    <div class="products-section">
-        <div class="section-title">📦 Товары на складе</div>
-        <div style="overflow-x: auto;">
-            <table id="productTable">
-                <thead>
-                    <tr><th>Фото</th><th>Товар</th><th>Производитель</th><th>Цена</th><th>Скидка</th><th>Остаток</th><th id="actionsHeader">Действия</th></tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+        <div id="filtersPanel" style="display:none;" class="filters">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск по названию, производителю...">
+            <select id="producerFilter"><option value="all">🏭 Все производители</option></select>
+            <select id="sortSelect"><option value="name">📋 По названию</option><option value="price_asc">💰 Цена ↑</option><option value="price_desc">💰 Цена ↓</option></select>
         </div>
-    </div>
 
-    <!-- Заказы (для менеджера/админа) -->
-    <div id="ordersSection" style="display: none; padding: 16px; border-top: 1px solid #ddd;">
-        <div class="section-title">📦 Заказы <button id="addOrderBtn" class="btn small-btn" style="margin-left: 10px;">+ Добавить заказ</button></div>
-        <div style="overflow-x: auto;">
-            <table id="ordersTable" style="width: 100%;">
-                <thead><tr><th>№</th><th>Статус</th><th>Адрес ПВЗ</th><th>Дата заказа</th><th>Действия</th></tr></thead>
-                <tbody id="ordersBody"></tbody>
-            </table>
+        <!-- СПИСОК ТОВАРОВ (карточки, как на скриншоте) -->
+        <div id="productsList" style="padding: 8px 0;"></div>
+
+        <!-- ЗАКАЗЫ (только менеджер/админ) -->
+        <div id="ordersSection" style="display:none;" class="orders-section">
+            <div style="display:flex; justify-content:space-between;"><strong>📦 Заказы</strong><button id="addOrderBtn" class="btn" style="padding:4px 12px;">+ Добавить</button></div>
+            <div id="ordersList" style="margin-top:10px;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // ----- НАЧАЛЬНЫЕ ДАННЫЕ (имитация БД) -----
+    // ------------- НАЧАЛЬНЫЕ ДАННЫЕ (как БД) -------------
     let products = [
-        { id: 1, name: "Цемент М500", category: "Смеси", producer: "Евроцемент", supplier: "СтройТрейд", price: 450, oldPrice: null, stock: 25, discount: 5, image: "🧱" },
-        { id: 2, name: "Кирпич облицовочный", category: "Кирпич", producer: "Кирпичный завод", supplier: "СтройТрейд", price: 18, oldPrice: 24, stock: 0, discount: 20, image: "🧱" },
-        { id: 3, name: "Утеплитель Rockwool", category: "Утеплители", producer: "Rockwool", supplier: "ТеплоДом", price: 3200, oldPrice: 4100, stock: 15, discount: 22, image: "🪨" },
-        { id: 4, name: "Гипсокартон", category: "Отделка", producer: "Gyproc", supplier: "СтройТрейд", price: 550, oldPrice: null, stock: 0, discount: 10, image: "📄" },
-        { id: 5, name: "Песок строительный", category: "Сыпучие", producer: "ПесокСервис", supplier: "База №1", price: 1200, oldPrice: null, stock: 50, discount: 8, image: "⏳" }
+        { id: 1, name: "Цемент М500", category: "Смеси", description: "Прочный цемент для фундамента", producer: "Евроцемент", supplier: "СтройТрейд", price: 450, oldPrice: null, unit: "мешок", stock: 25, discount: 5, image: "🧱" },
+        { id: 2, name: "Кирпич облицовочный", category: "Кирпич", description: "Красный керамический", producer: "Кирпичный завод", supplier: "СтройТрейд", price: 18, oldPrice: 24, unit: "шт", stock: 0, discount: 20, image: "🧱" },
+        { id: 3, name: "Утеплитель Rockwool", category: "Утеплители", description: "Минеральная вата 100мм", producer: "Rockwool", supplier: "ТеплоДом", price: 3200, oldPrice: 4100, unit: "м²", stock: 15, discount: 22, image: "🪨" },
+        { id: 4, name: "Гипсокартон", category: "Отделка", description: "Влагостойкий", producer: "Gyproc", supplier: "СтройТрейд", price: 550, oldPrice: null, unit: "лист", stock: 0, discount: 10, image: "📄" }
     ];
-
     let orders = [
-        { id: 101, status: "Новый", address: "ул. Строителей 5", orderDate: "2025-05-20", dueDate: "2025-05-25" },
-        { id: 102, status: "В обработке", address: "пр. Мира 12", orderDate: "2025-05-18", dueDate: "2025-05-23" }
+        { id: 101, status: "Новый", address: "ул. Строителей 5", orderDate: "2025-05-20" },
+        { id: 102, status: "В обработке", address: "пр. Мира 12", orderDate: "2025-05-18" }
     ];
-
     let users = [
-        { id: 1, login: "admin", password: "admin", role: "admin", fio: "Администратор" },
-        { id: 2, login: "manager", password: "manager", role: "manager", fio: "Петрова А.В." },
-        { id: 3, login: "client1", password: "123", role: "client", fio: "Сергеев А.А." }
+        { login: "admin", password: "admin", role: "admin", fio: "Сидоров Д.М." },
+        { login: "manager", password: "manager", role: "manager", fio: "Петрова А.В." },
+        { login: "client", password: "123", role: "client", fio: "Сергеев А.А." }
     ];
-
     let currentRole = "guest";
-    let currentUserFIO = "Гость";
-    let nextProductId = 6;
-    let nextOrderId = 103;
+    let currentFIO = "Гость";
+    let nextId = 5;
 
-    // ----- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ -----
-    function getProducers() { return [...new Set(products.map(p => p.producer))]; }
-
-    function updateProducerFilter() {
-        let select = document.getElementById("producerFilter");
-        if (!select) return;
-        let producers = getProducers();
-        select.innerHTML = '<option value="all">🏭 Все производители</option>';
-        producers.forEach(p => { let opt = document.createElement("option"); opt.value = p; opt.textContent = p; select.appendChild(opt); });
+    // Функция подсветки (скидка >12% → #F4A460, нет на складе → голубой)
+    function getCardStyle(product) {
+        if (product.stock === 0) return { background: "#ADD8E6", borderLeft: "4px solid #2196f3" };
+        if (product.discount > 12) return { background: "#F4A460", borderLeft: "4px solid #e65100" };
+        return { background: "white", borderLeft: "4px solid #2c5e2e" };
     }
 
     function getDiscountedPrice(p) { let base = p.oldPrice || p.price; return base * (1 - p.discount / 100); }
 
     function renderProducts() {
+        let container = document.getElementById("productsList");
+        if (!container) return;
         let filtered = [...products];
-        let searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
+        let search = document.getElementById("searchInput")?.value.toLowerCase() || "";
         let producerVal = document.getElementById("producerFilter")?.value || "all";
         if (currentRole === "manager" || currentRole === "admin") {
-            if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm) || p.producer.toLowerCase().includes(searchTerm) || p.category.toLowerCase().includes(searchTerm));
+            if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.producer.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
             if (producerVal !== "all") filtered = filtered.filter(p => p.producer === producerVal);
-            let sortVal = document.getElementById("sortSelect")?.value;
-            if (sortVal === "name") filtered.sort((a,b) => a.name.localeCompare(b.name));
-            if (sortVal === "price_asc") filtered.sort((a,b) => (a.oldPrice || a.price) - (b.oldPrice || b.price));
-            if (sortVal === "price_desc") filtered.sort((a,b) => (b.oldPrice || b.price) - (a.oldPrice || a.price));
+            let sort = document.getElementById("sortSelect")?.value;
+            if (sort === "name") filtered.sort((a,b) => a.name.localeCompare(b.name));
+            if (sort === "price_asc") filtered.sort((a,b) => (a.oldPrice || a.price) - (b.oldPrice || b.price));
+            if (sort === "price_desc") filtered.sort((a,b) => (b.oldPrice || b.price) - (a.oldPrice || a.price));
         }
-        let tbody = document.getElementById("tableBody");
-        tbody.innerHTML = "";
+        container.innerHTML = "";
         for (let p of filtered) {
-            let row = tbody.insertRow();
-            let outOfStock = (p.stock === 0);
-            let highDisc = p.discount > 12;
-            let rowClass = "";
-            if (outOfStock) rowClass = "stock-zero";
-            else if (highDisc) rowClass = "high-discount";
-            row.className = rowClass;
-            row.insertCell(0).innerText = p.image || "🖼️";
-            row.insertCell(1).innerText = p.name;
-            row.insertCell(2).innerText = p.producer;
-            let priceCell = row.insertCell(3);
-            if (p.oldPrice && p.oldPrice !== p.price) priceCell.innerHTML = `<span class="old-price">${p.oldPrice}₽</span> ${Math.round(getDiscountedPrice(p))}₽`;
-            else priceCell.innerText = `${p.price}₽`;
-            row.insertCell(4).innerText = `${p.discount}%`;
-            row.insertCell(5).innerText = p.stock;
-            let actionsCell = row.insertCell(6);
-            if (currentRole === "admin") {
-                actionsCell.innerHTML = `<span onclick="editProduct(${p.id})" style="cursor:pointer; margin-right:8px;">✏️</span><span onclick="deleteProduct(${p.id})" style="cursor:pointer;">🗑️</span>`;
-            } else { actionsCell.innerText = "—"; }
+            let style = getCardStyle(p);
+            let finalPrice = getDiscountedPrice(p);
+            let priceHtml = p.oldPrice ? `<span class="old-price">${p.oldPrice}₽</span> <span class="current-price">${Math.round(finalPrice)}₽</span>` : `<span class="current-price">${p.price}₽</span>`;
+            let actionsHtml = (currentRole === "admin") ? `<div class="admin-icons"><span onclick="editProduct(${p.id})">✏️</span><span onclick="deleteProduct(${p.id})">🗑️</span></div>` : "";
+            let stockBadge = (p.stock === 0) ? `<span class="stock-badge stock-zero-badge">📦 Нет на складе</span>` : `<span>📦 В наличии: ${p.stock} ${p.unit}</span>`;
+            container.innerHTML += `
+                <div class="product-card" style="background:${style.background}; border-left:${style.borderLeft};">
+                    <div class="product-photo">${p.image || "🖼️"}</div>
+                    <div class="product-info">
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-category">${p.category}</div>
+                        <div class="product-description">📝 ${p.description}</div>
+                        <div class="product-meta">🏭 ${p.producer} | 📦 ${p.supplier}</div>
+                        <div class="price-row">${priceHtml} <span class="discount-badge">🔥 скидка ${p.discount}%</span></div>
+                        <div>${stockBadge}</div>
+                        ${actionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function renderOrders() {
+        let container = document.getElementById("ordersList");
+        if (!container) return;
+        if (currentRole !== "manager" && currentRole !== "admin") return;
+        container.innerHTML = "";
+        for (let o of orders) {
+            let actions = (currentRole === "admin") ? `<span onclick="editOrder(${o.id})" style="cursor:pointer;">✏️</span> <span onclick="deleteOrder(${o.id})" style="cursor:pointer;">🗑️</span>` : "—";
+            container.innerHTML += `<div style="background:white; margin:8px 0; padding:10px; border-radius:16px;">✅ Заказ №${o.id} | ${o.status} | ${o.address} | ${o.orderDate} | ${actions}</div>`;
         }
     }
 
     window.editProduct = function(id) {
-        let p = products.find(pr => pr.id === id);
+        let p = products.find(x => x.id === id);
         if (!p) return;
-        let newName = prompt("Название товара:", p.name); if(newName && newName.trim()) p.name = newName.trim();
+        let newName = prompt("Название:", p.name); if(newName) p.name = newName;
         let newPrice = parseFloat(prompt("Цена:", p.price)); if(!isNaN(newPrice)) p.price = newPrice;
-        let newStock = parseInt(prompt("Количество:", p.stock)); if(!isNaN(newStock)) p.stock = newStock;
-        let newDiscount = parseFloat(prompt("Скидка %:", p.discount)); if(!isNaN(newDiscount)) p.discount = newDiscount;
-        let newProducer = prompt("Производитель:", p.producer); if(newProducer && newProducer.trim()) p.producer = newProducer.trim();
-        updateProducerFilter(); renderProducts();
+        let newStock = parseInt(prompt("Количество:")); if(!isNaN(newStock)) p.stock = newStock;
+        let newDiscount = parseFloat(prompt("Скидка %:")); if(!isNaN(newDiscount)) p.discount = newDiscount;
+        let newDesc = prompt("Описание:", p.description); if(newDesc) p.description = newDesc;
+        updateProducerList(); renderProducts(); renderOrders();
     };
-
     window.deleteProduct = function(id) {
-        let p = products.find(pr => pr.id === id);
-        if (p && p.id === 2) { alert("❌ Ошибка: товар в заказе №101! Удаление невозможно."); return; }
-        if (confirm(`Удалить "${p.name}"?`)) { products = products.filter(pr => pr.id !== id); updateProducerFilter(); renderProducts(); }
+        if (id === 2) { alert("❌ Товар в заказе! Удаление невозможно."); return; }
+        if (confirm("Удалить?")) { products = products.filter(x => x.id !== id); updateProducerList(); renderProducts(); }
     };
-
     function addProduct() {
         let name = prompt("Название товара:"); if(!name) return;
         let price = parseFloat(prompt("Цена:")); if(isNaN(price)) return;
         let stock = parseInt(prompt("Количество:"));
         let discount = parseFloat(prompt("Скидка %:"));
-        let producer = prompt("Производитель:") || "Неизвестный";
-        products.push({ id: nextProductId++, name: name, category: "Общая", producer: producer, supplier: "Поставщик", price: price, oldPrice: null, stock: isNaN(stock) ? 0 : stock, discount: isNaN(discount) ? 0 : discount, image: "🆕" });
-        updateProducerFilter(); renderProducts();
+        let producer = prompt("Производитель:");
+        let desc = prompt("Описание:");
+        products.push({ id: nextId++, name, category: "Общая", description: desc || "", producer: producer || "Неизвестный", supplier: "Поставщик", price, oldPrice: null, unit: "шт", stock: isNaN(stock)?0:stock, discount: isNaN(discount)?0:discount, image: "🆕" });
+        updateProducerList(); renderProducts();
     }
-
-    function renderOrders() {
-        let tbody = document.getElementById("ordersBody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-        for (let o of orders) {
-            let row = tbody.insertRow();
-            row.insertCell(0).innerText = o.id;
-            row.insertCell(1).innerText = o.status;
-            row.insertCell(2).innerText = o.address;
-            row.insertCell(3).innerText = o.orderDate;
-            let actionCell = row.insertCell(4);
-            if (currentRole === "admin") {
-                actionCell.innerHTML = `<span onclick="editOrder(${o.id})" style="cursor:pointer; margin-right:8px;">✏️</span><span onclick="deleteOrder(${o.id})" style="cursor:pointer;">🗑️</span>`;
-            } else { actionCell.innerText = "—"; }
-        }
+    function updateProducerList() {
+        let producers = [...new Set(products.map(p => p.producer))];
+        let select = document.getElementById("producerFilter");
+        if(select) { select.innerHTML = '<option value="all">🏭 Все производители</option>'; producers.forEach(p => { let opt = document.createElement("option"); opt.value = p; opt.textContent = p; select.appendChild(opt); }); }
     }
-
-    window.editOrder = function(id) {
-        let o = orders.find(ord => ord.id === id);
-        if (!o) return;
-        let newStatus = prompt("Новый статус (Новый/В обработке/Выдан):", o.status);
-        if (newStatus) o.status = newStatus;
-        renderOrders();
-    };
-
-    window.deleteOrder = function(id) {
-        if (confirm("Удалить заказ?")) { orders = orders.filter(o => o.id !== id); renderOrders(); }
-    };
-
-    function addOrder() {
-        let status = prompt("Статус (Новый/В обработке/Выдан):", "Новый");
-        let address = prompt("Адрес ПВЗ:", "ул. Строителей");
-        let date = new Date().toISOString().slice(0,10);
-        orders.push({ id: nextOrderId++, status: status, address: address, orderDate: date, dueDate: date });
-        renderOrders();
-    }
-
-    function manageRoles() {
-        let roleList = users.map(u => `${u.login} (${u.role}) - ${u.fio}`).join("\n");
-        let newLogin = prompt("Добавить нового пользователя?\nВведи логин (или отмена):");
-        if (newLogin) {
-            let newPass = prompt("Пароль:");
-            let newRole = prompt("Роль (admin/manager/client):");
-            let newFio = prompt("ФИО:");
-            if (newLogin && newPass && newRole) users.push({ id: users.length+1, login: newLogin, password: newPass, role: newRole, fio: newFio });
-            alert("Пользователь добавлен! Сейчас в системе: \n" + users.map(u => `${u.login} (${u.role})`).join(", "));
-        }
-    }
+    function manageRoles() { alert("👥 Роли:\n" + users.map(u => `${u.login} (${u.role}) - ${u.fio}`).join("\n") + "\n\nНа экзамене ты добавишь их в Access."); }
+    function addOrder() { let status = prompt("Статус:"); let address = prompt("Адрес:"); if(status && address) { orders.push({ id: Date.now(), status, address, orderDate: new Date().toISOString().slice(0,10) }); renderOrders(); } }
+    window.editOrder = function(id) { let o = orders.find(x => x.id === id); if(o) { let ns = prompt("Новый статус:", o.status); if(ns) o.status = ns; renderOrders(); } };
+    window.deleteOrder = function(id) { if(confirm("Удалить заказ?")) { orders = orders.filter(x => x.id !== id); renderOrders(); } };
 
     function updateUI() {
         let isAdmin = (currentRole === "admin");
         let isManagerOrAdmin = (currentRole === "manager" || currentRole === "admin");
-        document.getElementById("adminPanel").style.display = isAdmin ? "block" : "none";
+        document.getElementById("adminPanel").style.display = isAdmin ? "flex" : "none";
         document.getElementById("filtersPanel").style.display = isManagerOrAdmin ? "flex" : "none";
         document.getElementById("ordersSection").style.display = isManagerOrAdmin ? "block" : "none";
-        document.getElementById("actionsHeader").style.display = isAdmin ? "table-cell" : "none";
-        let displayName = currentUserFIO;
-        if (currentRole === "guest") displayName = "Гость (только просмотр)";
-        if (currentRole === "client") displayName = "Клиент: Сергеев А.А.";
-        if (currentRole === "manager") displayName = "Менеджер: Петрова А.В.";
-        if (currentRole === "admin") displayName = "Админ: Сидоров Д.М.";
-        document.getElementById("userNameDisplay").innerText = displayName;
-        renderProducts();
-        renderOrders();
-        updateProducerFilter();
+        document.getElementById("userNameDisplay").innerText = currentFIO;
+        renderProducts(); renderOrders();
     }
 
-    // ----- СОБЫТИЯ -----
+    document.querySelectorAll(".role-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            let role = btn.getAttribute("data-role");
+            currentRole = role;
+            if (role === "guest") currentFIO = "Гость (только просмотр)";
+            if (role === "client") currentFIO = "Клиент: Сергеев А.А.";
+            if (role === "manager") currentFIO = "Менеджер: Петрова А.В.";
+            if (role === "admin") currentFIO = "Админ: Сидоров Д.М.";
+            document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            updateUI();
+        });
+    });
     document.getElementById("addProductBtn")?.addEventListener("click", addProduct);
     document.getElementById("manageRolesBtn")?.addEventListener("click", manageRoles);
     document.getElementById("addOrderBtn")?.addEventListener("click", addOrder);
@@ -432,23 +422,29 @@
     document.getElementById("producerFilter")?.addEventListener("change", () => renderProducts());
     document.getElementById("sortSelect")?.addEventListener("change", () => renderProducts());
 
-    document.querySelectorAll(".role-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            let role = btn.getAttribute("data-role");
-            currentRole = role;
-            if (role === "guest") currentUserFIO = "Гость";
-            if (role === "client") currentUserFIO = "Сергеев А.А.";
-            if (role === "manager") currentUserFIO = "Петрова А.В.";
-            if (role === "admin") currentUserFIO = "Сидоров Д.М.";
-            document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            updateUI();
-        });
-    });
-
-    // Установить гостя по умолчанию
-    document.querySelector(".role-btn[data-role='guest']").classList.add("active");
+    // ----- ОБУЧЕНИЕ (пошаговое) -----
+    let step = 1;
+    const tutorialTexts = {
+        1: "📌 Сейчас ты видишь список товаров. Нажми на роль 'Админ' сверху — появятся кнопки 'Добавить товар' и 'Управление ролями'.",
+        2: "🛠️ Нажми 'Добавить товар' и создай свой товар (например, 'Шпаклёвка', цена 300, количество 10, скидка 15%). Посмотри, как он появился в списке!",
+        3: "🎨 Обрати внимание на цвета: если скидка >12% → фон оранжевый (#F4A460). Если товара нет → голубой фон.",
+        4: "🔍 Теперь переключись на 'Менеджера' и попробуй поиск (введи 'цемент'), фильтр по производителю и сортировку.",
+        5: "📦 Прокрути вниз до раздела 'Заказы'. Админ может добавлять/редактировать заказы.",
+        6: "👥 Нажми 'Управление ролями' — увидишь список пользователей. На экзамене ты создашь таблицу Users в Access.",
+        7: "✏️ Попробуй отредактировать любой товар (иконка ✏️) или удалить (но товар в заказе не удалится).",
+        8: "🎉 Ты научился всему! На экзамене делай то же самое: сначала БД, потом приложение. Удачи!"
+    };
+    document.getElementById("nextStepBtn").onclick = () => {
+        step = step + 1;
+        if (step > 8) step = 8;
+        document.querySelector(".step-badge").innerText = `📖 ШАГ ${step} / 8`;
+        document.getElementById("tutorialText").innerHTML = tutorialTexts[step] || "Готово!";
+        if (step === 2) document.getElementById("instructionPanel").innerHTML = "👇 Нажми 'Добавить товар' и создай свой первый товар!";
+        if (step === 8) document.getElementById("nextStepBtn").innerText = "✅ Завершено";
+    };
+    updateProducerList();
     updateUI();
+    document.querySelector(".role-btn[data-role='guest']").classList.add("active");
 </script>
 </body>
 </html>
