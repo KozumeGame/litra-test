@@ -2,429 +2,357 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажёр: Работа в Access — Демоэкзамен В3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ДЭ В3 — Тренажёр Access (мобильный)</title>
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
         body {
             background: #1e3c2c;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            padding: 12px;
         }
-        .simulator {
-            max-width: 1300px;
+        .trainer {
+            max-width: 600px;
             margin: 0 auto;
-            background: #f5f5f5;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: #f5f7fa;
+            border-radius: 28px;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        /* Шапка как в Access */
-        .access-ribbon {
+        /* шапка */
+        .app-header {
             background: #2c5e2e;
-            padding: 8px 20px;
-            display: flex;
-            gap: 20px;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            border-bottom: 3px solid #ffcc00;
-        }
-        .ribbon-tab {
-            padding: 6px 12px;
-            background: #1e4620;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
-        }
-        .main-window {
-            display: flex;
-            min-height: 600px;
-        }
-        /* Левая панель — объекты Access */
-        .objects-pane {
-            width: 260px;
-            background: #e9ecef;
-            border-right: 1px solid #adb5bd;
             padding: 16px;
+            color: white;
+            text-align: center;
         }
-        .objects-pane h3 {
-            font-size: 14px;
-            color: #2c5e2e;
-            margin-top: 0;
+        .app-header h1 {
+            font-size: 1.4rem;
         }
-        .object-list {
-            list-style: none;
-            padding: 0;
+        .app-header p {
+            font-size: 0.75rem;
+            opacity: 0.9;
         }
-        .object-list li {
-            padding: 8px 12px;
-            margin: 4px 0;
+        /* панель быстрых действий */
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px;
+            background: #e9ecef;
+            border-bottom: 1px solid #ccc;
+        }
+        .quick-btn {
             background: white;
-            border-radius: 8px;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             cursor: pointer;
+            flex: 1 0 auto;
+            text-align: center;
+        }
+        .quick-btn.access {
             border-left: 4px solid #2c5e2e;
-            transition: 0.2s;
-            font-size: 13px;
         }
-        .object-list li:hover {
-            background: #d1e7dd;
-            transform: translateX(3px);
+        /* контент */
+        .content-card {
+            padding: 18px;
         }
-        /* Правая область — контент */
-        .content-area {
-            flex: 1;
-            padding: 20px;
+        .visual-step {
             background: white;
-            overflow-y: auto;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
         }
-        .access-toolbar {
-            background: #f8f9fa;
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
+        .visual-step h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .badge {
+            background: #2c5e2e;
+            color: white;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-size: 0.7rem;
+        }
+        .mock-access {
+            background: #fef9e6;
+            border-radius: 16px;
+            padding: 12px;
+            margin: 12px 0;
+            font-family: monospace;
+            font-size: 0.75rem;
+            border: 1px solid #ffcd94;
+        }
+        .mock-menu {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
-        .access-btn {
-            background: #2c5e2e;
-            border: none;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.1s;
+        .mock-btn {
+            background: #e0e0e0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #1e4620;
         }
-        .access-btn:hover {
-            background: #1e4620;
-        }
-        .access-btn-orange {
-            background: #e67e22;
-        }
-        table {
+        .mock-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
+            font-size: 0.7rem;
         }
-        th {
+        .mock-table th {
             background: #2c5e2e;
             color: white;
-            padding: 8px;
-            text-align: left;
+            padding: 6px;
         }
-        td {
-            border: 1px solid #ddd;
-            padding: 6px 8px;
+        .mock-table td {
+            border: 1px solid #ccc;
+            padding: 6px;
         }
-        .highlight {
-            background: #F4A460;
-            color: black;
+        .highlight-orange {
+            background-color: #F4A460;
         }
-        .blue-bg {
-            background: #ADD8E6;
+        .highlight-blue {
+            background-color: #ADD8E6;
         }
         .old-price {
             text-decoration: line-through;
             color: red;
         }
-        .step-box {
+        .finger {
+            background: #ffecb3;
+            border-radius: 30px;
+            padding: 8px 12px;
+            margin-top: 12px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+        .step-plan {
             background: #e3f2fd;
             padding: 12px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 5px solid #2196f3;
+            border-radius: 16px;
+            margin-top: 12px;
         }
-        .step-box h4 {
-            margin: 0 0 8px 0;
-            color: #0b5e7e;
+        hr {
+            margin: 12px 0;
         }
-        .schema-img {
-            background: #fef9e6;
-            padding: 15px;
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 12px;
-            white-space: pre;
-            overflow-x: auto;
-        }
-        .footer-note {
-            background: #ffecb3;
-            padding: 12px;
-            font-size: 13px;
-            text-align: center;
-            border-top: 1px solid #ffc107;
-        }
-        .role-tag {
-            display: inline-block;
-            background: #2c3e66;
+        button {
+            background: #2c5e2e;
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-<div class="simulator">
-    <!-- Имитация ленты Access -->
-    <div class="access-ribbon">
-        <span class="ribbon-tab">📁 Главная</span>
-        <span class="ribbon-tab">📊 Создание</span>
-        <span class="ribbon-tab">🗄️ Внешние данные</span>
-        <span class="ribbon-tab">🔧 Работа с базами данных</span>
+<div class="trainer">
+    <div class="app-header">
+        <h1>🧱 Демоэкзамен В3</h1>
+        <p>Стройматериалы · Access + приложение</p>
     </div>
 
-    <div class="main-window">
-        <!-- Левая панель: Объекты БД -->
-        <div class="objects-pane">
-            <h3>🗂️ Все объекты Access</h3>
-            <ul class="object-list">
-                <li id="showTablesBtn">📋 Таблицы (5 шт)</li>
-                <li id="showSchemaBtn">🔗 Схема данных</li>
-                <li id="showQueriesBtn">⚡ Запросы</li>
-                <li id="showFormsBtn">🖼️ Формы</li>
-                <li id="showReportsBtn">📄 Отчёты</li>
-                <li id="showMacrosBtn">⚙️ Макросы (Autoexec)</li>
-            </ul>
-            <div style="margin-top: 20px; font-size: 12px; color: gray;">
-                ⚡ Демоэкзамен В3<br>
-                Строительные материалы
-            </div>
-        </div>
-
-        <!-- Правая область: динамический контент -->
-        <div class="content-area" id="contentArea">
-            <div class="access-toolbar">
-                <button class="access-btn" id="runQueryBtn">▶️ Выполнить SQL</button>
-                <button class="access-btn" id="importBtn">📂 Импорт данных (Excel/CSV)</button>
-                <button class="access-btn access-btn-orange" id="showInstructionsBtn">📖 Инструкция: что нажимать?</button>
-            </div>
-
-            <!-- Здесь будет отображаться динамический контент -->
-            <div id="dynamicContent">
-                <h2>Добро пожаловать в тренажёр Access</h2>
-                <p>Этот тренажёр показывает, <strong>как работать в Microsoft Access</strong> на демоэкзамене (вариант В3 — стройматериалы).</p>
-                <div class="step-box">
-                    <h4>📌 С чего начать на экзамене?</h4>
-                    <ol>
-                        <li>Открыть Access → <strong>«Создать базу данных»</strong> → дать имя <code>СтройМаркет.accdb</code></li>
-                        <li>В левой панели <strong>(Область переходов)</strong> нажать на <strong>«Таблицы»</strong> → создать таблицы через <strong>«Конструктор»</strong></li>
-                        <li>На вкладке <strong>«Работа с базами данных»</strong> → открыть <strong>«Схема данных»</strong> → добавить все таблицы и создать связи</li>
-                        <li>Импортировать данные через <strong>«Внешние данные» → «Excel/CSV»</strong></li>
-                        <li>Создать <strong>запросы, формы, отчёты</strong> через вкладку «Создание»</li>
-                    </ol>
-                </div>
-                <div class="step-box">
-                    <h4>🎯 Ключевые отличия варианта В3 (ваш вариант)</h4>
-                    <ul>
-                        <li>✅ Скидка <strong>больше 12%</strong> → фон строки <span style="background:#F4A460; padding:2px 8px;">#F4A460 (оранжевый)</span></li>
-                        <li>✅ Товара <strong>нет на складе</strong> → фон строки <span style="background:#ADD8E6; padding:2px 8px;">голубой</span></li>
-                        <li>✅ Фильтр — <strong>по производителю</strong> (выпадающий список)</li>
-                        <li>✅ Поиск в реальном времени (без кнопки «Найти»)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <div class="quick-actions">
+        <div class="quick-btn access" id="btnModule1">📁 Модуль 1 (БД)</div>
+        <div class="quick-btn access" id="btnModule2">📐 Модуль 2 (блок-схема)</div>
+        <div class="quick-btn access" id="btnModule3">🖥️ Модуль 3 (товары)</div>
+        <div class="quick-btn access" id="btnModule4">📦 Модуль 4 (заказы)</div>
     </div>
 
-    <div class="footer-note">
-        💡 На экзамене у вас будет Microsoft Access + среда разработки (C#/Python). Этот тренажёр — только визуальная подсказка.
+    <div class="content-card" id="contentArea">
+        <!-- динамический контент -->
+        <div id="dynamicContent">
+            <div class="visual-step">
+                <h3>📌 Добро пожаловать!</h3>
+                <p>Этот тренажёр <strong>показывает, куда нажимать в Access</strong> на демоэкзамене. Ваш вариант — <strong>В3 (строительные материалы)</strong>.</p>
+                <div class="finger">👇 Нажми на кнопки сверху, чтобы увидеть инструкции и визуальные подсказки.</div>
+            </div>
+
+            <div class="visual-step">
+                <h3>⚡ Отличия варианта В3 (запомни!)</h3>
+                <ul style="margin-left: 20px; font-size: 0.85rem;">
+                    <li>🎨 Скидка <strong>>12%</strong> → фон <span style="background:#F4A460; padding:2px 8px;">#F4A460</span> (оранжевый)</li>
+                    <li>📦 Нет на складе → фон <span style="background:#ADD8E6; padding:2px 8px;">голубой</span></li>
+                    <li>🏭 Фильтр — по <strong>производителю</strong> (выпадающий список)</li>
+                    <li>🔍 Поиск в реальном времени <strong>без кнопки "Найти"</strong></li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    // Данные для демонстрации таблиц и запросов
-    const sampleProducts = [
-        { id:1, name:"Цемент М500", category:"Смеси", producer:"Евроцемент", price:450, discount:5, stock:25, oldPrice:null },
-        { id:2, name:"Кирпич", category:"Кирпич", producer:"Кирпичный завод", price:18, discount:20, stock:0, oldPrice:24 },
-        { id:3, name:"Утеплитель Rockwool", category:"Утеплители", producer:"Rockwool", price:3200, discount:22, stock:15, oldPrice:4100 }
-    ];
-
-    function renderTableWithHighlight(productsArr) {
-        let html = '<table><thead><tr><th>ID</th><th>Товар</th><th>Категория</th><th>Производитель</th><th>Цена</th><th>Скидка</th><th>На складе</th></tr></thead><tbody>';
-        for(let p of productsArr) {
-            let rowClass = "";
-            let priceDisplay = `${p.price}₽`;
-            if(p.oldPrice && p.oldPrice !== p.price) {
-                priceDisplay = `<span class="old-price">${p.oldPrice}₽</span> ${p.price}₽`;
-            }
-            if(p.stock === 0) rowClass = "blue-bg";
-            else if(p.discount > 12) rowClass = "highlight";
-            html += `<tr class="${rowClass}"><td>${p.id}</td><td>${p.name}</td><td>${p.category}</td><td>${p.producer}</td><td>${priceDisplay}</td><td>${p.discount}%</td><td>${p.stock}</td></tr>`;
-        }
-        html += '</tbody></table>';
-        return html;
-    }
-
-    // Отображение схемы данных (имитация)
-    function showSchema() {
-        return `<h2>🔗 Схема данных (Access)</h2>
-        <div class="schema-img">
-        🗃️ Товары (id, название, категория_id, производитель_id, поставщик_id, цена, скидка, кол-во, фото)
-           │
-           │ (внешний ключ)
-           ▼
-        🗃️ Категории (id, название)
-        
-        🗃️ Производители (id, название)
-        
-        🗃️ Поставщики (id, название)
-        
-        🗃️ Пользователи (id, логин, пароль, роль, ФИО)
-        
-        🗃️ Заказы (id, статус, адрес_ПВЗ, дата_заказа)
-           │
-           ▼
-        🗃️ СоставЗаказа (id_заказа, id_товара, количество)
-        </div>
-        <div class="step-box"><h4>✅ Как создать связи:</h4>
-        <p>Вкладка «Работа с базами данных» → «Схема данных» → добавить все таблицы → перетащить первичный ключ на внешний ключ → включить «Обеспечение целостности данных».</p></div>`;
-    }
-
-    function showTables() {
-        return `<h2>📋 Таблицы базы данных (режим конструктора)</h2>
-        <p><strong>Таблица "Товары" (образец):</strong></p>
-        ${renderTableWithHighlight(sampleProducts)}
-        <div class="step-box"><h4>🔨 Как создать таблицу в Access:</h4>
-        <p>1. Вкладка «Создание» → «Конструктор таблиц»<br>
-        2. Задать имена полей и типы данных (Текстовый, Числовой, Денежный, Дата/время)<br>
-        3. Назначить первичный ключ (правой кнопкой мыши на поле → «Ключевое поле»)<br>
-        4. Сохранить (Ctrl+S)</p></div>`;
-    }
-
-    function showQueries() {
-        return `<h2>⚡ Запросы (для отчёта и фильтрации)</h2>
-        <p><strong>Пример SQL-запроса (вариант В3):</strong> товары со скидкой >12%</p>
-        <pre style="background:#eee;padding:10px;border-radius:8px;">SELECT Название, Цена, Скидка 
-FROM Товары 
-WHERE Скидка > 12 
-ORDER BY Цена DESC;</pre>
-        <p><strong>Перекрёстный запрос:</strong> количество товаров по производителям</p>
-        <div class="step-box"><h4>📌 Как создать запрос:</h4>
-        <p>«Создание» → «Конструктор запросов» → добавить таблицы → выбрать поля → задать условие → запустить (красный восклицательный знак)</p></div>`;
-    }
-
-    function showForms() {
-        return `<h2>🖼️ Формы (пользовательский интерфейс)</h2>
-        <p><strong>Главная форма (кнопки перехода):</strong> Клиенты, Услуги, Материалы, Отчёты, Статистика</p>
-        <div style="background:#eef;padding:15px;border-radius:12px;">
-            <button style="background:#2c5e2e;color:white;padding:8px 16px;margin:4px;">Клиенты</button>
-            <button style="background:#2c5e2e;color:white;padding:8px 16px;margin:4px;">Услуги</button>
-            <button style="background:#2c5e2e;color:white;padding:8px 16px;margin:4px;">Материалы</button>
-            <button style="background:#e67e22;color:white;padding:8px 16px;margin:4px;">Отчёты</button>
-            <button style="background:#e67e22;color:white;padding:8px 16px;margin:4px;">Статистика</button>
-        </div>
-        <div class="step-box"><h4>🖱️ Как создать форму:</h4>
-        <p>Выделить таблицу → «Создание» → «Форма» (мастер форм) → выбрать стиль → добавить кнопки навигации (мастер кнопок).</p></div>`;
-    }
-
-    function showReports() {
-        return `<h2>📄 Отчёты (для печати)</h2>
-        <p><strong>Пример отчёта:</strong> Список товаров со скидкой >12%</p>
-        <div style="border:1px solid #ccc;padding:12px;background:white;">
-            <h3>СтройМаркет — Отчёт по товарам</h3>
-            <table style="width:100%"><tr><th>Товар</th><th>Цена</th><th>Скидка</th></tr>
-            <tr><td>Кирпич</td><td>18₽</td><td>20%</td></tr>
-            <tr bgcolor="#F4A460"><td>Утеплитель</td><td>3200₽</td><td>22%</td></tr>
+    // -------- Модуль 1: БД, таблицы, схема, импорт --------
+    function module1HTML() {
+        return `
+        <div class="visual-step">
+            <h3>📁 Модуль 1 (50 мин) — Создание БД</h3>
+            <div class="mock-access">
+                <div class="mock-menu">
+                    <span class="mock-btn">📋 Таблицы</span>
+                    <span class="mock-btn">🔗 Схема данных</span>
+                    <span class="mock-btn">📂 Внешние данные</span>
+                </div>
+                <strong>👉 Что нажимать:</strong><br>
+                1️⃣ <strong>«Создание» → «Конструктор таблиц»</strong> → создать: Товары, Категории, Производители, Поставщики, Пользователи, Заказы, СоставЗаказа.<br>
+                2️⃣ Назначить <strong>первичный ключ</strong> (жёлтый ключик) → сохранить.<br>
+                3️⃣ <strong>«Работа с базами данных» → «Схема данных»</strong> → добавить таблицы → перетащить связи → включить <strong>«Обеспечение целостности»</strong>.<br>
+                4️⃣ <strong>«Внешние данные» → Excel/CSV</strong> → импорт файлов (Прил_2).<br>
+                5️⃣ <strong>ER-диаграмма</strong>: сохранить как PDF.
+            </div>
+            <div class="finger">👇 Пример таблицы Товары (с подсветкой В3)</div>
+            <table class="mock-table">
+                <thead><tr><th>Товар</th><th>Цена</th><th>Скидка</th><th>На складе</th></tr></thead>
+                <tbody>
+                    <tr><td>Цемент</td><td>450₽</td><td>5%</td><td>25</td></tr>
+                    <tr class="highlight-orange"><td>Кирпич</td><td><span class="old-price">24₽</span> 18₽</td><td>20%</td><td>0</td></tr>
+                    <tr class="highlight-blue"><td>Утеплитель</td><td><span class="old-price">4100₽</span> 3200₽</td><td>22%</td><td>15</td></tr>
+                </tbody>
             </table>
-        </div>
-        <div class="step-box"><h4>📑 Как создать отчёт:</h4>
-        <p>«Создание» → «Мастер отчётов» → выбрать запрос или таблицу → сгруппировать → сохранить.</p></div>`;
-    }
-
-    function showMacros() {
-        return `<h2>⚙️ Макрос Autoexec</h2>
-        <p><strong>Назначение:</strong> при запуске базы данных сворачивает область переходов и открывает главную форму.</p>
-        <div class="schema-img">
-        Макрос Autoexec:
-        ┌─────────────────────────────┐
-        │ NavigateTo: Область переходов → Скрыть
-        │ OpenForm: Главная форма
-        └─────────────────────────────┘
-        </div>
-        <div class="step-box"><h4>🛠️ Как создать макрос:</h4>
-        <p>«Создание» → «Макрос» → выбрать действие (NavigateTo, OpenForm) → сохранить как Autoexec.</p></div>`;
-    }
-
-    function showInstructions() {
-        return `<h2>📖 Полная инструкция по работе в Access (для демоэкзамена В3)</h2>
-        <div class="step-box">
-            <h4>1. СОЗДАНИЕ БАЗЫ ДАННЫХ (модуль 1, 50 минут)</h4>
-            <ul>
-                <li>Файл → Создать → Новая база данных → имя <strong>СтройМаркет.accdb</strong></li>
-                <li>Вкладка <strong>«Создание» → «Конструктор таблиц»</strong> → создать 5-7 таблиц (Товары, Категории, Производители, Поставщики, Пользователи, Заказы, СоставЗаказа)</li>
-                <li>Назначить <strong>первичные ключи</strong> (жёлтый ключик)</li>
-                <li><strong>Схема данных</strong>: Работа с базами данных → Схема данных → перетащить связи, включить <strong>«Обеспечение целостности данных»</strong></li>
-                <li><strong>Импорт</strong>: Внешние данные → Excel/CSV → выбрать файлы из Прил_2</li>
-                <li><strong>ER-диаграмма</strong>: скопировать схему данных в Word/PDF или через draw.io</li>
-            </ul>
-        </div>
-        <div class="step-box">
-            <h4>2. СОЗДАНИЕ ЗАПРОСОВ (вариант В3 — строительные материалы)</h4>
-            <ul>
-                <li><strong>Запрос с условием:</strong> Скидка >12%</li>
-                <li><strong>Запрос с группировкой:</strong> Количество товаров по производителям</li>
-                <li><strong>Запрос с вычисляемым полем:</strong> Цена со скидкой (цена - цена*скидка/100)</li>
-                <li><strong>Перекрёстный запрос:</strong> Товары по категориям и производителям</li>
-            </ul>
-        </div>
-        <div class="step-box">
-            <h4>3. ФОРМЫ (модуль 3 — 1 час 30 минут)</h4>
-            <ul>
-                <li><strong>Главная форма</strong> с кнопками: Товары, Отчёты, Статистика, Заказы, Выход</li>
-                <li><strong>Форма "Товары"</strong> → вывод таблицы, подсветка строк (скидка>12% → оранжевый, нет на складе → голубой)</li>
-                <li><strong>Форма поиска/фильтра</strong> → поле ввода + выпадающий список (производители) + кнопки сортировки</li>
-                <li><strong>Форма добавления/редактирования товара</strong> (только для администратора)</li>
-            </ul>
-        </div>
-        <div class="step-box">
-            <h4>4. ЧАСТЫЕ ОШИБКИ (чего НЕ делать)</h4>
-            <ul>
-                <li>❌ Забыть про ссылочную целостность в связях</li>
-                <li>❌ Не импортировать данные из файлов (потеря баллов)</li>
-                <li>❌ Сделать фильтрацию по кнопке — нужно в реальном времени</li>
-                <li>❌ Не выводить ФИО пользователя после входа</li>
-                <li>❌ Хранить фото в БД (нужно хранить путь к файлу)</li>
-            </ul>
+            <div class="step-plan"><strong>✅ Совет:</strong> сначала создай таблицы, потом связи, потом импорт.</div>
         </div>`;
     }
 
-    // Переключение вкладок
-    document.getElementById("showTablesBtn").onclick = () => document.getElementById("dynamicContent").innerHTML = showTables();
-    document.getElementById("showSchemaBtn").onclick = () => document.getElementById("dynamicContent").innerHTML = showSchema();
-    document.getElementById("showQueriesBtn").onclick = () => document.getElementById("dynamicContent").innerHTML = showQueries();
-    document.getElementById("showFormsBtn").onclick = () => document.getElementById("dynamicContent").innerHTML = showForms();
-    document.getElementById("showReportsBtn").onclick = () => document.getElementById("dynamicContent").innerHTML = showReports();
-    document.getElementById("showMacrosBtn").onclick = () => document.getElementById("dynamicContent").innerHTML = showMacros();
-    document.getElementById("showInstructionsBtn").onclick = () => showInstructions();
-    document.getElementById("showInstructionsBtn").onclick = () => document.getElementById("dynamicContent").innerHTML = showInstructions();
-    
-    // Имитация выполнения SQL
-    document.getElementById("runQueryBtn").onclick = () => {
-        document.getElementById("dynamicContent").innerHTML = `<h2>▶️ Результат SQL-запроса</h2>
-        <p><strong>Запрос:</strong> SELECT * FROM Товары WHERE Скидка > 12;</p>
-        ${renderTableWithHighlight(sampleProducts.filter(p => p.discount > 12))}
-        <div class="step-box">✅ В Access: «Создание» → «Конструктор запросов» → ввести SQL → выполнить (красный восклицательный знак).</div>`;
-    };
-    
-    document.getElementById("importBtn").onclick = () => {
-        document.getElementById("dynamicContent").innerHTML = `<h2>📂 Импорт данных в Access</h2>
-        <div class="step-box">
-            <h4>Пошаговая инструкция:</h4>
-            <ol>
-                <li>Вкладка <strong>«Внешние данные»</strong> → «Excel/CSV» (или «Текстовый файл»)</li>
-                <li>Нажать <strong>«Обзор»</strong> → выбрать файл (например, товары.csv)</li>
-                <li>Выбрать <strong>«Импортировать данные в новую таблицу»</strong></li>
-                <li>Указать разделитель (запятая/точка с запятой) и отметить <strong>«Первая строка содержит заголовки»</strong></li>
-                <li>Назначить типы данных столбцам → «Готово»</li>
-            </ol>
-            <p>📁 Файлы для импорта вам выдадут на экзамене (Приложение 2)</p>
+    // -------- Модуль 2: блок-схема ГОСТ --------
+    function module2HTML() {
+        return `
+        <div class="visual-step">
+            <h3>📐 Модуль 2 (40 мин) — Блок-схема</h3>
+            <div class="mock-access">
+                <p><strong>Где рисовать:</strong> draw.io / Visio / любой редактор → экспорт PDF.</p>
+                <p><strong>ГОСТ 19.701-90:</strong> овал (начало/конец), ромб (условие), прямоугольник (действие).</p>
+                <div style="background:#fff0d0; padding:10px; border-radius:12px; font-family:monospace; font-size:11px;">
+                [Старт] → [Подключение к БД] → [Показать окно входа] → ◇ (логин/пароль верны?)<br>
+                &nbsp;&nbsp;→ Да → [Определить роль] → [Главное окно с правами]<br>
+                &nbsp;&nbsp;→ Нет → [Сообщение об ошибке] → [Вернуться к вводу]
+                </div>
+                <div class="finger">🖱️ В draw.io: выбери «Блок-схема» → перетаскивай фигуры → линии → сохранить как PDF.</div>
+            </div>
         </div>`;
-    };
+    }
+
+    // -------- Модуль 3: товары + поиск + фильтр + подсветка (В3) --------
+    function module3HTML() {
+        return `
+        <div class="visual-step">
+            <h3>🖥️ Модуль 3 (1ч 30мин) — Список товаров</h3>
+            <div class="mock-access">
+                <strong>📍 Что делать в Access + приложении:</strong>
+                <ul style="margin: 8px 0 8px 20px;">
+                    <li>Создать форму «Список товаров».</li>
+                    <li>Вывести: фото, название, категорию, производителя, цену, скидку, остаток.</li>
+                    <li><strong>Условное форматирование (подсветка строк):</strong>
+                        <ul><li>скидка >12% → фон #F4A460</li><li>остаток = 0 → голубой фон</li></ul>
+                    </li>
+                    <li>Поиск (менеджер/админ): поле ввода → фильтр в реальном времени.</li>
+                    <li>Фильтр по производителю (выпадающий список).</li>
+                    <li>Сортировка по названию / цене.</li>
+                </ul>
+                <div class="finger">👉 В Access для подсветки: «Условное форматирование» (вкладка Формат) → выражение.</div>
+                <table class="mock-table">
+                    <tr class="highlight-orange"><td>Кирпич</td><td><span class="old-price">24₽</span> 18₽</td><td>скидка 20%</td><td>0 шт</td></tr>
+                    <tr><td>Цемент</td><td>450₽</td><td>5%</td><td>25 шт</td></tr>
+                    <tr class="highlight-blue"><td>Гипсокартон</td><td>550₽</td><td>10%</td><td>0 шт</td></tr>
+                </table>
+            </div>
+            <div class="step-plan"><strong>💡 Подсказка:</strong> поиск и фильтр должны работать без кнопки «Найти» — используй событие onChange / onInput.</div>
+        </div>`;
+    }
+
+    // -------- Модуль 4: заказы (админ + менеджер) --------
+    function module4HTML() {
+        return `
+        <div class="visual-step">
+            <h3>📦 Модуль 4 (1 час) — Заказы</h3>
+            <div class="mock-access">
+                <strong>➕ Добавить кнопку «Заказы» (для менеджера/админа)</strong><br>
+                Форма заказов: список (артикул, статус, адрес ПВЗ, дата заказа, дата выдачи).<br>
+                <ul>
+                    <li>🛠️ Администратор: добавление / редактирование / удаление заказа.</li>
+                    <li>📌 Статус заказа — выпадающий список (например: Новый, В обработке, Выдан).</li>
+                    <li>После изменений — обновление списка заказов.</li>
+                </ul>
+                <div class="finger">📌 В Access: создай таблицу «Заказы» + «СоставЗаказа». Связь с товарами.</div>
+            </div>
+        </div>`;
+    }
+
+    // общая инструкция + пошаговый план нажатий
+    function fullPlan() {
+        return `
+        <div class="visual-step">
+            <h3>🗺️ ПОШАГОВЫЙ ПЛАН (что нажимать на экзамене)</h3>
+            <div class="mock-access">
+                <strong>⏱️ 0:00 – 0:50 (Модуль 1):</strong><br>
+                • Пуск → Microsoft Access → «Новая база данных» → СтройМаркет.accdb<br>
+                • «Создание» → «Конструктор таблиц» → добавить поля → закрыть (дать имя таблице)<br>
+                • «Работа с базами данных» → «Схема данных» → добавить таблицы → создать связи<br>
+                • «Внешние данные» → «Excel/CSV» → выбрать файлы → импорт<br>
+                • «Файл» → «Сохранить как» → PDF (ER-диаграмму сделать через скриншот схемы)
+            </div>
+            <div class="mock-access">
+                <strong>⏱️ 0:50 – 1:30 (Модуль 2):</strong><br>
+                • Открыть draw.io → создать блок-схему по ГОСТ → экспорт PDF
+            </div>
+            <div class="mock-access">
+                <strong>⏱️ 1:30 – 3:00 (Модуль 3):</strong><br>
+                • Вкладка «Создание» → «Мастер форм» → выбрать таблицу Товары<br>
+                • Добавить поле поиска, выпадающий список производителей, кнопки сортировки<br>
+                • Условное форматирование: фон строки (скидка>12% → #F4A460, остаток=0 → голубой)
+            </div>
+            <div class="mock-access">
+                <strong>⏱️ 3:00 – 4:00 (Модуль 4):</strong><br>
+                • Создать форму «Заказы» → подчиненная форма «СоставЗаказа»<br>
+                • Добавить кнопку «Добавить заказ», «Редактировать», «Удалить»<br>
+                • Проверить, что товар, который есть в заказе, нельзя удалить
+            </div>
+            <div class="finger">🔥 СОВЕТ: Держи этот файл открытым на телефоне рядом с ноутбуком на экзамене.</div>
+        </div>`;
+    }
+
+    // переключение
+    let currentMode = "plan";
+
+    function setContent(html) {
+        document.getElementById("dynamicContent").innerHTML = html;
+    }
+
+    document.getElementById("btnModule1").onclick = () => setContent(module1HTML());
+    document.getElementById("btnModule2").onclick = () => setContent(module2HTML());
+    document.getElementById("btnModule3").onclick = () => setContent(module3HTML());
+    document.getElementById("btnModule4").onclick = () => setContent(module4HTML());
+
+    // дополнительная кнопка с планом (можно добавить в быстрые)
+    const quickDiv = document.querySelector(".quick-actions");
+    const planBtn = document.createElement("div");
+    planBtn.className = "quick-btn access";
+    planBtn.innerText = "🗺️ План по минутам";
+    planBtn.onclick = () => setContent(fullPlan());
+    quickDiv.appendChild(planBtn);
+
+    // покажем план по умолчанию
+    setContent(fullPlan());
 </script>
 </body>
 </html>
