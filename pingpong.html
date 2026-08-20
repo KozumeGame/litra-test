@@ -5,442 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пинг-понг · Нео-нуар</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        :root {
-            --bg: #0a0a0a;
-            --fg: #ffffff;
-            --dim: #666666;
-            --accent: #ff4444;
-            --border: #ffffff;
-            --gold: #ffd700;
-        }
-
-        .light-theme {
-            --bg: #f5f5f5;
-            --fg: #0a0a0a;
-            --dim: #999999;
-            --accent: #cc0000;
-            --border: #0a0a0a;
-        }
-
-        body {
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Press Start 2P', 'Courier New', monospace;
-            cursor: default;
-            transition: background 0.3s;
-        }
-
-        #gameContainer {
-            position: relative;
-            width: 1000px;
-            height: 500px;
-        }
-
-        canvas {
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            border: 4px solid var(--border);
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
-            transition: border-color 0.3s;
-            display: none;
-            background: var(--bg);
-        }
-
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            background: var(--bg);
-            color: var(--fg);
-            z-index: 10;
-            transition: background 0.3s, color 0.3s;
-            overflow-y: auto;
-            padding: 20px;
-            padding-top: 60px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .menu-title {
-            font-size: 32px;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            letter-spacing: 4px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .menu-button {
-            background: transparent;
-            color: var(--fg);
-            border: 2px solid var(--fg);
-            padding: 12px 30px;
-            margin: 6px;
-            font-family: 'Press Start 2P', 'Courier New', monospace;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-width: 250px;
-            text-align: center;
-            letter-spacing: 1px;
-            flex-shrink: 0;
-        }
-
-        .menu-button:hover {
-            background: var(--fg);
-            color: var(--bg);
-        }
-
-        .menu-button:active {
-            transform: scale(0.95);
-        }
-
-        .menu-button.small {
-            min-width: auto;
-            padding: 8px 15px;
-            font-size: 10px;
-        }
-
-        .menu-button.shop-btn {
-            border-color: #4444ff;
-            color: #4444ff;
-            min-width: 120px;
-        }
-
-        .menu-button.roulette-btn {
-            border-color: #ff4444;
-            color: #ff4444;
-            min-width: 120px;
-        }
-
-        .menu-button.codes-btn {
-            border-color: #00ff00;
-            color: #00ff00;
-            min-width: 120px;
-        }
-
-        .menu-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 20;
-            background: transparent;
-            color: var(--fg);
-            border: 1px solid var(--fg);
-            padding: 8px 12px;
-            font-family: 'Press Start 2P', 'Courier New', monospace;
-            font-size: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .back-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 20;
-            background: transparent;
-            color: var(--fg);
-            border: 1px solid var(--fg);
-            padding: 8px 12px;
-            font-family: 'Press Start 2P', 'Courier New', monospace;
-            font-size: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .info-text {
-            font-size: 10px;
-            line-height: 1.6;
-            text-align: center;
-            margin: 10px;
-            color: var(--dim);
-        }
-
-        .shop-section {
-            width: 100%;
-            max-width: 450px;
-            margin-bottom: 20px;
-        }
-
-        .shop-section-title {
-            font-size: 14px;
-            text-align: center;
-            margin: 15px 0;
-            color: var(--accent);
-            letter-spacing: 2px;
-        }
-
-        .ability-slot, .shop-item, .achievement-item, .paddle-skin, .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 8px auto;
-            padding: 12px;
-            border: 1px solid var(--dim);
-            width: 100%;
-            max-width: 400px;
-            justify-content: space-between;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .ability-slot.equipped, .paddle-skin.equipped {
-            border-color: var(--fg);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .achievement-item.unlocked {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        .ability-name, .paddle-name {
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-
-        .ability-desc {
-            font-size: 8px;
-            color: var(--dim);
-            margin-top: 4px;
-            line-height: 1.4;
-        }
-
-        .shop-price {
-            font-size: 12px;
-            color: #ffd700;
-        }
-
-        .coins-display {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 12px;
-            color: #ffd700;
-            z-index: 15;
-        }
-
-        .category-title {
-            font-size: 14px;
-            margin: 20px 0 10px;
-            letter-spacing: 2px;
-            color: var(--accent);
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .achievement-reward {
-            font-size: 10px;
-            color: #ffd700;
-        }
-
-        .setting-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 10px;
-            width: 100%;
-            max-width: 400px;
-            justify-content: space-between;
-        }
-
-        .setting-label {
-            font-size: 12px;
-        }
-
-        input[type="range"] {
-            width: 200px;
-            cursor: pointer;
-        }
-
-        .code-input {
-            background: transparent;
-            color: var(--fg);
-            border: 2px solid var(--fg);
-            padding: 10px;
-            font-family: 'Press Start 2P', 'Courier New', monospace;
-            font-size: 14px;
-            text-align: center;
-            width: 300px;
-            margin: 20px;
-            letter-spacing: 2px;
-        }
-
-        .screen::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .screen::-webkit-scrollbar-thumb {
-            background: var(--dim);
-            border-radius: 4px;
-        }
-
-        .pause-menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 30;
-            background: var(--bg);
-            border: 2px solid var(--fg);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        :root { --bg: #0a0a0a; --fg: #ffffff; --dim: #666666; --accent: #ff4444; --border: #ffffff; --gold: #ffd700; }
+        .light-theme { --bg: #f5f5f5; --fg: #0a0a0a; --dim: #999999; --accent: #cc0000; --border: #0a0a0a; }
+        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: 'Press Start 2P', 'Courier New', monospace; cursor: default; transition: background 0.3s; }
+        #gameContainer { position: relative; width: 1000px; height: 500px; }
+        canvas { image-rendering: pixelated; image-rendering: crisp-edges; border: 4px solid var(--border); box-shadow: 0 0 40px rgba(255,0,0,0.2); transition: border-color 0.3s; display: none; background: var(--bg); }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: var(--bg); color: var(--fg); z-index: 10; transition: background 0.3s, color 0.3s; overflow-y: auto; padding: 20px; padding-top: 60px; }
+        .hidden { display: none !important; }
+        .menu-title { font-size: 32px; margin-bottom: 30px; text-shadow: 0 0 20px rgba(255,255,255,0.5); letter-spacing: 4px; text-align: center; flex-shrink: 0; animation: fadeInDown 0.5s ease; }
+        .menu-button { background: transparent; color: var(--fg); border: 2px solid var(--fg); padding: 12px 30px; margin: 6px; font-family: 'Press Start 2P', 'Courier New', monospace; font-size: 12px; cursor: pointer; transition: all 0.2s; min-width: 250px; text-align: center; letter-spacing: 1px; flex-shrink: 0; animation: fadeInUp 0.4s ease backwards; }
+        .menu-button:nth-child(2) { animation-delay: 0.05s; }
+        .menu-button:nth-child(3) { animation-delay: 0.1s; }
+        .menu-button:nth-child(4) { animation-delay: 0.15s; }
+        .menu-button:nth-child(5) { animation-delay: 0.2s; }
+        .menu-button:nth-child(6) { animation-delay: 0.25s; }
+        .menu-button:nth-child(7) { animation-delay: 0.3s; }
+        .menu-button:hover { background: var(--fg); color: var(--bg); }
+        .menu-button:active { transform: scale(0.95); }
+        .menu-button.small { min-width: auto; padding: 8px 15px; font-size: 10px; }
+        .menu-button.shop-btn { border-color: #4444ff; color: #4444ff; min-width: 120px; }
+        .menu-button.roulette-btn { border-color: #ff4444; color: #ff4444; min-width: 120px; }
+        .menu-button.codes-btn { border-color: #00ff00; color: #00ff00; min-width: 120px; }
+        .menu-row { display: flex; gap: 10px; width: 100%; justify-content: center; flex-wrap: wrap; animation: fadeInUp 0.4s ease 0.2s backwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .theme-toggle, .back-button { position: absolute; top: 10px; z-index: 20; background: transparent; color: var(--fg); border: 1px solid var(--fg); padding: 8px 12px; font-family: 'Press Start 2P', 'Courier New', monospace; font-size: 10px; cursor: pointer; transition: all 0.2s; }
+        .theme-toggle { right: 10px; }
+        .back-button { left: 10px; }
+        .theme-toggle:hover, .back-button:hover { background: var(--fg); color: var(--bg); }
+        .coins-display { position: absolute; top: 10px; left: 10px; font-size: 12px; color: #ffd700; z-index: 15; }
+        .info-text { font-size: 10px; line-height: 1.6; text-align: center; margin: 10px; color: var(--dim); }
+        .shop-section { width: 100%; max-width: 450px; margin-bottom: 20px; }
+        .shop-section-title { font-size: 14px; text-align: center; margin: 15px 0; color: var(--accent); letter-spacing: 2px; }
+        .ability-slot, .shop-item, .achievement-item, .paddle-skin, .leaderboard-item, .map-item { display: flex; align-items: center; gap: 15px; margin: 8px auto; padding: 12px; border: 1px solid var(--dim); width: 100%; max-width: 400px; justify-content: space-between; transition: all 0.2s; flex-shrink: 0; animation: fadeInUp 0.3s ease backwards; }
+        .ability-slot.equipped, .paddle-skin.equipped, .map-item.selected { border-color: var(--fg); background: rgba(255,255,255,0.1); }
+        .achievement-item.unlocked { border-color: #ffd700; background: rgba(255,215,0,0.1); }
+        .achievement-item.locked { opacity: 0.5; }
+        .ability-name, .paddle-name, .map-name { font-size: 12px; letter-spacing: 1px; }
+        .ability-desc, .map-desc { font-size: 8px; color: var(--dim); margin-top: 4px; line-height: 1.4; }
+        .shop-price { font-size: 12px; color: #ffd700; }
+        .achievement-reward { font-size: 10px; color: #ffd700; }
+        .category-title { font-size: 14px; margin: 20px 0 10px; letter-spacing: 2px; color: var(--accent); text-align: center; flex-shrink: 0; }
+        .setting-item { display: flex; align-items: center; gap: 15px; margin: 10px; width: 100%; max-width: 400px; justify-content: space-between; }
+        .setting-label { font-size: 12px; }
+        input[type="range"] { width: 200px; cursor: pointer; }
+        .code-input { background: transparent; color: var(--fg); border: 2px solid var(--fg); padding: 10px; font-family: 'Press Start 2P', 'Courier New', monospace; font-size: 14px; text-align: center; width: 300px; margin: 20px; letter-spacing: 2px; }
+        .code-input:focus { outline: none; border-color: #00ff00; }
+        .screen::-webkit-scrollbar { width: 8px; }
+        .screen::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; }
+        .pause-menu { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 30; background: var(--bg); border: 2px solid var(--fg); padding: 30px; display: flex; flex-direction: column; gap: 15px; align-items: center; animation: fadeInUp 0.3s ease; }
         .rarity-common { color: #888888; }
         .rarity-rare { color: #4444ff; }
         .rarity-epic { color: #ff44ff; }
         .rarity-legendary { color: #ffd700; }
-        .rarity-secret { 
-            background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0088);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .slot-machine {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 20px;
-        }
-
-        .slot {
-            width: 80px;
-            height: 100px;
-            border: 2px solid var(--fg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            background: var(--bg);
-            overflow: hidden;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .slot.spinning {
-            animation: slotShake 0.1s infinite;
-        }
-
-        @keyframes slotShake {
-            0% { transform: translateY(-5px); }
-            50% { transform: translateY(5px); }
-            100% { transform: translateY(-5px); }
-        }
-
-        .loading-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        .loading-text {
-            font-size: 24px;
-            color: #fff;
-            animation: blink 1s infinite;
-            letter-spacing: 4px;
-        }
-
-        .rarity-list-container {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .rarity-btn {
-            padding: 10px 15px;
-            border: 2px solid;
-            cursor: pointer;
-            font-family: 'Press Start 2P', 'Courier New', monospace;
-            font-size: 10px;
-            background: transparent;
-            transition: all 0.2s;
-        }
-
+        .rarity-secret { background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0088); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .slot-machine { display: flex; gap: 20px; justify-content: center; margin: 20px; }
+        .slot { width: 80px; height: 100px; border: 2px solid var(--fg); display: flex; align-items: center; justify-content: center; font-size: 40px; background: var(--bg); overflow: hidden; position: relative; transition: all 0.3s; }
+        .slot.spinning { animation: slotShake 0.1s infinite; }
+        @keyframes slotShake { 0% { transform: translateY(-5px); } 50% { transform: translateY(5px); } 100% { transform: translateY(-5px); } }
+        .loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        .loading-text { font-size: 24px; color: #fff; animation: loadingPulse 1.5s infinite; letter-spacing: 4px; }
+        .loading-dots { display: flex; gap: 10px; margin-top: 20px; }
+        .loading-dot { width: 10px; height: 10px; background: #fff; border-radius: 50%; animation: dotBounce 0.6s infinite; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes loadingPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes dotBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .rarity-list-container { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; justify-content: center; }
+        .rarity-btn { padding: 10px 15px; border: 2px solid; cursor: pointer; font-family: 'Press Start 2P', 'Courier New', monospace; font-size: 10px; background: transparent; transition: all 0.2s; }
         .rarity-btn.common { border-color: #888888; color: #888888; }
         .rarity-btn.rare { border-color: #4444ff; color: #4444ff; }
         .rarity-btn.epic { border-color: #ff44ff; color: #ff44ff; }
         .rarity-btn.legendary { border-color: #ffd700; color: #ffd700; }
         .rarity-btn.secret { border-color: #ff0088; color: #ff0088; }
-
-        .rarity-btn.active {
-            background: currentColor;
-            color: var(--bg);
-        }
-
-        .rarity-abilities-list {
-            display: none;
-            margin: 10px 0;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .rarity-abilities-list.show {
-            display: block;
-        }
-
-        .rarity-ability-item {
-            padding: 8px;
-            border: 1px solid var(--dim);
-            margin: 5px 0;
-            font-size: 10px;
-        }
+        .rarity-btn.active { background: currentColor; color: var(--bg); }
+        .rarity-abilities-list { display: none; margin: 10px 0; width: 100%; max-width: 400px; }
+        .rarity-abilities-list.show { display: block; }
+        .rarity-ability-item { padding: 8px; border: 1px solid var(--dim); margin: 5px 0; font-size: 10px; }
+        .multiplier-btn { width: 50px; height: 50px; border: 2px solid var(--fg); background: transparent; color: var(--fg); font-family: 'Press Start 2P', 'Courier New', monospace; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .multiplier-btn:hover { background: var(--fg); color: var(--bg); }
+        .multiplier-selector { display: flex; gap: 5px; align-items: center; position: relative; }
+        .multiplier-dropdown { display: none; position: absolute; background: var(--bg); border: 2px solid var(--fg); padding: 10px; flex-direction: column; gap: 5px; z-index: 50; top: 100%; left: 0; }
+        .multiplier-dropdown.show { display: flex; }
+        .roulette-controls { display: flex; gap: 10px; align-items: center; position: relative; }
+        .roulette-result-box { border: 2px solid var(--fg); padding: 15px; margin: 15px auto; width: 100%; max-width: 400px; text-align: center; font-size: 10px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .music-btn { width: 50px; height: 50px; border: 2px solid var(--fg); background: transparent; color: var(--fg); font-family: 'Press Start 2P', 'Courier New', monospace; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .music-btn:hover { background: var(--fg); color: var(--bg); }
+        .map-preview { width: 100%; max-width: 400px; height: 80px; border: 1px solid var(--dim); margin: 5px 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .map-preview canvas { width: 100%; height: 100%; display: block; }
     </style>
 </head>
 <body>
     <div id="gameContainer">
         <canvas id="gameCanvas" width="1000" height="500"></canvas>
-        
         <button class="theme-toggle" id="themeToggle">🌓 ТЕМА</button>
         <div class="coins-display hidden" id="coinsDisplay">🪙 0</div>
-        
         <div class="loading-screen" id="loadingScreen">
-            <div class="loading-text">ЗАГРУЗКА...</div>
+            <div class="loading-text">ЗАГРУЗКА</div>
+            <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
         </div>
-        
         <div class="screen hidden" id="mainMenu">
             <div class="menu-title">ПИНГ-ПОНГ</div>
             <button class="menu-button" onclick="showScreen('modeSelect')">ИГРАТЬ</button>
@@ -457,48 +121,70 @@
             <button class="menu-button" onclick="showScreen('about')">ОБ ИГРЕ</button>
             <button class="menu-button codes-btn" onclick="showScreen('codes')">CODES</button>
         </div>
-        
         <div class="screen hidden" id="modeSelect">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">РЕЖИМ</div>
             <button class="menu-button" onclick="selectMode('score')">СЧЁТ (до 10)</button>
             <button class="menu-button" onclick="selectMode('hp')">HP (5 жизней)</button>
+            <button class="menu-button" onclick="selectMode('endless')">♾ БЕСКОНЕЧНЫЙ</button>
             <button class="menu-button" onclick="selectMode('nightmare')">💀 КОШМАР</button>
         </div>
-        
+        <div class="screen hidden" id="mapSelect">
+            <button class="back-button" onclick="showScreen('modeSelect')">←</button>
+            <div class="menu-title">КАРТА</div>
+            <div class="map-item" id="map_classic" onclick="selectMap('classic')">
+                <div><div class="map-name">КЛАССИЧЕСКАЯ</div><div class="map-desc">Чистая, без препятствий</div></div>
+            </div>
+            <div class="map-item" id="map_walls" onclick="selectMap('walls')">
+                <div><div class="map-name">СТЕНЫ</div><div class="map-desc">2 постоянные стены</div></div>
+            </div>
+            <div class="map-item" id="map_obstacles" onclick="selectMap('obstacles')">
+                <div><div class="map-name">ПОЛОСА ПРЕПЯТСТВИЙ</div><div class="map-desc">Стены появляются и исчезают</div></div>
+            </div>
+            <div class="map-item" id="map_narrow" onclick="selectMap('narrow')">
+                <div><div class="map-name">УЗКАЯ</div><div class="map-desc">Ограниченное пространство</div></div>
+            </div>
+        </div>
         <div class="screen hidden" id="difficultySelect">
-            <button class="back-button" onclick="showScreen('modeSelect')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mapSelect')">←</button>
             <div class="menu-title">СЛОЖНОСТЬ</div>
             <button class="menu-button" onclick="selectDifficulty('easy')">ЛЁГКИЙ</button>
             <button class="menu-button" onclick="selectDifficulty('medium')">СРЕДНИЙ</button>
             <button class="menu-button" onclick="selectDifficulty('hard')">СЛОЖНЫЙ</button>
         </div>
-        
         <div class="screen hidden" id="inventory">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">ИНВЕНТАРЬ</div>
             <div id="abilityList"></div>
             <div class="shop-section-title">ДОСКИ</div>
             <div id="paddleList"></div>
         </div>
-        
         <div class="screen hidden" id="shop">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">МАГАЗИН</div>
             <div id="shopPaddles"></div>
         </div>
-        
         <div class="screen hidden" id="roulette">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">РУЛЕТКА</div>
             <div class="slot-machine">
                 <div class="slot" id="slot1">?</div>
                 <div class="slot" id="slot2">?</div>
                 <div class="slot" id="slot3">?</div>
             </div>
-            <button class="menu-button roulette-btn" onclick="spinRoulette()">КРУТИТЬ (100 🪙)</button>
-            <div id="rouletteResult" class="info-text"></div>
-            
+            <div class="roulette-controls">
+                <button class="menu-button roulette-btn" id="spinBtn" onclick="spinRoulette()">КРУТИТЬ (100 🪙)</button>
+                <div class="multiplier-selector">
+                    <button class="multiplier-btn" id="multiplierBtn" onclick="toggleMultiplierDropdown(event)">1x</button>
+                    <div class="multiplier-dropdown" id="multiplierDropdown">
+                        <button class="menu-button small" onclick="setMultiplier(1)">1x</button>
+                        <button class="menu-button small" onclick="setMultiplier(10)">10x</button>
+                        <button class="menu-button small" onclick="setMultiplier(50)">50x</button>
+                        <button class="menu-button small" onclick="setMultiplier(100)">100x</button>
+                    </div>
+                </div>
+            </div>
+            <div class="roulette-result-box" id="rouletteResultBox">НАЖМИТЕ "КРУТИТЬ"</div>
             <div class="rarity-list-container">
                 <button class="rarity-btn common" onclick="toggleRarityList('common')">ОБЫЧНЫЕ</button>
                 <button class="rarity-btn rare" onclick="toggleRarityList('rare')">РЕДКИЕ</button>
@@ -506,7 +192,6 @@
                 <button class="rarity-btn legendary" onclick="toggleRarityList('legendary')">ЛЕГЕНДАРНЫЕ</button>
                 <button class="rarity-btn secret" onclick="toggleRarityList('secret')">СЕКРЕТНЫЕ</button>
             </div>
-            
             <div id="rarityLists">
                 <div class="rarity-abilities-list" id="list-common"></div>
                 <div class="rarity-abilities-list" id="list-rare"></div>
@@ -515,71 +200,53 @@
                 <div class="rarity-abilities-list" id="list-secret"></div>
             </div>
         </div>
-        
         <div class="screen hidden" id="codes">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">CODES</div>
             <input type="text" class="code-input" id="codeInput" placeholder="ВВЕДИТЕ КОД" maxlength="20">
             <button class="menu-button codes-btn" onclick="redeemCode()">АКТИВИРОВАТЬ</button>
             <div id="codeResult" class="info-text"></div>
         </div>
-        
         <div class="screen hidden" id="achievements">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">ДОСТИЖЕНИЯ</div>
             <div id="achievementsList"></div>
         </div>
-        
         <div class="screen hidden" id="challenges">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">ИСПЫТАНИЯ</div>
             <div id="challengesList"></div>
         </div>
-        
         <div class="screen hidden" id="leaderboard">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">ТАБЛИЦА ЛИДЕРОВ</div>
             <div id="leaderboardList"></div>
         </div>
-        
         <div class="screen hidden" id="profile">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">ПРОФИЛЬ</div>
             <div id="profileInfo" class="info-text"></div>
         </div>
-        
         <div class="screen hidden" id="settings">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">НАСТРОЙКИ</div>
-            <div class="setting-item">
-                <span class="setting-label">Громкость</span>
-                <input type="range" min="0" max="100" value="50" id="volumeSlider">
-            </div>
-            <div class="setting-item">
-                <span class="setting-label">Чувствительность</span>
-                <input type="range" min="50" max="200" value="100" id="sensitivitySlider">
-            </div>
+            <div class="setting-item"><span class="setting-label">Громкость</span><input type="range" min="0" max="100" value="50" id="volumeSlider" onchange="gameState.settings.volume=parseInt(this.value);saveGame();"></div>
+            <div class="setting-item"><span class="setting-label">Чувствительность</span><input type="range" min="50" max="200" value="100" id="sensitivitySlider" onchange="gameState.settings.sensitivity=parseInt(this.value);saveGame();"></div>
+            <div class="setting-item"><span class="setting-label">Музыка</span><button class="music-btn" id="musicToggle" onclick="toggleMusic()">🔇</button></div>
             <button class="menu-button" onclick="resetSettings()">СБРОС НАСТРОЕК</button>
             <button class="menu-button" onclick="resetProgress()">СБРОС ПРОГРЕССА</button>
         </div>
-        
         <div class="screen hidden" id="about">
-            <button class="back-button" onclick="showScreen('mainMenu')">← НАЗАД</button>
+            <button class="back-button" onclick="showScreen('mainMenu')">←</button>
             <div class="menu-title">ОБ ИГРЕ</div>
-            <div class="info-text">
-                ПИНГ-ПОНГ · НЕО-НУАР<br><br>
-                Версия: 3.0<br>
-                Автор: Kozume
-            </div>
+            <div class="info-text">ПИНГ-ПОНГ · НЕО-НУАР<br><br>Версия: 7.0<br>Автор: Kozume</div>
         </div>
-        
         <div class="screen hidden" id="gameOver">
             <div class="menu-title" id="gameOverTitle">GAME OVER</div>
             <div class="info-text" id="gameOverStats"></div>
             <button class="menu-button" onclick="restartGame()">РЕСТАРТ</button>
             <button class="menu-button" onclick="showScreen('mainMenu')">В МЕНЮ</button>
         </div>
-        
         <div class="pause-menu hidden" id="pauseMenu">
             <div class="menu-title">ПАУЗА</div>
             <button class="menu-button" onclick="resumeGame()">ПРОДОЛЖИТЬ</button>
@@ -588,51 +255,73 @@
     </div>
 
     <script>
-        // ============ СОСТОЯНИЕ ============
-        let gameState = {
-            screen: 'mainMenu', mode: 'score', difficulty: 'medium', theme: 'dark',
-            coins: 1000, playerHP: 5, aiHP: 5, playerScore: 0, aiScore: 0,
-            equippedAbility: null, ownedAbilities: [], equippedPaddle: 'classic',
-            ownedPaddles: ['classic'], achievements: [], gameRunning: false,
-            gameLoopRunning: false, paused: false,
-            settings: { volume: 50, sensitivity: 100, screenShake: true, flashes: true, particles: true, trail: true, pulsation: true },
-            stats: { gamesPlayed: 0, wins: 0, losses: 0, totalCoinsEarned: 0, totalTimePlayed: 0, favoriteAbility: null, favoritePaddle: 'classic' }
-        };
-
-        let usedCodes = [];
-        let sessionRecord = 0;
+        // ============ ГЛОБАЛЬНЫЕ ДАННЫЕ ============
+        const allAchievements = [
+            { id: 'first_goal', name: 'ПЕРВЫЙ ГОЛ', desc: 'Забить первый мяч', reward: 10, category: 'Основные' },
+            { id: 'streak_5', name: 'СЕРИЯ ИЗ 5', desc: '5 голов подряд', reward: 50, category: 'Основные' },
+            { id: 'streak_10', name: 'СЕРИЯ ИЗ 10', desc: '10 голов подряд', reward: 100, category: 'Основные' },
+            { id: 'speed_10', name: 'РАЗГОН', desc: 'Скорость 10', reward: 30, category: 'Скоростные' },
+            { id: 'speed_15', name: 'РЕАКТИВНЫЙ', desc: 'Скорость 15', reward: 80, category: 'Скоростные' },
+            { id: 'speed_20', name: 'СВЕРХЗВУК', desc: 'Скорость 20', reward: 150, category: 'Скоростные' },
+            { id: 'survivor', name: 'ВЫЖИВШИЙ', desc: 'Победа в HP', reward: 40, category: 'Режимные' },
+            { id: 'dominator', name: 'ДОМИНАТОР', desc: 'Победа 10-0', reward: 100, category: 'Режимные' },
+            { id: 'comeback', name: 'КАМБЭК', desc: 'Победа при 0-5', reward: 120, category: 'Режимные' },
+            { id: 'novice', name: 'НОВИЧОК', desc: 'Победа на лёгком', reward: 10, category: 'Сложность' },
+            { id: 'experienced', name: 'ОПЫТНЫЙ', desc: 'Победа на среднем', reward: 30, category: 'Сложность' },
+            { id: 'master', name: 'МАСТЕР', desc: 'Победа на сложном', reward: 80, category: 'Сложность' },
+            { id: 'impossible', name: 'НЕВОЗМОЖНЫЙ', desc: 'Победа в кошмаре', reward: 200, category: 'Сложность' },
+            { id: 'collector', name: 'КОЛЛЕКЦИОНЕР', desc: 'Купить 3 доски', reward: 50, category: 'Особые' },
+            { id: 'rich', name: 'БОГАЧ', desc: '5000 монет', reward: 100, category: 'Особые' },
+            { id: 'long_liver', name: 'ДОЛГОЖИТЕЛЬ', desc: '100 матчей', reward: 150, category: 'Особые' },
+            { id: 'lightning', name: 'МОЛНИЕНОСНЫЙ', desc: 'Выиграть за 30 секунд', reward: 50, category: 'Особые' },
+            { id: 'speedy', name: 'СКОРОСТНОЙ', desc: 'Достичь скорости 20', reward: 20, category: 'Скоростные' },
+            { id: 'unbreakable', name: 'НЕПРОБИВАЕМЫЙ', desc: 'Не дать ИИ 3 очка', reward: 30, category: 'Режимные' },
+            { id: 'endless_10', name: 'БЕСКОНЕЧНЫЙ 10', desc: '10 очков в бесконечном', reward: 50, category: 'Режимные' },
+            { id: 'endless_25', name: 'БЕСКОНЕЧНЫЙ 25', desc: '25 очков в бесконечном', reward: 100, category: 'Режимные' },
+            { id: 'endless_50', name: 'БЕСКОНЕЧНЫЙ 50', desc: '50 очков в бесконечном', reward: 200, category: 'Режимные' }
+        ];
 
         const abilities = [
             { id: 'powerstrike', name: 'POWER STRIKE', desc: 'Центр = ускорение ×1.5', rarity: 'common' },
             { id: 'magnet', name: 'MAGNET', desc: 'Мяч притягивается к центру', rarity: 'common' },
             { id: 'absorber', name: 'ABSORBER', desc: 'Отскок замедляет мяч', rarity: 'common' },
-            { id: 'curveball', name: 'CURVE BALL', desc: 'Края закручивают мяч', rarity: 'rare' },
-            { id: 'ghost', name: 'GHOST', desc: '15% шанс пройти сквозь доску', rarity: 'rare' },
-            { id: 'reflector', name: 'REFLECTOR', desc: '+20% скорости при отскоке', rarity: 'rare' },
+            { id: 'curveball', name: 'CURVE BALL', desc: 'Края = средняя дуга', rarity: 'rare' },
+            { id: 'ghost', name: 'GHOST', desc: '15% шанс пройти сквозь', rarity: 'rare' },
+            { id: 'reflector', name: 'REFLECTOR', desc: '+20% скорости', rarity: 'rare' },
             { id: 'nuckleball', name: 'NUCKLEBALL', desc: 'Центр = хаотичный полёт', rarity: 'epic' },
-            { id: 'shield', name: 'SHIELD', desc: 'Барьер от гола (интервал 25 сек)', rarity: 'epic' },
-            { id: 'splitshot', name: 'SPLIT SHOT', desc: 'Раздвоение мяча (интервал 5 сек)', rarity: 'epic' },
-            { id: 'timefreeze', name: 'TIME FREEZE', desc: 'Заморозка мяча при ударе', rarity: 'epic' },
-            { id: 'berserk', name: 'BERSERK', desc: 'При HP < 3 доска ×1.5', rarity: 'legendary' },
-            { id: 'phoenix', name: 'PHOENIX', desc: 'Восстановление HP при HP = 1', rarity: 'legendary' },
-            { id: 'offside', name: 'OFFSIDE', desc: '20% шанс отмены гола', rarity: 'legendary' },
+            { id: 'shield', name: 'SHIELD', desc: 'Барьер от гола (25 сек)', rarity: 'epic' },
+            { id: 'splitshot', name: 'SPLIT SHOT', desc: 'Раздвоение мяча (5 сек)', rarity: 'epic' },
+            { id: 'timefreeze', name: 'TIME FREEZE', desc: 'Заморозка мяча', rarity: 'epic' },
+            { id: 'berserk', name: 'BERSERK', desc: 'HP < 3 = доска ×1.5', rarity: 'legendary' },
+            { id: 'phoenix', name: 'PHOENIX', desc: 'Восстановление HP', rarity: 'legendary' },
+            { id: 'offside', name: 'OFFSIDE', desc: '20% отмена гола', rarity: 'legendary' },
             { id: 'mindcontrol', name: 'MIND CONTROL', desc: 'Управление траекторией', rarity: 'secret' },
-            { id: 'chaos', name: 'CHAOS', desc: 'Случайная способность при ударе', rarity: 'secret' }
+            { id: 'chaos', name: 'CHAOS', desc: 'Случайная способность', rarity: 'secret' }
         ];
 
         const paddles = [
-            { id: 'classic', name: 'КЛАССИЧЕСКАЯ', desc: 'Базовая доска', price: 0, color: '#ffffff' },
-            { id: 'neon', name: 'НЕОНОВАЯ', desc: 'Светится в темноте', price: 200, color: '#00ff00' },
-            { id: 'blood', name: 'КРОВАВАЯ', desc: 'Оставляет красный след', price: 300, color: '#ff0000' },
-            { id: 'gold', name: 'ЗОЛОТАЯ', desc: 'Блестит, частицы', price: 500, color: '#ffd700' },
-            { id: 'ghost_paddle', name: 'ПРИЗРАЧНАЯ', desc: 'Полупрозрачная', price: 600, color: 'rgba(255,255,255,0.5)' },
-            { id: 'fire', name: 'ОГНЕННАЯ', desc: 'Искры при ударе', price: 700, color: '#ff6600' },
-            { id: 'cosmic', name: 'КОСМИЧЕСКАЯ', desc: 'Звёзды, неон', price: 1000, color: '#6600ff' },
-            { id: 'dragon', name: 'ДРАКОНЬЯ', desc: 'Чешуя, огонь', price: 1200, color: '#00ff00' },
-            { id: 'void', name: 'ПУСТОТНАЯ', desc: 'Искажение пространства', price: 1500, color: '#330033' },
-            { id: 'rainbow', name: 'РАДУЖНАЯ', desc: 'Меняет цвета', price: 2000, color: 'rainbow' },
-            { id: 'chrome', name: 'ХРОМИРОВАННАЯ', desc: 'Зеркальная', price: 2500, color: '#cccccc' },
-            { id: 'divine', name: 'БОЖЕСТВЕННАЯ', desc: 'Сияние, лучи', price: 3000, color: '#ffff00' }
+            { id: 'classic', name: 'КЛАССИЧЕСКАЯ', desc: 'Базовая доска', price: 0, color: '#ffffff', bonus: null },
+            { id: 'neon', name: 'НЕОНОВАЯ', desc: 'Зелёная', price: 200, color: '#00ff00', bonus: null },
+            { id: 'blood', name: 'КРОВАВАЯ', desc: 'Красная', price: 300, color: '#ff0000', bonus: null },
+            { id: 'gold', name: 'ЗОЛОТАЯ', desc: '+25% монет', price: 500, color: '#ffd700', bonus: 'coins' },
+            { id: 'ghost_paddle', name: 'ПРИЗРАЧНАЯ', desc: '5% пройти сквозь ИИ', price: 600, color: 'rgba(255,255,255,0.5)', bonus: 'ghost' },
+            { id: 'fire', name: 'ОГНЕННАЯ', desc: '+15% скорость мяча', price: 700, color: '#ff6600', bonus: 'speed' },
+            { id: 'long', name: 'ДЛИННАЯ', desc: '+20% размер', price: 600, color: '#44ff44', bonus: 'size' },
+            { id: 'ice', name: 'ЛЕДЯНАЯ', desc: 'Усиления +1 сек', price: 800, color: '#44ddff', bonus: 'duration' },
+            { id: 'cosmic', name: 'КОСМИЧЕСКАЯ', desc: '+50% монет', price: 1500, color: '#6600ff', bonus: 'coins2' },
+            { id: 'dragon', name: 'ДРАКОНЬЯ', desc: 'Тёмно-зелёная', price: 1200, color: '#008844', bonus: null },
+            { id: 'void', name: 'ПУСТОТНАЯ', desc: 'Чёрная', price: 1500, color: '#330033', bonus: null },
+            { id: 'rainbow', name: 'РАДУЖНАЯ', desc: 'Переливается', price: 2000, color: 'rainbow', bonus: null },
+            { id: 'chrome', name: 'ХРОМИРОВАННАЯ', desc: 'Зеркальная', price: 2500, color: '#cccccc', bonus: null },
+            { id: 'imperial', name: 'ИМПЕРАТОРСКАЯ', desc: 'Сияющая', price: 3000, color: '#ffffff', bonus: 'all' },
+            { id: 'blue', name: 'СИНЯЯ', desc: 'Неоново-синяя', price: 200, color: '#4444ff', bonus: null },
+            { id: 'pink', name: 'РОЗОВАЯ', desc: 'Ярко-розовая', price: 300, color: '#ff44ff', bonus: null },
+            { id: 'turquoise', name: 'БИРЮЗОВАЯ', desc: 'Морская волна', price: 400, color: '#00ffcc', bonus: null },
+            { id: 'coral', name: 'КОРАЛЛОВАЯ', desc: 'Светло-красная', price: 500, color: '#ff6644', bonus: null },
+            { id: 'amber', name: 'ЯНТАРНАЯ', desc: 'Тёмно-оранжевая', price: 600, color: '#ffaa00', bonus: null },
+            { id: 'lavender', name: 'ЛАВАНДОВАЯ', desc: 'Светло-фиолетовая', price: 700, color: '#cc88ff', bonus: null },
+            { id: 'mint', name: 'МЯТНАЯ', desc: 'Светло-зелёная', price: 800, color: '#88ffcc', bonus: null },
+            { id: 'peach', name: 'ПЕРСИКОВАЯ', desc: 'Тёплый оранжевый', price: 900, color: '#ffcc88', bonus: null }
         ];
 
         const leaderboard = [
@@ -648,17 +337,41 @@
             { name: 'error_404', score: 208 }
         ];
 
+        // ============ СОСТОЯНИЕ ============
+        let gameState = {
+            screen: 'mainMenu', mode: 'score', difficulty: 'medium', theme: 'dark', map: 'classic',
+            coins: 1000, playerHP: 5, aiHP: 5, playerScore: 0, aiScore: 0,
+            equippedAbility: null, ownedAbilities: [], equippedPaddle: 'classic',
+            ownedPaddles: ['classic'], achievements: [], gameRunning: false,
+            gameLoopRunning: false, paused: false, musicEnabled: false,
+            settings: { volume: 50, sensitivity: 100, screenShake: true, flashes: true, particles: true, trail: true, pulsation: true },
+            stats: { gamesPlayed: 0, wins: 0, losses: 0, totalCoinsEarned: 0, totalTimePlayed: 0, favoriteAbility: null, favoritePaddle: 'classic' }
+        };
+
+        let usedCodes = [];
+        let sessionRecord = 0;
+        let rouletteMultiplier = 1;
+        let isSpinning = false;
+        let maxBallSpeed = 25;
+        let musicInterval = null;
+        let musicStep = 0;
+        let glitchEffects = [];
+        let invertFlash = 0;
+        let paddleSquash = 0;
+        let aiPaddleSquash = 0;
+        let phantomBall = null;
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let audioCtx = null;
 
         let playerPaddle = { x: 20, y: 250, width: 20, height: 80, speedMultiplier: 1 };
         let aiPaddle = { x: 960, y: 250, width: 20, height: 80 };
-        let ball = { 
+        let ball = {
             x: 500, y: 250, size: 16, speedX: 4, speedY: 3, baseSpeed: 4,
             speedMultiplier: 1, shieldActive: false, shieldCooldown: 0,
-            nuckleball: false, nuckleballTime: 0, curveball: false,
-            mindControlled: false, phantom: false, phantomTime: 0,
+            nuckleball: false, nuckleballTime: 0, curveball: false, curveballDir: 1,
+            curveballProgress: 0, mindControlled: false, phantom: false, phantomTime: 0,
             splitCooldown: 0, chaosCooldown: 0
         };
         let powerups = [];
@@ -667,7 +380,6 @@
         let obstacles = [];
         let screenShake = 0;
         let flashEffect = 0;
-        let colorPhase = 0;
         let gameTime = 0;
         let ballSpeed = 4;
         let combo = 0;
@@ -677,28 +389,152 @@
         let scoreMultiplier = 1;
         let winsStreak = 0;
         let activeEffects = { speed: 0, slow: 0, expand: 0, gold: 0 };
+        let isFirstReset = true;
+        let endlessBestScore = 0;
+        let staticWalls = [];
 
-        // ============ ФУНКЦИИ МЕНЮ ============
+        // ============ СОХРАНЕНИЕ ============
+        function saveGame() {
+            try {
+                const data = {
+                    coins: gameState.coins, ownedAbilities: gameState.ownedAbilities,
+                    ownedPaddles: gameState.ownedPaddles, equippedAbility: gameState.equippedAbility,
+                    equippedPaddle: gameState.equippedPaddle, achievements: gameState.achievements,
+                    stats: gameState.stats, theme: gameState.theme, usedCodes: usedCodes,
+                    winsStreak: winsStreak, settings: gameState.settings,
+                    sessionRecord: sessionRecord, musicEnabled: gameState.musicEnabled,
+                    endlessBestScore: endlessBestScore, map: gameState.map
+                };
+                localStorage.setItem('pingpong_save', JSON.stringify(data));
+            } catch(e) {}
+        }
+
+        function loadGame() {
+            try {
+                const data = JSON.parse(localStorage.getItem('pingpong_save'));
+                if (data) {
+                    if (data.coins !== undefined) gameState.coins = data.coins;
+                    if (data.ownedAbilities) gameState.ownedAbilities = data.ownedAbilities;
+                    if (data.ownedPaddles) gameState.ownedPaddles = data.ownedPaddles;
+                    if (data.equippedAbility !== undefined) gameState.equippedAbility = data.equippedAbility;
+                    if (data.equippedPaddle) gameState.equippedPaddle = data.equippedPaddle;
+                    if (data.achievements) gameState.achievements = data.achievements;
+                    if (data.stats) gameState.stats = data.stats;
+                    if (data.theme) gameState.theme = data.theme;
+                    if (data.usedCodes) usedCodes = data.usedCodes;
+                    if (data.winsStreak !== undefined) winsStreak = data.winsStreak;
+                    if (data.settings) gameState.settings = { ...gameState.settings, ...data.settings };
+                    if (data.sessionRecord !== undefined) sessionRecord = data.sessionRecord;
+                    if (data.musicEnabled !== undefined) gameState.musicEnabled = data.musicEnabled;
+                    if (data.endlessBestScore !== undefined) endlessBestScore = data.endlessBestScore;
+                    if (data.map) gameState.map = data.map;
+                    if (data.theme === 'light') {
+                        document.body.classList.add('light-theme');
+                        document.getElementById('themeToggle').textContent = '☀️ ТЕМА';
+                    }
+                }
+            } catch(e) {}
+        }
+
+        // ============ ЗВУК ============
+        function initAudio() {
+            if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+        }
+        function playPixelSound(freq = 440, dur = 0.05, vol = 0.3, type = 'square') {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol * (gameState.settings.volume / 100), audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + dur);
+            } catch(e) {}
+        }
+        function playCoinSound() { playPixelSound(800, 0.1, 0.2); setTimeout(() => playPixelSound(1000, 0.1, 0.2), 100); }
+        function playButtonSound() { playPixelSound(400, 0.03, 0.1); }
+        function playWinSound() { playPixelSound(600, 0.1, 0.3); setTimeout(() => playPixelSound(800, 0.1, 0.3), 100); setTimeout(() => playPixelSound(1000, 0.15, 0.3), 200); }
+        function playLoseSound() { playPixelSound(300, 0.15, 0.3); setTimeout(() => playPixelSound(200, 0.2, 0.3), 150); }
+        function playHitSound(speed) { playPixelSound(400 + speed * 10, 0.03, 0.25); }
+
+        function toggleMusic() {
+            gameState.musicEnabled = !gameState.musicEnabled;
+            const btn = document.getElementById('musicToggle');
+            if (btn) btn.textContent = gameState.musicEnabled ? '🔊' : '🔇';
+            if (gameState.musicEnabled) startMusic(); else stopMusic();
+            saveGame();
+        }
+        function startMusic() {
+            if (!audioCtx) initAudio();
+            if (!audioCtx || musicInterval) return;
+            const notes = [261, 329, 392, 523, 392, 329, 261, 293, 349, 440, 349, 293];
+            musicStep = 0;
+            musicInterval = setInterval(() => {
+                if (!gameState.musicEnabled || !audioCtx) return;
+                playPixelSound(notes[musicStep % notes.length], 0.15, 0.05, 'square');
+                musicStep++;
+            }, 200);
+        }
+        function stopMusic() { if (musicInterval) { clearInterval(musicInterval); musicInterval = null; } }
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('menu-button') || e.target.classList.contains('back-button') || e.target.classList.contains('theme-toggle') || e.target.classList.contains('rarity-btn') || e.target.classList.contains('music-btn') || e.target.classList.contains('multiplier-btn')) {
+                playButtonSound();
+            }
+        });
+
+        // ============ МЕНЮ ============
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(screenId).classList.remove('hidden');
             gameState.screen = screenId;
             if (screenId === 'inventory') updateInventory();
             if (screenId === 'shop') updateShop();
-            if (screenId === 'roulette') buildRarityLists();
+            if (screenId === 'roulette') { buildRarityLists(); isSpinning = false; const spinBtn = document.getElementById('spinBtn'); if (spinBtn) spinBtn.disabled = false; updateSpinButtonText(); }
             if (screenId === 'leaderboard') updateLeaderboard();
             if (screenId === 'profile') updateProfile();
+            if (screenId === 'achievements') updateAchievements();
+            if (screenId === 'challenges') updateChallenges();
+            if (screenId === 'settings') updateMusicButton();
+            if (screenId === 'mapSelect') updateMapSelection();
             canvas.style.display = (screenId === 'game') ? 'block' : 'none';
             document.getElementById('coinsDisplay').classList.toggle('hidden', screenId === 'game');
             updateCoinsDisplay();
+            saveGame();
+        }
+
+        function updateMusicButton() {
+            const btn = document.getElementById('musicToggle');
+            if (btn) btn.textContent = gameState.musicEnabled ? '🔊' : '🔇';
         }
 
         function selectMode(mode) {
             gameState.mode = mode;
             if (mode === 'nightmare') {
-                if (winsStreak >= 3) selectDifficulty('hard');
+                if (winsStreak >= 3) showScreen('mapSelect');
                 else { alert('Нужно 3 победы подряд!'); showScreen('modeSelect'); }
-            } else showScreen('difficultySelect');
+            } else {
+                showScreen('mapSelect');
+            }
+        }
+
+        function updateMapSelection() {
+            document.querySelectorAll('.map-item').forEach(item => item.classList.remove('selected'));
+            const selected = document.getElementById('map_' + gameState.map);
+            if (selected) selected.classList.add('selected');
+        }
+
+        function selectMap(mapId) {
+            gameState.map = mapId;
+            updateMapSelection();
+            saveGame();
+            if (gameState.mode === 'endless') {
+                startGame();
+            } else {
+                showScreen('difficultySelect');
+            }
         }
 
         function selectDifficulty(difficulty) {
@@ -719,6 +555,7 @@
             particles = [];
             trail = [];
             obstacles = [];
+            staticWalls = [];
             powerupSpawnTimer = 0;
             obstacleSpawnTimer = 0;
             scoreMultiplier = 1;
@@ -732,7 +569,29 @@
             ball.shieldCooldown = 0;
             ball.splitCooldown = 0;
             ball.chaosCooldown = 0;
+            ball.curveball = false;
+            ball.curveballDir = 1;
+            ball.curveballProgress = 0;
+            ball.nuckleball = false;
+            ball.mindControlled = false;
+            ball.phantom = false;
+            sessionRecord = 0;
+            isFirstReset = true;
+            glitchEffects = [];
+            invertFlash = 0;
+            paddleSquash = 0;
+            aiPaddleSquash = 0;
+            phantomBall = null;
+            
+            // Применяем бонусы доски
+            applyPaddleBonus();
+            
+            ball.baseSpeed = gameState.mode === 'nightmare' ? 8 : 4;
             resetBall(1);
+            
+            // Создаём карту
+            setupMap();
+            
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             canvas.style.display = 'block';
             gameState.screen = 'game';
@@ -742,10 +601,49 @@
             }
         }
 
+        function applyPaddleBonus() {
+            const paddle = paddles.find(p => p.id === gameState.equippedPaddle);
+            if (!paddle || !paddle.bonus) return;
+            switch(paddle.bonus) {
+                case 'size': playerPaddle.height = 96; break;
+                case 'speed': break;
+                case 'ghost': break;
+                case 'coins': break;
+                case 'coins2': break;
+                case 'duration': break;
+                case 'all': playerPaddle.height = 84; break;
+            }
+        }
+
+        function setupMap() {
+            if (gameState.map === 'walls') {
+                staticWalls = [
+                    { x: 400, y: 50, width: 8, height: 150 },
+                    { x: 600, y: 300, width: 8, height: 150 }
+                ];
+            } else if (gameState.map === 'narrow') {
+                staticWalls = [
+                    { x: 300, y: 0, width: 8, height: 100 },
+                    { x: 300, y: 400, width: 8, height: 100 },
+                    { x: 700, y: 0, width: 8, height: 100 },
+                    { x: 700, y: 400, width: 8, height: 100 }
+                ];
+            }
+        }
+
         function restartGame() { startGame(); }
         function pauseGame() { if (gameState.gameRunning && !gameState.paused) { gameState.paused = true; document.getElementById('pauseMenu').classList.remove('hidden'); } }
         function resumeGame() { gameState.paused = false; document.getElementById('pauseMenu').classList.add('hidden'); }
-        function exitToMenu() { gameState.gameRunning = false; gameState.paused = false; document.getElementById('pauseMenu').classList.add('hidden'); showScreen('mainMenu'); }
+        function exitToMenu() {
+            gameState.gameRunning = false;
+            gameState.paused = false;
+            document.getElementById('pauseMenu').classList.add('hidden');
+            powerups = []; particles = []; trail = []; obstacles = []; staticWalls = [];
+            screenShake = 0; flashEffect = 0; isSpinning = false; glitchEffects = [];
+            invertFlash = 0; phantomBall = null;
+            saveGame();
+            showScreen('mainMenu');
+        }
 
         function updateInventory() {
             const abilityContainer = document.getElementById('abilityList');
@@ -776,8 +674,8 @@
             });
         }
 
-        function equipAbility(id) { gameState.equippedAbility = id; updateInventory(); }
-        function equipPaddle(id) { gameState.equippedPaddle = id; updateInventory(); }
+        function equipAbility(id) { gameState.equippedAbility = id; updateInventory(); saveGame(); }
+        function equipPaddle(id) { gameState.equippedPaddle = id; updateInventory(); saveGame(); }
 
         function updateShop() {
             const container = document.getElementById('shopPaddles');
@@ -786,34 +684,33 @@
                 const isOwned = gameState.ownedPaddles.includes(paddle.id);
                 const item = document.createElement('div');
                 item.className = 'shop-item';
-                item.innerHTML = `<div><div class="paddle-name">${paddle.name}</div><div class="ability-desc">${paddle.desc}</div></div>${isOwned ? '<div class="shop-price">✓ КУПЛЕНО</div>' : `<button class="menu-button small" onclick="buyPaddle('${paddle.id}')">🪙 ${paddle.price}</button>`}`;
+                item.innerHTML = `<div><div class="paddle-name">${paddle.name}</div><div class="ability-desc">${paddle.desc}</div></div>${isOwned ? '<div class="shop-price">✓</div>' : `<button class="menu-button small" onclick="buyPaddle('${paddle.id}')">🪙 ${paddle.price}</button>`}`;
                 container.appendChild(item);
             });
         }
 
         function buyPaddle(id) {
             const paddle = paddles.find(p => p.id === id);
-            if (gameState.coins >= paddle.price && !gameState.ownedPaddles.includes(id)) {
+            if (paddle && gameState.coins >= paddle.price && !gameState.ownedPaddles.includes(id)) {
                 gameState.coins -= paddle.price;
                 gameState.ownedPaddles.push(id);
-                updateShop();
-                updateCoinsDisplay();
-                playCoinSound();
+                updateShop(); updateCoinsDisplay(); playCoinSound();
+                checkAchievement('collector'); saveGame();
             }
         }
 
         // ============ РУЛЕТКА ============
         function buildRarityLists() {
             const rarities = ['common', 'rare', 'epic', 'legendary', 'secret'];
-            const rarityNames = { common: 'ОБЫЧНЫЕ', rare: 'РЕДКИЕ', epic: 'ЭПИЧЕСКИЕ', legendary: 'ЛЕГЕНДАРНЫЕ', secret: 'СЕКРЕТНЫЕ' };
             rarities.forEach(rarity => {
                 const list = document.getElementById(`list-${rarity}`);
+                if (!list) return;
                 list.innerHTML = '';
-                const abilitiesOfRarity = abilities.filter(a => a.rarity === rarity);
-                abilitiesOfRarity.forEach(ability => {
+                abilities.filter(a => a.rarity === rarity).forEach(ability => {
                     const item = document.createElement('div');
                     item.className = 'rarity-ability-item';
-                    item.innerHTML = `<span class="rarity-${rarity}">${ability.name}</span> — ${ability.desc}`;
+                    const owned = gameState.ownedAbilities.includes(ability.id) ? ' [✓]' : '';
+                    item.innerHTML = `<span class="rarity-${rarity}">${ability.name}</span> — ${ability.desc}${owned}`;
                     list.appendChild(item);
                 });
             });
@@ -822,42 +719,66 @@
         function toggleRarityList(rarity) {
             const list = document.getElementById(`list-${rarity}`);
             const btn = document.querySelector(`.rarity-btn.${rarity}`);
+            if (!list || !btn) return;
             const allLists = document.querySelectorAll('.rarity-abilities-list');
             const allBtns = document.querySelectorAll('.rarity-btn');
-            
-            if (list.classList.contains('show')) {
-                list.classList.remove('show');
-                btn.classList.remove('active');
-            } else {
+            if (list.classList.contains('show')) { list.classList.remove('show'); btn.classList.remove('active'); }
+            else {
                 allLists.forEach(l => l.classList.remove('show'));
                 allBtns.forEach(b => b.classList.remove('active'));
-                list.classList.add('show');
-                btn.classList.add('active');
+                list.classList.add('show'); btn.classList.add('active');
             }
         }
 
+        function toggleMultiplierDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('multiplierDropdown');
+            if (dropdown) dropdown.classList.toggle('show');
+            playButtonSound();
+        }
+        function setMultiplier(mult) {
+            rouletteMultiplier = mult;
+            const btn = document.getElementById('multiplierBtn');
+            if (btn) btn.textContent = mult + 'x';
+            const dropdown = document.getElementById('multiplierDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+            updateSpinButtonText(); playButtonSound();
+        }
+        function updateSpinButtonText() {
+            const btn = document.getElementById('spinBtn');
+            if (btn) btn.textContent = `КРУТИТЬ (${100 * rouletteMultiplier} 🪙)`;
+        }
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('multiplierDropdown');
+            if (dropdown && dropdown.classList.contains('show') && !e.target.closest('.multiplier-selector')) dropdown.classList.remove('show');
+        });
+
         function spinRoulette() {
-            if (gameState.coins < 100) {
-                document.getElementById('rouletteResult').textContent = 'Недостаточно монет!';
+            if (isSpinning) return;
+            const cost = 100 * rouletteMultiplier;
+            if (gameState.coins < cost) {
+                document.getElementById('rouletteResultBox').textContent = 'НЕДОСТАТОЧНО МОНЕТ!';
                 return;
             }
-            gameState.coins -= 100;
-            updateCoinsDisplay();
-            playCoinSound();
+            isSpinning = true;
+            gameState.coins -= cost;
+            updateCoinsDisplay(); playCoinSound();
+            const spinBtn = document.getElementById('spinBtn');
+            if (spinBtn) spinBtn.disabled = true;
             const slots = ['slot1', 'slot2', 'slot3'];
             const rarities = ['common', 'rare', 'epic', 'legendary', 'secret'];
-            const weights = [40, 30, 20, 8, 2];
+            const weights = [35, 30, 22, 10, 3];
             const results = [];
             slots.forEach((slotId, index) => {
                 const slot = document.getElementById(slotId);
-                slot.textContent = '';
-                slot.className = 'slot spinning';
+                slot.textContent = ''; slot.className = 'slot spinning';
                 let spinInterval = setInterval(() => {
                     const r = rarities[Math.floor(Math.random() * rarities.length)];
                     slot.textContent = getRaritySymbol(r);
                     slot.className = 'slot spinning rarity-' + r;
                     playPixelSound(600 + Math.random() * 400, 0.02, 0.08);
-                }, 100);
+                }, 80);
                 setTimeout(() => {
                     clearInterval(spinInterval);
                     const rarity = weightedRandom(rarities, weights);
@@ -865,8 +786,13 @@
                     slot.textContent = getRaritySymbol(rarity);
                     slot.className = 'slot rarity-' + rarity;
                     playPixelSound(800, 0.1, 0.3);
-                    if (index === 2) checkRouletteResult(results);
-                }, 1500 + index * 800);
+                    if (index === 2) {
+                        processRouletteResults(results, cost);
+                        isSpinning = false;
+                        if (spinBtn) spinBtn.disabled = false;
+                        updateSpinButtonText();
+                    }
+                }, 1200 + index * 700);
             });
         }
 
@@ -876,35 +802,42 @@
             for (let i = 0; i < items.length; i++) { r -= weights[i]; if (r <= 0) return items[i]; }
             return items[0];
         }
+        function getRaritySymbol(rarity) { return { common: '●', rare: '◆', epic: '▲', legendary: '★', secret: '✦' }[rarity] || '?'; }
 
-        function getRaritySymbol(rarity) {
-            return { common: '●', rare: '◆', epic: '▲', legendary: '★', secret: '✦' }[rarity] || '?';
-        }
+        function processRouletteResults(results, cost) {
+            const resultBox = document.getElementById('rouletteResultBox');
+            let totalWinnings = 0;
+            let abilitiesWon = [];
+            const compensations = { common: 50, rare: 100, epic: 200, legendary: 500, secret: 1000 };
+            const consolations = { common: 25, rare: 50, epic: 75, legendary: 100, secret: 150 };
 
-        function checkRouletteResult(results) {
-            const resultDiv = document.getElementById('rouletteResult');
-            if (Math.random() < 0.05) { resultDiv.textContent = '😅 Пусто!'; return; }
             if (results[0] === results[1] && results[1] === results[2]) {
                 const rarity = results[0];
                 const abilitiesOfRarity = abilities.filter(a => a.rarity === rarity);
-                const ability = abilitiesOfRarity[Math.floor(Math.random() * abilitiesOfRarity.length)];
-                if (gameState.ownedAbilities.includes(ability.id)) {
-                    const comp = { common: 50, rare: 100, epic: 200, legendary: 500, secret: 1000 }[rarity];
-                    gameState.coins += comp;
-                    resultDiv.textContent = `Дубликат! +${comp} 🪙`;
-                } else {
-                    gameState.ownedAbilities.push(ability.id);
-                    resultDiv.textContent = `Выигрыш: ${ability.name}!`;
-                    playCoinSound();
+                for (let i = 0; i < rouletteMultiplier; i++) {
+                    const ability = abilitiesOfRarity[Math.floor(Math.random() * abilitiesOfRarity.length)];
+                    if (gameState.ownedAbilities.includes(ability.id)) totalWinnings += compensations[rarity];
+                    else { gameState.ownedAbilities.push(ability.id); if (!abilitiesWon.includes(ability.name)) abilitiesWon.push(ability.name); }
                 }
             } else {
                 const order = ['common', 'rare', 'epic', 'legendary', 'secret'];
                 const lowest = results.reduce((a, b) => order.indexOf(a) < order.indexOf(b) ? a : b);
-                const consolation = { common: 25, rare: 50, epic: 75, legendary: 100, secret: 150 }[lowest];
-                gameState.coins += consolation;
-                resultDiv.textContent = `Утешительный приз: +${consolation} 🪙`;
+                totalWinnings = consolations[lowest] * rouletteMultiplier;
+                if (Math.random() < 0.3 * rouletteMultiplier) {
+                    const randomAbility = abilities[Math.floor(Math.random() * abilities.length)];
+                    if (!gameState.ownedAbilities.includes(randomAbility.id)) { gameState.ownedAbilities.push(randomAbility.id); abilitiesWon.push(randomAbility.name); }
+                    else totalWinnings += 50;
+                }
             }
-            updateCoinsDisplay();
+
+            gameState.coins += totalWinnings;
+            updateCoinsDisplay(); saveGame(); buildRarityLists();
+            
+            let msg = '';
+            if (abilitiesWon.length > 0) { msg = `🎉 ВЫИГРЫШ: ${abilitiesWon.join(', ')}!`; playCoinSound(); }
+            if (totalWinnings > 0) msg += (msg ? ' ' : '') + `💰 +${totalWinnings} 🪙`;
+            if (!msg) msg = '😅 ПУСТО! ПОВЕЗЁТ В СЛЕДУЮЩИЙ РАЗ!';
+            resultBox.textContent = msg;
         }
 
         // ============ CODES ============
@@ -912,18 +845,61 @@
             const input = document.getElementById('codeInput');
             const code = input.value.trim().toUpperCase();
             const result = document.getElementById('codeResult');
-            if (usedCodes.includes(code)) { result.textContent = '❌ Код уже использован!'; return; }
-            if (code === 'KOZUME50000') {
-                gameState.coins += 50000;
-                usedCodes.push(code);
-                updateCoinsDisplay();
-                result.textContent = '✅ +50000 монет!';
-                playCoinSound();
-            } else result.textContent = '❌ Неверный код!';
+            if (usedCodes.includes(code)) { result.textContent = '❌ Код уже использован!'; }
+            else if (code === 'KOZUME50000') { gameState.coins += 50000; usedCodes.push(code); updateCoinsDisplay(); result.textContent = '✅ +50000 монет!'; playCoinSound(); saveGame(); }
+            else if (code === 'ALLABILITIES') { abilities.forEach(a => { if (!gameState.ownedAbilities.includes(a.id)) gameState.ownedAbilities.push(a.id); }); usedCodes.push(code); result.textContent = '✅ Все способности!'; playCoinSound(); saveGame(); buildRarityLists(); updateInventory(); }
+            else { result.textContent = '❌ Неверный код!'; }
             input.value = '';
         }
 
-        // ============ ПРОЧИЕ ЭКРАНЫ ============
+        // ============ ДОСТИЖЕНИЯ ============
+        function updateAchievements() {
+            const container = document.getElementById('achievementsList');
+            container.innerHTML = '';
+            const categories = ['Основные', 'Скоростные', 'Режимные', 'Сложность', 'Особые'];
+            categories.forEach(category => {
+                const title = document.createElement('div');
+                title.className = 'category-title';
+                title.textContent = category.toUpperCase();
+                container.appendChild(title);
+                allAchievements.filter(a => a.category === category).forEach(achievement => {
+                    const isUnlocked = gameState.achievements.includes(achievement.id);
+                    const item = document.createElement('div');
+                    item.className = 'achievement-item ' + (isUnlocked ? 'unlocked' : 'locked');
+                    item.innerHTML = `<div><div class="ability-name">${achievement.name}</div><div class="ability-desc">${achievement.desc}</div></div><div class="achievement-reward">${isUnlocked ? '✓' : '🪙 ' + achievement.reward}</div>`;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        function checkAchievement(id) {
+            if (!gameState.achievements.includes(id)) {
+                const achievement = allAchievements.find(a => a.id === id);
+                if (achievement) { gameState.achievements.push(id); gameState.coins += achievement.reward; updateCoinsDisplay(); saveGame(); }
+            }
+        }
+
+        function updateChallenges() {
+            const container = document.getElementById('challengesList');
+            container.innerHTML = '';
+            const challengesData = [
+                { id: 'lightning', name: 'МОЛНИЕНОСНЫЙ', desc: 'Выиграть за 30 секунд', reward: 50 },
+                { id: 'unbreakable', name: 'НЕПРОБИВАЕМЫЙ', desc: 'Не дать ИИ 3 очка', reward: 30 },
+                { id: 'speedy', name: 'СКОРОСТНОЙ', desc: 'Скорость 20', reward: 20 },
+                { id: 'endless_10', name: 'БЕСКОНЕЧНЫЙ 10', desc: '10 очков', reward: 50 },
+                { id: 'endless_25', name: 'БЕСКОНЕЧНЫЙ 25', desc: '25 очков', reward: 100 },
+                { id: 'endless_50', name: 'БЕСКОНЕЧНЫЙ 50', desc: '50 очков', reward: 200 }
+            ];
+            challengesData.forEach(challenge => {
+                const completed = gameState.achievements.includes(challenge.id);
+                const item = document.createElement('div');
+                item.className = 'achievement-item ' + (completed ? 'unlocked' : 'locked');
+                item.innerHTML = `<div><div class="ability-name">${challenge.name}</div><div class="ability-desc">${challenge.desc}</div></div><div class="achievement-reward">${completed ? '✓' : '🪙 ' + challenge.reward}</div>`;
+                container.appendChild(item);
+            });
+        }
+
+        // ============ ПРОЧЕЕ ============
         function updateLeaderboard() {
             const container = document.getElementById('leaderboardList');
             container.innerHTML = '';
@@ -934,114 +910,85 @@
                 container.appendChild(item);
             });
         }
-
         function updateProfile() {
-            const info = document.getElementById('profileInfo');
-            info.innerHTML = `Матчей: ${gameState.stats.gamesPlayed}<br>Побед: ${gameState.stats.wins}<br>Поражений: ${gameState.stats.losses}<br>Монет заработано: ${gameState.stats.totalCoinsEarned}`;
+            document.getElementById('profileInfo').innerHTML = `Матчей: ${gameState.stats.gamesPlayed}<br>Побед: ${gameState.stats.wins}<br>Поражений: ${gameState.stats.losses}<br>Монет заработано: ${gameState.stats.totalCoinsEarned}<br>Время в игре: ${Math.floor(gameState.stats.totalTimePlayed / 60)} мин<br>Бесконечный рекорд: ${endlessBestScore}`;
         }
-
-        function updateCoinsDisplay() {
-            document.getElementById('coinsDisplay').textContent = `🪙 ${gameState.coins}`;
-        }
+        function updateCoinsDisplay() { document.getElementById('coinsDisplay').textContent = `🪙 ${gameState.coins}`; }
 
         function resetSettings() {
             gameState.settings = { volume: 50, sensitivity: 100, screenShake: true, flashes: true, particles: true, trail: true, pulsation: true };
+            gameState.musicEnabled = false; stopMusic();
+            document.getElementById('volumeSlider').value = 50;
+            document.getElementById('sensitivitySlider').value = 100;
+            updateMusicButton(); saveGame();
         }
-
         function resetProgress() {
             if (confirm('Сбросить прогресс?')) {
-                gameState.coins = 0;
-                gameState.ownedAbilities = [];
-                gameState.ownedPaddles = ['classic'];
-                gameState.equippedAbility = null;
-                gameState.equippedPaddle = 'classic';
-                usedCodes = [];
-                updateCoinsDisplay();
+                gameState.coins = 1000; gameState.ownedAbilities = []; gameState.ownedPaddles = ['classic'];
+                gameState.equippedAbility = null; gameState.equippedPaddle = 'classic';
+                gameState.achievements = []; gameState.stats = { gamesPlayed: 0, wins: 0, losses: 0, totalCoinsEarned: 0, totalTimePlayed: 0, favoriteAbility: null, favoritePaddle: 'classic' };
+                usedCodes = []; winsStreak = 0; sessionRecord = 0; endlessBestScore = 0;
+                saveGame(); updateCoinsDisplay(); updateInventory(); updateShop();
             }
         }
-
-        // ============ ЗВУКИ ============
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-
-        function playPixelSound(freq = 440, dur = 0.05, vol = 0.3, type = 'square') {
-            if (!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol * (gameState.settings.volume / 100), audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + dur);
-        }
-
-        function playCoinSound() {
-            playPixelSound(800, 0.1, 0.2);
-            setTimeout(() => playPixelSound(1000, 0.1, 0.2), 100);
-        }
-
-        function playButtonSound() {
-            playPixelSound(400, 0.03, 0.1);
-        }
-
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('menu-button') || e.target.classList.contains('back-button') || e.target.classList.contains('theme-toggle') || e.target.classList.contains('rarity-btn')) {
-                playButtonSound();
-            }
-        });
 
         document.getElementById('themeToggle').addEventListener('click', () => {
             gameState.theme = gameState.theme === 'dark' ? 'light' : 'dark';
             document.body.classList.toggle('light-theme', gameState.theme === 'light');
             document.getElementById('themeToggle').textContent = gameState.theme === 'dark' ? '🌓 ТЕМА' : '☀️ ТЕМА';
+            saveGame();
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && gameState.screen === 'game') {
-                if (gameState.paused) resumeGame();
-                else pauseGame();
+                if (gameState.paused) resumeGame(); else pauseGame();
             }
         });
 
         // ============ ИГРА ============
         let mouseY = 250;
-
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
             mouseY = (e.clientY - rect.top) * scaleY * (gameState.settings.sensitivity / 100);
             initAudio();
         });
-
         canvas.addEventListener('click', initAudio);
 
         function resetBall(direction) {
-            ball.x = 500;
-            ball.y = 250;
-            ball.baseSpeed = Math.max(4, ball.baseSpeed - 2);
+            ball.x = 500; ball.y = 250;
+            if (!isFirstReset) {
+                const minSpeed = gameState.mode === 'nightmare' ? 6 : 4;
+                ball.baseSpeed = Math.max(minSpeed, ball.baseSpeed - 2);
+            }
+            isFirstReset = false;
             ball.speedX = ball.baseSpeed * direction;
             ball.speedY = (Math.random() - 0.5) * 4;
             ballSpeed = ball.baseSpeed;
-            ball.speedMultiplier = 1;
-            ball.shieldActive = false;
-            ball.nuckleball = false;
-            ball.curveball = false;
-            ball.mindControlled = false;
-            ball.phantom = false;
+            ball.speedMultiplier = 1; ball.shieldActive = false;
+            ball.nuckleball = false; ball.curveball = false;
+            ball.curveballDir = 1; ball.curveballProgress = 0;
+            ball.mindControlled = false; ball.phantom = false;
             trail = [];
         }
 
         function spawnPowerup() {
             powerupSpawnTimer++;
-            const rate = gameState.mode === 'nightmare' ? 600 : 300;
+            const rate = gameState.mode === 'nightmare' ? 600 : gameState.mode === 'endless' ? 200 : 300;
             if (powerupSpawnTimer > rate && powerups.length < 3) {
                 powerupSpawnTimer = 0;
-                const types = ['tremor', 'speed', 'slow', 'expand', 'split', 'reverse', 'gold'];
-                powerups.push({ x: 300 + Math.random() * 400, y: 50 + Math.random() * 400, type: types[Math.floor(Math.random() * types.length)], size: 20, life: 300 });
+                const isGold = Math.random() < 0.05;
+                const types = isGold ? ['gold'] : ['tremor', 'speed', 'slow', 'expand', 'split', 'reverse'];
+                let x, y, overlapping, attempts = 0;
+                do {
+                    x = 300 + Math.random() * 400;
+                    y = 50 + Math.random() * 400;
+                    overlapping = false;
+                    obstacles.forEach(o => { if (x < o.x + o.width && x + 20 > o.x && y < o.y + o.height && y + 20 > o.y) overlapping = true; });
+                    staticWalls.forEach(w => { if (x < w.x + w.width && x + 20 > w.x && y < w.y + w.height && y + 20 > w.y) overlapping = true; });
+                    attempts++;
+                } while (overlapping && attempts < 10);
+                powerups.push({ x, y, type: types[Math.floor(Math.random() * types.length)], size: 20, life: 300 });
             }
         }
 
@@ -1062,48 +1009,85 @@
 
         function activatePowerup(type) {
             playPixelSound(600, 0.1, 0.3);
+            const paddle = paddles.find(p => p.id === gameState.equippedPaddle);
+            const durationBonus = paddle && paddle.bonus === 'duration' ? 60 : 0;
             switch(type) {
                 case 'tremor':
-                    screenShake = 20;
-                    flashEffect = 1;
+                    screenShake = 20; flashEffect = 1;
                     playerPaddle.y += (Math.random() - 0.5) * 60;
                     aiPaddle.y += (Math.random() - 0.5) * 60;
                     playerPaddle.y = Math.max(0, Math.min(canvas.height - playerPaddle.height, playerPaddle.y));
                     aiPaddle.y = Math.max(0, Math.min(canvas.height - aiPaddle.height, aiPaddle.y));
                     break;
-                case 'speed': ball.speedMultiplier = 1.5; activeEffects.speed = 180; break;
-                case 'slow': ball.speedMultiplier = 0.5; activeEffects.slow = 180; break;
-                case 'expand': playerPaddle.height = 120; activeEffects.expand = 300; break;
-                case 'split': ball.phantom = true; ball.phantomTime = 120; break;
+                case 'speed': ball.speedMultiplier = 1.5; activeEffects.speed = 180 + durationBonus; break;
+                case 'slow': ball.speedMultiplier = 0.5; activeEffects.slow = 180 + durationBonus; break;
+                case 'expand': playerPaddle.height = 120; activeEffects.expand = 300 + durationBonus; break;
+                case 'split':
+                    ball.phantom = true; ball.phantomTime = 120 + durationBonus;
+                    phantomBall = {
+                        x: ball.x, y: ball.y, size: ball.size,
+                        speedX: -ball.speedX, speedY: -ball.speedY,
+                        life: 120 + durationBonus
+                    };
+                    break;
                 case 'reverse': ball.speedX = -ball.speedX; break;
-                case 'gold': scoreMultiplier = 2; activeEffects.gold = 600; break;
+                case 'gold': scoreMultiplier = 2; activeEffects.gold = 600 + durationBonus; break;
+            }
+        }
+
+        function updatePhantomBall() {
+            if (phantomBall) {
+                phantomBall.x += phantomBall.speedX;
+                phantomBall.y += phantomBall.speedY;
+                phantomBall.life--;
+                if (phantomBall.y <= 0 || phantomBall.y + phantomBall.size >= canvas.height) phantomBall.speedY = -phantomBall.speedY;
+                if (phantomBall.life <= 0) phantomBall = null;
             }
         }
 
         function spawnObstacle() {
+            if (gameState.map === 'classic' || gameState.map === 'walls' || gameState.map === 'narrow') return;
             obstacleSpawnTimer++;
-            const rate = gameState.mode === 'nightmare' ? 400 : 600;
+            const rate = gameState.mode === 'nightmare' ? 400 : gameState.mode === 'endless' ? 300 : 600;
             if (obstacleSpawnTimer > rate && obstacles.length < 3) {
                 obstacleSpawnTimer = 0;
                 const height = [100, 150, 200][Math.floor(Math.random() * 3)];
-                obstacles.push({ x: 350 + Math.random() * 300, y: 50 + Math.random() * (400 - height), width: 8, height: height, warning: 120, active: false, life: 480 });
+                let x, y, overlapping, attempts = 0;
+                do {
+                    x = 350 + Math.random() * 300;
+                    y = 50 + Math.random() * (400 - height);
+                    overlapping = false;
+                    powerups.forEach(p => { if (x < p.x + p.size && x + 8 > p.x && y < p.y + p.size && y + height > p.y) overlapping = true; });
+                    staticWalls.forEach(w => { if (x < w.x + w.width && x + 8 > w.x && y < w.y + w.height && y + height > w.y) overlapping = true; });
+                    attempts++;
+                } while (overlapping && attempts < 10);
+                obstacles.push({ x, y, width: 8, height: height, warning: 120, active: false, life: 480 });
             }
         }
 
+        function checkWallCollision(wall) {
+            if (ball.x < wall.x + wall.width && ball.x + ball.size > wall.x && ball.y < wall.y + wall.height && ball.y + ball.size > wall.y) {
+                const ballCenter = ball.x + ball.size / 2;
+                const wallCenter = wall.x + wall.width / 2;
+                if (ballCenter < wallCenter) { ball.x = wall.x - ball.size; ball.speedX = -Math.abs(ball.speedX); }
+                else { ball.x = wall.x + wall.width; ball.speedX = Math.abs(ball.speedX); }
+                createParticles(ball.x, ball.y, 8);
+                playHitSound(ballSpeed);
+                ball.curveball = false; ball.curveballProgress = 0;
+                ball.nuckleball = false; ball.mindControlled = false;
+                return true;
+            }
+            return false;
+        }
+
         function updateObstacles() {
+            staticWalls.forEach(w => checkWallCollision(w));
             obstacles.forEach((o, i) => {
                 if (o.warning > 0) o.warning--;
                 else if (!o.active) o.active = true;
                 if (o.active) {
                     o.life--;
-                    if (ball.x < o.x + o.width && ball.x + ball.size > o.x && ball.y < o.y + o.height && ball.y + ball.size > o.y) {
-                        const ballCenter = ball.x + ball.size / 2;
-                        const wallCenter = o.x + o.width / 2;
-                        if (ballCenter < wallCenter) { ball.x = o.x - ball.size; ball.speedX = -Math.abs(ball.speedX); }
-                        else { ball.x = o.x + o.width; ball.speedX = Math.abs(ball.speedX); }
-                        createParticles(ball.x, ball.y, 8);
-                        playPixelSound(250, 0.03, 0.2);
-                    }
+                    checkWallCollision(o);
                 }
                 if (o.life <= 0) obstacles.splice(i, 1);
             });
@@ -1111,15 +1095,22 @@
 
         function updateAI() {
             let speed, error;
-            if (gameState.difficulty === 'easy') { speed = 3; error = 70; }
+            if (gameState.mode === 'endless') {
+                speed = 3 + gameState.playerScore * 0.5;
+                error = Math.max(5, 70 - gameState.playerScore * 3);
+            } else if (gameState.difficulty === 'easy') { speed = 3; error = 70; }
             else if (gameState.difficulty === 'medium') { speed = 5; error = 40; }
             else { speed = 7; error = 15; }
-            aiPaddle.speed = speed;
+            const speedModifier = ball.speedMultiplier > 1 ? 1.2 : ball.speedMultiplier < 1 ? 0.8 : 1;
+            aiPaddle.speed = Math.min(15, speed * speedModifier);
             let targetY = ball.y - aiPaddle.height / 2;
+            if (ball.curveball) targetY += ball.curveballDir * 30;
+            if (phantomBall && Math.random() < 0.3) targetY = phantomBall.y - aiPaddle.height / 2;
             obstacles.forEach(o => {
-                if (o.active && ball.speedX > 0 && ball.y + ball.size > o.y && ball.y < o.y + o.height && ball.x < o.x && ball.x + ball.speedX * 10 > o.x) {
-                    targetY = o.y - aiPaddle.height / 2;
-                }
+                if (o.active && ball.speedX > 0 && ball.y + ball.size > o.y && ball.y < o.y + o.height && ball.x < o.x && ball.x + ball.speedX * 10 > o.x) targetY = o.y - aiPaddle.height / 2;
+            });
+            staticWalls.forEach(w => {
+                if (ball.speedX > 0 && ball.y + ball.size > w.y && ball.y < w.y + w.height && ball.x < w.x && ball.x + ball.speedX * 10 > w.x) targetY = w.y - aiPaddle.height / 2;
             });
             if (ball.speedX > 0 && ball.x > 500) {
                 targetY += (Math.random() - 0.5) * error;
@@ -1134,114 +1125,88 @@
 
         function updateBall() {
             if (hitStop > 0) { hitStop--; return; }
-            
-            // Cooldowns
             if (ball.shieldCooldown > 0) ball.shieldCooldown--;
             if (ball.splitCooldown > 0) ball.splitCooldown--;
             if (ball.chaosCooldown > 0) ball.chaosCooldown--;
+            if (paddleSquash > 0) paddleSquash *= 0.8;
+            if (aiPaddleSquash > 0) aiPaddleSquash *= 0.8;
+            if (invertFlash > 0) invertFlash -= 0.1;
+            updatePhantomBall();
 
             const cx = ball.speedX * ball.speedMultiplier;
             const cy = ball.speedY * ball.speedMultiplier;
-            ball.x += cx;
-            ball.y += cy;
+            ball.x += cx; ball.y += cy;
 
-            // Magnet: притягивает мяч к центру доски
             if (gameState.equippedAbility === 'magnet' && ball.speedX < 0 && ball.x < 300) {
-                const paddleCenter = playerPaddle.y + playerPaddle.height / 2;
-                const ballCenter = ball.y + ball.size / 2;
-                if (Math.abs(paddleCenter - ballCenter) > 20) {
-                    ball.y += (paddleCenter - ballCenter) * 0.02;
-                }
+                const pc = playerPaddle.y + playerPaddle.height / 2;
+                const bc = ball.y + ball.size / 2;
+                if (Math.abs(pc - bc) > 20) ball.y += (pc - bc) * 0.02;
             }
-
             if (gameState.equippedAbility === 'mindcontrol' && ball.mindControlled) {
-                ball.y = mouseY - ball.size / 2;
+                ball.y += (Math.max(0, Math.min(canvas.height - ball.size, mouseY - ball.size / 2)) - ball.y) * 0.3;
             }
-
-            if (ball.phantom) {
-                ball.phantomTime--;
-                if (ball.phantomTime <= 0) ball.phantom = false;
-            }
-
+            if (ball.phantom) { ball.phantomTime--; if (ball.phantomTime <= 0) ball.phantom = false; }
             if (gameState.settings.trail) {
                 trail.push({ x: ball.x, y: ball.y, life: 10 });
                 if (trail.length > 20) trail.shift();
                 trail.forEach(t => t.life--);
                 trail = trail.filter(t => t.life > 0);
             }
-
             if (ball.y <= 0 || ball.y + ball.size >= canvas.height) {
                 ball.speedY = -ball.speedY;
                 ball.y = Math.max(0, Math.min(canvas.height - ball.size, ball.y));
                 createParticles(ball.x, ball.y, 5);
-                playPixelSound(300, 0.03, 0.2);
-                ballSpeed *= 1.05;
+                playHitSound(ballSpeed);
+                ballSpeed = Math.min(maxBallSpeed, ballSpeed * 1.05);
+                ball.curveball = false; ball.curveballProgress = 0; ball.nuckleball = false;
+                if (ballSpeed > 10 && Math.random() < 0.3) addGlitchEffect();
+                checkSpeedAchievements();
             }
 
             // Отскок от доски игрока
             if (ball.x <= playerPaddle.x + playerPaddle.width && ball.x + ball.size >= playerPaddle.x && ball.y + ball.size >= playerPaddle.y && ball.y <= playerPaddle.y + playerPaddle.height) {
+                const paddle = paddles.find(p => p.id === gameState.equippedPaddle);
+                const ghostChance = paddle && paddle.bonus === 'ghost' ? 0.05 : 0;
                 if (gameState.equippedAbility === 'ghost' && Math.random() < 0.15) {
                     // Проходим сквозь
+                } else if (ghostChance > 0 && Math.random() < ghostChance) {
+                    // Проходим сквозь (бонус доски)
                 } else {
                     ball.x = playerPaddle.x + playerPaddle.width;
                     ball.speedX = Math.abs(cx);
                     const hitPos = (ball.y + ball.size / 2 - playerPaddle.y) / playerPaddle.height;
-                    
-                    if (gameState.equippedAbility === 'absorber' && Math.abs(hitPos - 0.5) < 0.2) {
-                        ball.speedX *= 0.8;
-                        ball.speedY *= 0.8;
-                    } else {
-                        ball.speedY = (hitPos - 0.5) * 10;
-                        ball.speedX *= 1.05;
-                    }
-                    
-                    if (gameState.equippedAbility === 'reflector') {
-                        ball.speedX *= 1.2;
-                        ball.speedY *= 1.2;
-                    }
-                    if (gameState.equippedAbility === 'powerstrike' && Math.abs(hitPos - 0.5) < 0.3) {
-                        ball.speedX *= 1.5;
-                        flashEffect = 0.5;
-                    }
-                    if (gameState.equippedAbility === 'nuckleball' && Math.abs(hitPos - 0.5) < 0.3) {
-                        ball.nuckleball = true;
-                        ball.nuckleballTime = 30;
-                    }
-                    if (gameState.equippedAbility === 'mindcontrol' && Math.abs(hitPos - 0.5) < 0.1) {
-                        ball.mindControlled = true;
-                    }
-                    if (gameState.equippedAbility === 'curveball' && Math.abs(hitPos - 0.5) > 0.3) {
-                        ball.curveball = true;
-                    }
-                    if (gameState.equippedAbility === 'splitshot' && ball.splitCooldown <= 0 && Math.random() < 0.3) {
-                        ball.phantom = true;
-                        ball.phantomTime = 60;
-                        ball.splitCooldown = 300; // 5 секунд
-                    }
-                    if (gameState.equippedAbility === 'timefreeze') {
-                        hitStop = 5;
-                    }
+                    paddleSquash = 1;
+                    ball.curveball = false; ball.curveballProgress = 0;
+                    ball.nuckleball = false; ball.mindControlled = false;
+
+                    if (gameState.equippedAbility === 'absorber' && Math.abs(hitPos - 0.5) < 0.2) { ball.speedX *= 0.8; ball.speedY *= 0.8; }
+                    else { ball.speedY = (hitPos - 0.5) * 10; ball.speedX *= 1.05; }
+                    if (gameState.equippedAbility === 'reflector') { ball.speedX *= 1.2; ball.speedY *= 1.2; }
+                    const speedBonus = paddle && paddle.bonus === 'speed' ? 1.15 : 1;
+                    if (gameState.equippedAbility === 'powerstrike' && Math.abs(hitPos - 0.5) < 0.3) { ball.speedX *= 1.5 * speedBonus; flashEffect = 0.5; if (ballSpeed > 10) invertFlash = 1; }
+                    else ball.speedX *= speedBonus;
+                    if (gameState.equippedAbility === 'nuckleball' && Math.abs(hitPos - 0.5) < 0.3) { ball.nuckleball = true; ball.nuckleballTime = 30; }
+                    if (gameState.equippedAbility === 'mindcontrol' && Math.abs(hitPos - 0.5) < 0.1) ball.mindControlled = true;
+                    if (gameState.equippedAbility === 'curveball' && Math.abs(hitPos - 0.5) > 0.3) { ball.curveball = true; ball.curveballDir = ball.speedY > 0 ? 1 : -1; ball.curveballProgress = 0; }
+                    if (gameState.equippedAbility === 'splitshot' && ball.splitCooldown <= 0 && Math.random() < 0.3) { ball.phantom = true; ball.phantomTime = 60; ball.splitCooldown = 300; }
+                    if (gameState.equippedAbility === 'timefreeze') hitStop = 5;
                     if (gameState.equippedAbility === 'chaos' && ball.chaosCooldown <= 0) {
                         const effects = ['powerstrike', 'nuckleball', 'curveball', 'splitshot'];
                         const effect = effects[Math.floor(Math.random() * effects.length)];
                         if (effect === 'powerstrike') ball.speedX *= 1.5;
                         if (effect === 'nuckleball') { ball.nuckleball = true; ball.nuckleballTime = 30; }
-                        if (effect === 'curveball') ball.curveball = true;
+                        if (effect === 'curveball') { ball.curveball = true; ball.curveballDir = ball.speedY > 0 ? 1 : -1; ball.curveballProgress = 0; }
                         if (effect === 'splitshot') { ball.phantom = true; ball.phantomTime = 60; }
-                        ball.chaosCooldown = 180; // 3 секунды
+                        ball.chaosCooldown = 180;
                     }
-                    if (gameState.equippedAbility === 'berserk' && gameState.playerHP < 3) {
-                        playerPaddle.speedMultiplier = 1.5;
-                    }
-                    if (gameState.equippedAbility === 'shield' && ball.shieldCooldown <= 0) {
-                        ball.shieldActive = true;
-                        ball.shieldCooldown = 1500; // 25 секунд
-                    }
-
+                    if (gameState.equippedAbility === 'berserk' && gameState.playerHP < 3) playerPaddle.speedMultiplier = 1.5;
+                    if (gameState.equippedAbility === 'shield' && ball.shieldCooldown <= 0) { ball.shieldActive = true; ball.shieldCooldown = 1500; }
                     createParticles(ball.x, ball.y, 15);
-                    playPixelSound(500, 0.04, 0.3);
-                    ballSpeed = Math.abs(ball.speedX * ball.speedMultiplier);
+                    playHitSound(ballSpeed);
+                    ballSpeed = Math.min(maxBallSpeed, Math.abs(ball.speedX * ball.speedMultiplier));
                     combo++;
+                    if (ballSpeed > 10 && Math.random() < 0.3) addGlitchEffect();
+                    checkSpeedAchievements();
                 }
             }
 
@@ -1251,29 +1216,34 @@
                 ball.speedX = -Math.abs(cx) * 1.05;
                 const hitPos = (ball.y + ball.size / 2 - aiPaddle.y) / aiPaddle.height;
                 ball.speedY = (hitPos - 0.5) * 10;
+                aiPaddleSquash = 1;
+                ball.curveball = false; ball.curveballProgress = 0;
+                ball.nuckleball = false; ball.mindControlled = false;
                 createParticles(ball.x, ball.y, 15);
-                playPixelSound(500, 0.04, 0.3);
-                ballSpeed = Math.abs(ball.speedX * ball.speedMultiplier);
+                playHitSound(ballSpeed);
+                ballSpeed = Math.min(maxBallSpeed, Math.abs(ball.speedX * ball.speedMultiplier));
                 combo = 0;
             }
 
+            // Curve Ball — средняя дуга
+            if (ball.curveball) {
+                ball.curveballProgress += 0.015;
+                if (ball.curveballProgress > 1) ball.curveballProgress = 1;
+                const curveStrength = Math.pow(ball.curveballProgress, 2) * 12;
+                ball.y += ball.curveballDir * curveStrength;
+                ball.y = Math.max(0, Math.min(canvas.height - ball.size, ball.y));
+            }
+
+            // Nuckleball
             if (ball.nuckleball) {
                 ball.nuckleballTime--;
-                ball.y += Math.sin(ball.x * 0.1) * 2;
-                if (ball.nuckleballTime <= 0) {
-                    ball.nuckleball = false;
-                    ball.speedY = (Math.random() - 0.5) * 15;
-                }
+                ball.y += Math.sin(ball.x * 0.15) * 3;
+                ball.y = Math.max(0, Math.min(canvas.height - ball.size, ball.y));
+                if (ball.nuckleballTime <= 0) { ball.nuckleball = false; ball.speedY = (Math.random() - 0.5) * 15; }
             }
 
-            if (ball.curveball) {
-                ball.y += Math.sin(ball.x * 0.05) * 3;
-            }
-
-            // Проверка гола с учётом Shield
             if (ball.x < -ball.size) {
                 if (gameState.equippedAbility === 'shield' && ball.shieldActive) {
-                    // Щит блокирует гол
                     ball.shieldActive = false;
                     ball.x = playerPaddle.x + playerPaddle.width;
                     ball.speedX = Math.abs(ball.speedX);
@@ -1283,53 +1253,63 @@
                     handleGoal(false);
                 }
             }
+            if (ball.x > canvas.width + ball.size) handleGoal(true);
+            ballSpeed = Math.min(maxBallSpeed, Math.max(ballSpeed, Math.abs(ball.speedX * ball.speedMultiplier)));
+        }
 
-            if (ball.x > canvas.width + ball.size) {
-                handleGoal(true);
-            }
-
-            ballSpeed = Math.max(ballSpeed, Math.abs(ball.speedX * ball.speedMultiplier));
+        function addGlitchEffect() {
+            glitchEffects.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, width: 50 + Math.random() * 150, height: 2 + Math.random() * 5, life: 10 });
         }
 
         function handleGoal(playerScored) {
             if (gameState.equippedAbility === 'offside' && !playerScored && Math.random() < 0.2) {
-                ball.x = 500;
-                ball.y = 250;
-                ball.speedX = -Math.abs(ball.speedX);
+                ball.x = 500; ball.y = 250; ball.speedX = -Math.abs(ball.speedX);
+                ball.curveball = false; ball.curveballProgress = 0; ball.nuckleball = false; scoreMultiplier = 1;
                 return;
             }
-
             if (playerScored) {
-                if (gameState.mode === 'score' || gameState.mode === 'nightmare') {
+                if (gameState.mode === 'endless') {
+                    gameState.playerScore += 2;
+                    if (gameState.playerScore > endlessBestScore) endlessBestScore = gameState.playerScore;
+                    if (gameState.playerScore > sessionRecord) sessionRecord = gameState.playerScore;
+                    checkAchievement('first_goal');
+                    if (gameState.playerScore >= 10) checkAchievement('endless_10');
+                    if (gameState.playerScore >= 25) checkAchievement('endless_25');
+                    if (gameState.playerScore >= 50) checkAchievement('endless_50');
+                } else if (gameState.mode === 'score' || gameState.mode === 'nightmare') {
                     gameState.playerScore += scoreMultiplier;
                     if (gameState.playerScore > sessionRecord) sessionRecord = gameState.playerScore;
+                    checkAchievement('first_goal');
                     if (gameState.playerScore >= 10) gameOver(true);
                 } else {
                     gameState.aiHP--;
                     if (gameState.aiHP <= 0) gameOver(true);
                 }
             } else {
-                if (gameState.mode === 'score' || gameState.mode === 'nightmare') {
+                if (gameState.mode === 'endless') {
+                    gameState.playerScore--;
+                    if (gameState.playerScore <= 0) { gameOver(false); return; }
+                } else if (gameState.mode === 'score' || gameState.mode === 'nightmare') {
                     gameState.aiScore++;
                     if (gameState.aiScore >= 10) gameOver(false);
                 } else {
                     gameState.playerHP--;
-                    if (gameState.equippedAbility === 'phoenix' && gameState.playerHP === 1) {
-                        gameState.playerHP = 2;
-                        gameState.equippedAbility = null;
-                    }
+                    if (gameState.equippedAbility === 'phoenix' && gameState.playerHP === 1) { gameState.playerHP = 2; gameState.equippedAbility = null; }
                     if (gameState.playerHP <= 0) gameOver(false);
                 }
             }
-
             resetBall(playerScored ? -1 : 1);
+        }
+
+        function checkSpeedAchievements() {
+            if (ballSpeed >= 10) checkAchievement('speed_10');
+            if (ballSpeed >= 15) checkAchievement('speed_15');
+            if (ballSpeed >= 20) { checkAchievement('speed_20'); checkAchievement('speedy'); }
         }
 
         function createParticles(x, y, count) {
             if (!gameState.settings.particles) return;
-            for (let i = 0; i < count; i++) {
-                particles.push({ x, y, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8, life: 20 });
-            }
+            for (let i = 0; i < count; i++) particles.push({ x, y, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8, life: 20 });
         }
 
         function gameOver(playerWon) {
@@ -1337,23 +1317,41 @@
             gameState.stats.gamesPlayed++;
             const title = document.getElementById('gameOverTitle');
             const stats = document.getElementById('gameOverStats');
-            if (playerWon) {
-                title.textContent = 'ПОБЕДА!';
-                title.style.color = '#ffd700';
-                gameState.stats.wins++;
-                winsStreak++;
-            } else {
-                title.textContent = 'ПОРАЖЕНИЕ';
-                title.style.color = '#ff4444';
-                gameState.stats.losses++;
-                winsStreak = 0;
+            if (playerWon) { title.textContent = 'ПОБЕДА!'; title.style.color = '#ffd700'; gameState.stats.wins++; winsStreak++; playWinSound(); }
+            else { title.textContent = gameState.mode === 'endless' ? 'ИГРА ОКОНЧЕНА' : 'ПОРАЖЕНИЕ'; title.style.color = '#ff4444'; gameState.stats.losses++; winsStreak = 0; playLoseSound(); }
+            if (gameState.mode === 'endless') stats.textContent = `СЧЁТ: ${gameState.playerScore} | РЕКОРД: ${endlessBestScore}`;
+            else stats.textContent = gameState.mode === 'hp' ? `HP: ${gameState.playerHP} - ${gameState.aiHP}` : `СЧЁТ: ${gameState.playerScore} - ${gameState.aiScore}`;
+            
+            const paddle = paddles.find(p => p.id === gameState.equippedPaddle);
+            let coinsEarned = Math.floor(gameTime / 10) + (playerWon ? 50 : gameState.mode === 'endless' ? Math.floor(gameState.playerScore / 2) : 10);
+            if (paddle && (paddle.bonus === 'coins' || paddle.bonus === 'coins2')) {
+                coinsEarned = Math.floor(coinsEarned * (paddle.bonus === 'coins' ? 1.25 : 1.5));
             }
-            stats.textContent = gameState.mode === 'hp' ? `HP: ${gameState.playerHP} - ${gameState.aiHP}` : `СЧЁТ: ${gameState.playerScore} - ${gameState.aiScore}`;
-            const coinsEarned = Math.floor(gameTime / 10) + (playerWon ? 50 : 10);
             gameState.coins += coinsEarned;
             gameState.stats.totalCoinsEarned += coinsEarned;
             gameState.stats.totalTimePlayed += gameTime;
+            if (gameState.equippedAbility) gameState.stats.favoriteAbility = gameState.equippedAbility;
+            gameState.stats.favoritePaddle = gameState.equippedPaddle;
             updateCoinsDisplay();
+            if (playerWon) {
+                if (gameState.difficulty === 'easy') checkAchievement('novice');
+                if (gameState.difficulty === 'medium') checkAchievement('experienced');
+                if (gameState.difficulty === 'hard') checkAchievement('master');
+                if (gameState.mode === 'hp') checkAchievement('survivor');
+                if (gameState.mode === 'nightmare') checkAchievement('impossible');
+                if (gameState.playerScore === 10 && gameState.aiScore === 0) checkAchievement('dominator');
+                if (gameTime <= 30) checkAchievement('lightning');
+                if (gameState.aiScore <= 2) checkAchievement('unbreakable');
+            }
+            if (gameState.coins >= 5000) checkAchievement('rich');
+            if (gameState.ownedPaddles.length >= 3) checkAchievement('collector');
+            if (gameState.stats.gamesPlayed >= 100) checkAchievement('long_liver');
+            
+            powerups = []; particles = []; trail = []; obstacles = []; staticWalls = [];
+            screenShake = 0; flashEffect = 0; combo = 0;
+            activeEffects = { speed: 0, slow: 0, expand: 0, gold: 0 };
+            glitchEffects = []; invertFlash = 0; paddleSquash = 0; aiPaddleSquash = 0; phantomBall = null;
+            saveGame();
             showScreen('gameOver');
         }
 
@@ -1369,34 +1367,50 @@
             let bgColor = rootStyles.getPropertyValue('--bg').trim() || '#0a0a0a';
             const fgColor = rootStyles.getPropertyValue('--fg').trim() || '#ffffff';
 
+            if (gameState.mode === 'endless' && gameState.gameRunning) {
+                const intensity = Math.min(1, gameState.playerScore / 30);
+                const pulse = Math.sin(gameTime * 0.1) * 0.1 * intensity;
+                if (gameState.theme === 'dark') bgColor = `rgb(${10 + intensity * 40 + pulse * 10}, ${10 - intensity * 5}, ${10 - intensity * 5})`;
+            }
             if (gameState.settings.pulsation && hitStop > 0) {
                 const pulse = Math.sin(gameTime * 0.5) * 0.1;
                 const brightness = gameState.theme === 'dark' ? 10 + pulse * 10 : 245 + pulse * 10;
                 bgColor = `rgb(${brightness}, ${brightness}, ${brightness})`;
             }
-
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            if (invertFlash > 0) {
+                ctx.globalCompositeOperation = 'difference';
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.globalCompositeOperation = 'source-over';
+            }
             if (screenShake > 0 && gameState.settings.screenShake) {
                 ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
                 screenShake *= 0.9;
             }
-
             if (flashEffect > 0 && gameState.settings.flashes) {
                 ctx.fillStyle = `rgba(255, 0, 0, ${flashEffect * 0.3})`;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 flashEffect *= 0.95;
             }
 
+            glitchEffects.forEach(g => {
+                ctx.fillStyle = fgColor;
+                ctx.globalAlpha = g.life / 10 * 0.5;
+                ctx.fillRect(g.x, g.y, g.width, g.height);
+                g.life--;
+            });
+            ctx.globalAlpha = 1;
+            glitchEffects = glitchEffects.filter(g => g.life > 0);
+
             ctx.strokeStyle = fgColor;
             ctx.setLineDash([10, 10]);
-            ctx.beginPath();
-            ctx.moveTo(canvas.width / 2, 0);
-            ctx.lineTo(canvas.width / 2, canvas.height);
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height); ctx.stroke();
             ctx.setLineDash([]);
 
+            staticWalls.forEach(w => { ctx.fillStyle = fgColor; ctx.fillRect(w.x, w.y, w.width, w.height); });
             obstacles.forEach(o => {
                 ctx.fillStyle = o.warning > 0 ? 'rgba(128,128,128,0.5)' : fgColor;
                 ctx.fillRect(o.x, o.y, o.width, o.height);
@@ -1424,12 +1438,20 @@
                 ctx.fillStyle = fgColor;
                 ctx.globalAlpha = p.life / 20;
                 ctx.fillRect(p.x, p.y, 4, 4);
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life--;
+                p.x += p.vx; p.y += p.vy; p.life--;
             });
             ctx.globalAlpha = 1;
             particles = particles.filter(p => p.life > 0);
+
+            // Фантомный мяч
+            if (phantomBall) {
+                ctx.fillStyle = '#888888';
+                ctx.globalAlpha = 0.5;
+                ctx.beginPath();
+                ctx.arc(phantomBall.x + phantomBall.size / 2, phantomBall.y + phantomBall.size / 2, phantomBall.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
 
             let ballColor = scoreMultiplier === 2 ? '#ffd700' : fgColor;
             ctx.fillStyle = ballColor;
@@ -1439,8 +1461,9 @@
             ctx.fill();
             ctx.globalAlpha = 1;
 
+            const squashAmount = paddleSquash * 5;
             ctx.fillStyle = getPaddleColor(gameState.equippedPaddle);
-            ctx.fillRect(playerPaddle.x, playerPaddle.y, playerPaddle.width, playerPaddle.height);
+            ctx.fillRect(playerPaddle.x, playerPaddle.y + squashAmount / 2, playerPaddle.width, playerPaddle.height - squashAmount);
 
             if (ball.shieldActive) {
                 ctx.strokeStyle = '#00ffff';
@@ -1448,8 +1471,9 @@
                 ctx.strokeRect(playerPaddle.x - 5, playerPaddle.y - 5, playerPaddle.width + 10, playerPaddle.height + 10);
             }
 
+            const aiSquashAmount = aiPaddleSquash * 5;
             ctx.fillStyle = fgColor;
-            ctx.fillRect(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+            ctx.fillRect(aiPaddle.x, aiPaddle.y + aiSquashAmount / 2, aiPaddle.width, aiPaddle.height - aiSquashAmount);
 
             if (ballSpeed < 8) {
                 ctx.strokeStyle = fgColor;
@@ -1457,7 +1481,7 @@
                 ctx.setLineDash([5, 5]);
                 ctx.beginPath();
                 ctx.moveTo(ball.x + ball.size / 2, ball.y + ball.size / 2);
-                ctx.lineTo(ball.x + ball.speedX * 20, ball.y + ball.speedY * 20);
+                ctx.lineTo(ball.x + ball.speedX * ball.speedMultiplier * 20, ball.y + ball.speedY * ball.speedMultiplier * 20);
                 ctx.stroke();
                 ctx.setLineDash([]);
                 ctx.globalAlpha = 1;
@@ -1466,26 +1490,23 @@
             ctx.font = '32px "Press Start 2P", monospace';
             ctx.textAlign = 'center';
             ctx.fillStyle = fgColor;
-            ctx.fillText(gameState.playerScore, canvas.width / 4, 50);
-            ctx.fillText(gameState.aiScore, canvas.width * 3 / 4, 50);
-
+            if (gameState.mode === 'endless') ctx.fillText(gameState.playerScore, canvas.width / 2, 50);
+            else { ctx.fillText(gameState.playerScore, canvas.width / 4, 50); ctx.fillText(gameState.aiScore, canvas.width * 3 / 4, 50); }
             if (gameState.mode === 'hp') {
                 ctx.font = '20px "Press Start 2P", monospace';
                 ctx.fillText('❤️'.repeat(gameState.playerHP), canvas.width / 4, 90);
                 ctx.fillText('❤️'.repeat(gameState.aiHP), canvas.width * 3 / 4, 90);
             }
-
             ctx.font = '10px "Press Start 2P", monospace';
             ctx.fillStyle = fgColor;
             ctx.globalAlpha = 0.7;
-            ctx.fillText(`СЧЁТ: ${gameState.playerScore} - ${gameState.aiScore}`, canvas.width / 2, 30);
-            ctx.fillText(`РЕКОРД: ${sessionRecord}`, canvas.width / 2, 50);
+            if (gameState.mode === 'endless') ctx.fillText(`РЕКОРД: ${endlessBestScore}`, canvas.width / 2, 80);
+            else { ctx.fillText(`СЧЁТ: ${gameState.playerScore} - ${gameState.aiScore}`, canvas.width / 2, 30); ctx.fillText(`РЕКОРД: ${sessionRecord}`, canvas.width / 2, 50); }
             ctx.globalAlpha = 0.5;
             let infoText = `СКОРОСТЬ: ${Math.floor(ballSpeed)}`;
             if (scoreMultiplier === 2) infoText += ' | ×2';
             ctx.fillText(infoText, canvas.width / 2, canvas.height - 20);
             ctx.globalAlpha = 1;
-
             ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
 
@@ -1506,11 +1527,16 @@
         }
 
         // ============ ИНИЦИАЛИЗАЦИЯ ============
+        loadGame();
+        document.getElementById('volumeSlider').value = gameState.settings.volume;
+        document.getElementById('sensitivitySlider').value = gameState.settings.sensitivity;
+        updateSpinButtonText();
+        updateMusicButton();
+        if (gameState.musicEnabled) startMusic();
         setTimeout(() => {
             document.getElementById('loadingScreen').classList.add('hidden');
             showScreen('mainMenu');
         }, 2000);
-
         updateCoinsDisplay();
     </script>
 </body>
