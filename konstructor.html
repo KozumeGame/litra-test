@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Конструктор приглашения</title>
+
+<!-- Подключаем много разных шрифтов для выбора -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Pinyon+Script&family=Marck+Script&family=Bad+Script&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: #1b2a44; /* Темно-синий фон для контраста */
+    font-family: 'Cormorant Garamond', serif;
+    color: #ffffff;
+    padding-bottom: 100px;
+  }
+
+  .main-header {
+    text-align: center;
+    padding: 50px 20px 30px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%);
+  }
+  .main-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #a9cae6;
+  }
+  .main-header p {
+    margin-top: 10px;
+    font-size: 18px;
+    font-style: italic;
+    color: #c9d9e6;
+  }
+
+  .category-title {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: #ffffff;
+    margin: 60px 0 30px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(169, 202, 230, 0.3);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Сетка для карточек */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    color: #1e3a52;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    overflow: hidden;
+  }
+  
+  .card-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7fb4dd;
+    font-weight: 600;
+  }
+
+  /* =========================================
+     КАТЕГОРИЯ 1: ШРИФТЫ ДЛЯ ИМЁН
+     ========================================= */
+  .font-1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 32px; font-weight: 500; }
+  .font-2 { font-family: 'Great Vibes', cursive; font-size: 46px; }
+  .font-3 { font-family: 'Pinyon Script', cursive; font-size: 40px; }
+  .font-4 { font-family: 'Marck Script', cursive; font-size: 32px; }
+  .font-5 { font-family: 'Bad Script', cursive; font-size: 30px; }
+  .font-6 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+
+  /* =========================================
+     КАТЕГОРИЯ 2: ТЕКСТ (Размер/Начертание)
+     ========================================= */
+  .text-demo {
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+  .text-1 { font-family: 'Cormorant Garamond', serif; font-style: italic; color: #4a7ba8; }
+  .text-2 { font-family: 'Cormorant Garamond', serif; font-style: normal; font-weight: 600; color: #1e3a52; }
+  .text-3 { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: 1px; color: #4a7ba8; }
+  .text-4 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; font-weight: 600; color: #1e3a52; }
+
+  /* =========================================
+     КАТЕГОРИЯ 3: ЦВЕТОВАЯ ПАЛИТРА
+     ========================================= */
+  .palette-card {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 160px;
+  }
+  .palette-colors {
+    display: flex;
+    height: 100px;
+    width: 100%;
+  }
+  .color-block { flex: 1; height: 100%; }
+  
+  /* Палитры */
+  .pal-1 .color-block:nth-child(1) { background: #ffffff; border-right: 1px solid #eee; }
+  .pal-1 .color-block:nth-child(2) { background: #5a9bd0; }
+  .pal-1 .color-block:nth-child(3) { background: #1e3a52; }
+
+  .pal-2 .color-block:nth-child(1) { background: #fdfbf7; border-right: 1px solid #eee; } /* Бежевый */
+  .pal-2 .color-block:nth-child(2) { background: #7fb4dd; }
+  .pal-2 .color-block:nth-child(3) { background: #2c5c88; }
+
+  .pal-3 .color-block:nth-child(1) { background: #f4f1ea; border-right: 1px solid #eee; } /* Слоновая кость */
+  .pal-3 .color-block:nth-child(2) { background: #4a8bc2; }
+  .pal-3 .color-block:nth-child(3) { background: #24486b; }
+
+  .pal-4 .color-block:nth-child(1) { background: #eef5fa; border-right: 1px solid #eee; }
+  .pal-4 .color-block:nth-child(2) { background: #b0c4de; } /* Серебро */
+  .pal-4 .color-block:nth-child(3) { background: #4a7ba8; }
+
+  .pal-5 .color-block:nth-child(1) { background: #ffffff; border-right: 1px solid #eee; }
+  .pal-5 .color-block:nth-child(2) { background: #c9a86a; } /* Золото */
+  .pal-5 .color-block:nth-child(3) { background: #4a7ba8; }
+
+  .palette-name {
+    padding: 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #1e3a52;
+    font-weight: 600;
+    background: #fff;
+  }
+
+  /* =========================================
+     КАТЕГОРИЯ 4: ОФОРМЛЕНИЕ ЦИТАТ (ФОТО)
+     ========================================= */
+  .photo-demo {
+    width: 120px;
+    height: 160px;
+    background: linear-gradient(135deg, #e0eefa, #a9cae6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #4a7ba8;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  /* 1. Полароид */
+  .ph-1 {
+    background: #fff;
+    padding: 10px 10px 40px 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: rotate(-3deg);
+  }
+  .ph-1 .photo-demo { width: 100%; height: 100%; }
+
+  /* 2. Тонкая рамка */
+  .ph-2 {
+    border: 1px solid #7fb4dd;
+    padding: 5px;
+    background: #fff;
+  }
+  .ph-2 .photo-demo { width: 100%; height: 100%; }
+
+  /* 3. Круглая */
+  .ph-3 .photo-demo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    box-shadow: 0 10px 20px rgba(90,130,170,0.3);
+  }
+
+  /* 4. С тенью и скруглением */
+  .ph-4 .photo-demo {
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(74, 139, 194, 0.4);
+  }
+
+  /* =========================================
+     КАТЕГОРИЯ 5: ПЕЧАТЬ НА КОНВЕРТЕ
+     ========================================= */
+  .seal-demo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #8ac2e8, #4a8bc2 60%, #2c5c88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 0 10px rgba(255,255,255,0.5);
+  }
+  .seal-1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 34px; }
+  .seal-2 { font-size: 40px; }
+  .seal-3 { font-family: 'Great Vibes', cursive; font-size: 42px; }
+  .seal-4 { font-size: 36px; }
+</style>
+</head>
+<body>
+
+  <div class="main-header">
+    <h1>Конструктор приглашения</h1>
+    <p>Посмотрите варианты и выберите то, что вам по душе</p>
+  </div>
+
+  <div class="container">
+
+    <!-- 1. ШРИФТЫ -->
+    <div class="category-title">1. Шрифт для имён</div>
+    <div class="grid">
+      <div class="card">
+        <span class="card-label">Вариант 1 (Классика)</span>
+        <div class="font-1">Мухаммад & Асият</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 2 (Каллиграфия)</span>
+        <div class="font-2">Мухаммад & Асият</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 3 (Тонкое перо)</span>
+        <div class="font-3">Мухаммад & Асият</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 4 (Рукописный)</span>
+        <div class="font-4">Мухаммад & Асият</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 5 (Лёгкий почерк)</span>
+        <div class="font-5">Мухаммад & Асият</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 6 (Строгий)</span>
+        <div class="font-6">Мухаммад & Асият</div>
+      </div>
+    </div>
+
+    <!-- 2. ТЕКСТ -->
+    <div class="category-title">2. Шрифт и размер текста</div>
+    <div class="grid">
+      <div class="card">
+        <span class="card-label">Вариант 1 (Курсив)</span>
+        <div class="text-demo text-1">Дорогие родные и близкие! В этот особенный день мы хотим быть рядом с вами.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 2 (Жирный)</span>
+        <div class="text-demo text-2">Дорогие родные и близкие! В этот особенный день мы хотим быть рядом с вами.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 3 (Современный)</span>
+        <div class="text-demo text-3">Дорогие родные и близкие! В этот особенный день мы хотим быть рядом с вами.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 4 (Крупный)</span>
+        <div class="text-demo text-4">Дорогие родные и близкие! В этот особенный день.</div>
+      </div>
+    </div>
+
+    <!-- 3. ПАЛИТРЫ -->
+    <div class="category-title">3. Цветовая палитра</div>
+    <div class="grid">
+      <div class="card palette-card pal-1">
+        <span class="card-label" style="z-index:2; color:#1e3a52;">Вариант 1</span>
+        <div class="palette-colors"><div class="color-block"></div><div class="color-block"></div><div class="color-block"></div></div>
+        <div class="palette-name">Белый + Голубой + Синий</div>
+      </div>
+      <div class="card palette-card pal-2">
+        <span class="card-label" style="z-index:2; color:#1e3a52;">Вариант 2</span>
+        <div class="palette-colors"><div class="color-block"></div><div class="color-block"></div><div class="color-block"></div></div>
+        <div class="palette-name">Бежевый + Голубой</div>
+      </div>
+      <div class="card palette-card pal-3">
+        <span class="card-label" style="z-index:2; color:#1e3a52;">Вариант 3</span>
+        <div class="palette-colors"><div class="color-block"></div><div class="color-block"></div><div class="color-block"></div></div>
+        <div class="palette-name">Слоновая кость + Голубой</div>
+      </div>
+      <div class="card palette-card pal-4">
+        <span class="card-label" style="z-index:2; color:#1e3a52;">Вариант 4</span>
+        <div class="palette-colors"><div class="color-block"></div><div class="color-block"></div><div class="color-block"></div></div>
+        <div class="palette-name">Голубой + Серебро</div>
+      </div>
+      <div class="card palette-card pal-5">
+        <span class="card-label" style="z-index:2; color:#1e3a52;">Вариант 5</span>
+        <div class="palette-colors"><div class="color-block"></div><div class="color-block"></div><div class="color-block"></div></div>
+        <div class="palette-name">Голубой + Золото (акценты)</div>
+      </div>
+    </div>
+
+    <!-- 4. ОФОРМЛЕНИЕ ЦИТАТ -->
+    <div class="category-title">4. Оформление цитат (фотографий)</div>
+    <div class="grid">
+      <div class="card">
+        <span class="card-label">Вариант 1 (Полароид)</span>
+        <div class="ph-1"><div class="photo-demo">Цитата</div></div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 2 (Тонкая рамка)</span>
+        <div class="ph-2"><div class="photo-demo">Цитата</div></div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 3 (Круглая)</span>
+        <div class="ph-3"><div class="photo-demo">Цитата</div></div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 4 (Мягкие углы)</span>
+        <div class="ph-4"><div class="photo-demo">Цитата</div></div>
+      </div>
+    </div>
+
+    <!-- 5. ПЕЧАТЬ -->
+    <div class="category-title">5. Печать на конверте</div>
+    <div class="grid">
+      <div class="card">
+        <span class="card-label">Вариант 1 (Буквы)</span>
+        <div class="seal-demo seal-1">М & А</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 2 (Сердце)</span>
+        <div class="seal-demo seal-2">❤</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 3 (Каллиграфия)</span>
+        <div class="seal-demo seal-3">М & А</div>
+      </div>
+      <div class="card">
+        <span class="card-label">Вариант 4 (Кольца)</span>
+        <div class="seal-demo seal-4">💍</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
