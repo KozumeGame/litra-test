@@ -46,7 +46,6 @@
       inset 0 0 40px rgba(180,140,90,.15);
   }
 
-  /* верхний клапан */
   .flap {
     position: absolute;
     top: 0; left: 0;
@@ -65,7 +64,6 @@
     z-index: 1;
   }
 
-  /* золотая окантовка */
   .envelope::after {
     content: "";
     position: absolute;
@@ -75,7 +73,6 @@
     pointer-events: none;
   }
 
-  /* сургучная печать */
   .seal {
     position: absolute;
     top: 50%; left: 50%;
@@ -109,14 +106,12 @@
     opacity: 0;
   }
 
-  /* подсказка */
   .hint {
     position: absolute;
     bottom: -58px;
     left: 50%;
     transform: translateX(-50%);
     color: #d8b98a;
-    font-family: 'Cormorant Garamond', serif;
     font-size: 17px;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -130,133 +125,217 @@
     50% { opacity: 1; }
   }
 
-  /* ===== КАРТОЧКА-ПРИГЛАШЕНИЕ ===== */
-  .card {
+  /* ===== БОЛЬШОЙ ЛИСТ-ПРИГЛАШЕНИЕ ===== */
+  .sheet {
     position: fixed;
-    top: 50%; left: 50%;
-    width: 440px;
-    max-width: 88vw;
-    max-height: 88vh;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
     overflow-y: auto;
-    transform: translate(-50%, -50%) scale(.85);
+    overflow-x: hidden;
     opacity: 0;
     pointer-events: none;
-    background: linear-gradient(170deg, #fbf6ec 0%, #f0e4cd 100%);
-    border-radius: 4px;
-    padding: 46px 34px 38px;
-    text-align: center;
-    box-shadow:
-      0 40px 90px rgba(0,0,0,.6),
-      0 0 0 1px rgba(180,140,80,.5),
-      inset 0 0 0 6px rgba(255,255,255,.5),
-      inset 0 0 0 7.5px rgba(180,140,80,.35);
+    transform: scale(.92);
     transition: transform 1s cubic-bezier(.19,1,.22,1), opacity 1s;
+    background: linear-gradient(180deg, #fbf6ec 0%, #f4e9d4 55%, #efe1c6 100%);
     z-index: 10;
+    scroll-behavior: smooth;
   }
-  .card.show {
-    transform: translate(-50%, -50%) scale(1);
+  .sheet.show {
     opacity: 1;
     pointer-events: auto;
+    transform: scale(1);
+  }
+  .sheet::-webkit-scrollbar { width: 8px; }
+  .sheet::-webkit-scrollbar-track { background: #efe1c6; }
+  .sheet::-webkit-scrollbar-thumb { background: #c9a86a; border-radius: 4px; }
+
+  /* внутренняя рамка страницы */
+  .sheet-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 70px 34px 80px;
+    position: relative;
   }
 
-  .card::-webkit-scrollbar { width: 0; }
-
   .orn {
+    text-align: center;
     font-size: 20px;
     color: #b8912f;
     letter-spacing: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
   }
 
-  .card h1 {
+  .sheet h1 {
     font-family: 'Marck Script', cursive;
-    font-size: clamp(40px, 9vw, 58px);
+    font-size: clamp(52px, 11vw, 92px);
     color: #5a3a1a;
-    line-height: 1.05;
-    margin: 4px 0 2px;
+    line-height: 1;
+    text-align: center;
     font-weight: 400;
+    margin: 6px 0 2px;
   }
   .amp {
     display: block;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 30px;
+    font-size: clamp(28px, 6vw, 44px);
     color: #b8912f;
-    margin: 2px 0;
+    margin: 4px 0;
   }
 
   .sub {
-    font-family: 'Cormorant Garamond', serif;
+    text-align: center;
     font-size: 15px;
-    letter-spacing: 6px;
+    letter-spacing: 7px;
     text-transform: uppercase;
     color: #8a6a3a;
-    margin: 18px 0 8px;
+    margin: 16px 0 8px;
   }
 
   .divider {
-    width: 120px;
+    width: 160px;
     height: 1px;
     background: linear-gradient(90deg, transparent, #b8912f, transparent);
-    margin: 20px auto;
+    margin: 34px auto;
   }
 
   .date-block {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 18px;
-    margin: 10px 0 4px;
+    gap: 20px;
+    margin: 8px 0;
     color: #5a3a1a;
   }
   .date-block .day {
-    font-size: 58px;
+    font-size: clamp(64px, 14vw, 96px);
     font-weight: 600;
     line-height: 1;
   }
   .date-block .month-year {
     text-align: left;
-    font-size: 16px;
+    font-size: 18px;
     letter-spacing: 3px;
     text-transform: uppercase;
     line-height: 1.5;
     color: #8a6a3a;
   }
 
-  .place {
-    font-size: 17px;
-    color: #5a3a1a;
-    line-height: 1.6;
-    margin-top: 6px;
+  .section-title {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #a07d4a;
+    margin-bottom: 20px;
   }
-  .place small {
+
+  .text {
+    font-size: 19px;
+    color: #5c4224;
+    line-height: 1.85;
+    text-align: center;
+    font-style: italic;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .text p { margin-bottom: 18px; }
+
+  /* программа */
+  .program {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .prog-item {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(180,140,80,.25);
+  }
+  .prog-item:last-child { border-bottom: none; }
+  .prog-time {
+    min-width: 82px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #b8912f;
+  }
+  .prog-desc {
+    font-size: 17px;
+    color: #5c4224;
+    letter-spacing: .5px;
+  }
+
+  /* фото-галерея */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .photo {
+    aspect-ratio: 3 / 4;
+    border-radius: 4px;
+    background: linear-gradient(145deg, #e8d8c0, #d9c4a2);
+    box-shadow: 0 8px 24px rgba(120,90,50,.18), inset 0 0 0 1px rgba(180,140,80,.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a07d4a;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    overflow: hidden;
+  }
+  .photo img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* место */
+  .place-box {
+    text-align: center;
+    font-size: 19px;
+    color: #5c4224;
+    line-height: 1.7;
+  }
+  .place-box small {
     display: block;
     font-size: 13px;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: #a07d4a;
-    margin-top: 6px;
+    margin-top: 8px;
   }
-
-  .text {
-    font-size: 16px;
-    color: #6b4e2a;
-    line-height: 1.7;
-    margin: 22px 0 6px;
-    font-style: italic;
+  .btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    border: 1px solid #b8912f;
+    background: transparent;
+    color: #8a6a3a;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background .3s, color .3s;
+    cursor: pointer;
   }
+  .btn:hover { background: #b8912f; color: #fff; }
 
+  /* отсчёт */
   .countdown {
     display: flex;
     justify-content: center;
-    gap: 14px;
-    margin-top: 24px;
+    gap: 18px;
+    margin-top: 10px;
   }
-  .cd-item {
-    min-width: 54px;
-  }
+  .cd-item { min-width: 62px; text-align: center; }
   .cd-num {
-    font-size: 30px;
+    font-size: 38px;
     font-weight: 600;
     color: #5a3a1a;
     line-height: 1;
@@ -266,7 +345,41 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     color: #a07d4a;
-    margin-top: 4px;
+    margin-top: 6px;
+  }
+
+  /* RSVP */
+  .rsvp { max-width: 460px; margin: 0 auto; text-align: center; }
+  .rsvp input, .rsvp select {
+    width: 100%;
+    padding: 13px 16px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(180,140,80,.5);
+    background: rgba(255,255,255,.5);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: #5c4224;
+    border-radius: 2px;
+    outline: none;
+  }
+  .rsvp input:focus, .rsvp select:focus { border-color: #b8912f; }
+
+  .final {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .final .names {
+    font-family: 'Marck Script', cursive;
+    font-size: clamp(40px, 9vw, 64px);
+    color: #5a3a1a;
+    line-height: 1.1;
+  }
+  .final .d {
+    font-size: 15px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #8a6a3a;
+    margin-top: 12px;
   }
 
   .petal {
@@ -284,9 +397,10 @@
     to { transform: translateY(105vh) rotate(360deg); opacity: 0; }
   }
 
-  @media (max-width: 480px) {
-    .card { padding: 36px 22px 30px; }
-    .date-block .day { font-size: 46px; }
+  @media (max-width: 560px) {
+    .sheet-inner { padding: 50px 22px 60px; }
+    .gallery { grid-template-columns: repeat(2, 1fr); }
+    .prog-time { min-width: 70px; font-size: 19px; }
   }
 </style>
 </head>
@@ -301,57 +415,111 @@
     <div class="hint">Нажмите, чтобы открыть</div>
   </div>
 
-  <!-- ПРИГЛАШЕНИЕ -->
-  <div class="card" id="card">
-    <div class="orn">✦ ✦ ✦</div>
-    <div class="sub">Приглашение на свадьбу</div>
-    <h1>Мухаммад<span class="amp">&</span>Асият</h1>
+  <!-- ЛИСТ -->
+  <div class="sheet" id="sheet">
+    <div class="sheet-inner">
 
-    <div class="divider"></div>
+      <div class="orn">✦ ✦ ✦</div>
+      <div class="sub">Приглашение на свадьбу</div>
+      <h1>Мухаммад<span class="amp">&</span>Асият</h1>
 
-    <div class="date-block">
-      <div class="day">01</div>
-      <div class="month-year">ноября<br>2026</div>
+      <div class="divider"></div>
+
+      <div class="date-block">
+        <div class="day">01</div>
+        <div class="month-year">ноября<br>2026</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="text">
+        Дорогие родные и близкие!<br>
+        В этот особенный для нас день мы хотим быть рядом<br>
+        с самыми дорогими людьми — с вами.<br><br>
+        С радостью приглашаем вас разделить с нами<br>
+        самый счастливый день нашей жизни.
+      </p>
+
+      <div class="divider"></div>
+
+      <div class="section-title">До торжества осталось</div>
+      <div class="countdown">
+        <div class="cd-item"><div class="cd-num" id="cd-d">--</div><div class="cd-label">дней</div></div>
+        <div class="cd-item"><div class="cd-num" id="cd-h">--</div><div class="cd-label">часов</div></div>
+        <div class="cd-item"><div class="cd-num" id="cd-m">--</div><div class="cd-label">минут</div></div>
+        <div class="cd-item"><div class="cd-num" id="cd-s">--</div><div class="cd-label">секунд</div></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">Наши фотографии</div>
+      <div class="gallery">
+        <div class="photo">фото</div>
+        <div class="photo">фото</div>
+        <div class="photo">фото</div>
+        <div class="photo">фото</div>
+        <div class="photo">фото</div>
+        <div class="photo">фото</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">Программа дня</div>
+      <div class="program">
+        <div class="prog-item"><div class="prog-time">15:00</div><div class="prog-desc">Сбор гостей</div></div>
+        <div class="prog-item"><div class="prog-time">16:00</div><div class="prog-desc">Торжественная церемония</div></div>
+        <div class="prog-item"><div class="prog-time">17:30</div><div class="prog-desc">Банкет</div></div>
+        <div class="prog-item"><div class="prog-time">23:00</div><div class="prog-desc">Завершение вечера</div></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">Место проведения</div>
+      <div class="place-box">
+        Республика Дагестан
+        <small>Банкетный зал «Название»</small>
+        <a href="#" class="btn">Открыть на карте</a>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">Подтвердите присутствие</div>
+      <div class="rsvp">
+        <input type="text" placeholder="Ваше имя">
+        <select>
+          <option>Приду один / одна</option>
+          <option>Приду с парой</option>
+          <option>Приду с семьёй</option>
+        </select>
+        <button class="btn" style="width:100%;">Отправить</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="final">
+        <div class="names">Мухаммад & Асият</div>
+        <div class="d">01 · 11 · 2026</div>
+        <div class="orn" style="margin-top:26px;">✦ ✦ ✦</div>
+      </div>
+
     </div>
-
-    <div class="place">
-      Республика Дагестан
-      <small>Банкетный зал «Название»</small>
-    </div>
-
-    <div class="divider"></div>
-
-    <p class="text">
-      С радостью приглашаем вас разделить с нами<br>
-      самый счастливый день нашей жизни
-    </p>
-
-    <div class="countdown" id="countdown">
-      <div class="cd-item"><div class="cd-num" id="cd-d">--</div><div class="cd-label">дней</div></div>
-      <div class="cd-item"><div class="cd-num" id="cd-h">--</div><div class="cd-label">часов</div></div>
-      <div class="cd-item"><div class="cd-num" id="cd-m">--</div><div class="cd-label">минут</div></div>
-      <div class="cd-item"><div class="cd-num" id="cd-s">--</div><div class="cd-label">секунд</div></div>
-    </div>
-
-    <div class="orn" style="margin-top:26px;">✦ ✦ ✦</div>
   </div>
 
 <script>
   const env = document.getElementById('env');
-  const card = document.getElementById('card');
+  const sheet = document.getElementById('sheet');
   let opened = false;
 
   env.addEventListener('click', () => {
     if (opened) return;
     opened = true;
     env.classList.add('opened');
-    setTimeout(() => card.classList.add('show'), 550);
+    setTimeout(() => sheet.classList.add('show'), 550);
     setTimeout(spawnPetals, 300);
   });
 
-  // лепестки
   function spawnPetals() {
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < 16; i++) {
       setTimeout(() => {
         const p = document.createElement('div');
         p.className = 'petal';
@@ -364,12 +532,9 @@
     }
   }
 
-  // обратный отсчёт до 1 ноября 2026
   const target = new Date('2026-11-01T00:00:00').getTime();
-
   function tick() {
-    const now = Date.now();
-    let diff = target - now;
+    let diff = target - Date.now();
     if (diff < 0) diff = 0;
     const d = Math.floor(diff / 86400000);
     const h = Math.floor(diff % 86400000 / 3600000);
