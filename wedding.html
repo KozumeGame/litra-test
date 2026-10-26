@@ -100,45 +100,42 @@
   }
   .envelope-wrap.opened .flap { transform: rotateX(180deg); z-index: 1; }
 
+  /* ===== ПЕЧАТЬ (КАРТИНКА + ТЕКСТ) ===== */
   .seal {
     position: absolute; top: 50%; left: 50%;
-    width: 110px; height: 110px;
+    width: 140px;
+    height: 140px;
     transform: translate(-50%, -50%);
-    background: radial-gradient(circle at 30% 30%, #a1d2f2, #4a8bc2 50%, #2c5c88 90%);
-    border-radius: 50%;
     z-index: 6;
-    display: flex; align-items: center; justify-content: center;
-    text-align: center;
-    color: #ffffff;
-    font-family: 'Playfair Display', serif; 
-    font-style: italic;
-    font-size: 32px; 
-    line-height: 1;
-    white-space: nowrap; 
-    text-shadow: 0 2px 5px rgba(0,0,0,.4);
-    box-shadow: 
-      0 10px 25px rgba(0,0,0,.5), 
-      inset 0 0 15px rgba(200,230,255,.7), 
-      0 0 0 4px #ffffff,
-      0 0 0 6px rgba(200, 225, 245, 0.5);
-    transition: transform 0.9s cubic-bezier(.34,1.56,.64,1), opacity 0.9s ease-in, box-shadow 0.6s;
-  }
-  
-  .seal::before {
-    content: ""; position: absolute; inset: 8px;
-    border: 1.5px dashed rgba(255,255,255,.8);
-    border-radius: 50%;
+    
+    background-image: url('seal.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.4));
+    
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    
+    transition: transform 1.2s cubic-bezier(.34,1.56,.64,1), opacity 1s ease-in, filter 0.6s;
   }
 
   .seal span {
-    display: block;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 36px;
+    color: #14293c; 
+    text-shadow: 0 2px 4px rgba(255,255,255,0.8); 
     transform: translateY(-2px); 
+    white-space: nowrap;
   }
 
   .envelope-wrap.opened .seal {
     transform: translate(-50%, -50%) translate(60px, 200px) rotate(45deg) scale(0.9);
     opacity: 0;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6));
   }
 
   .hint {
@@ -217,24 +214,14 @@
   }
   .text p { margin-bottom: 16px; }
 
-  /* ===== ЦИТАТЫ (Центрированы, ограничены по высоте) ===== */
   .quote-item { margin: 50px 0; text-align: center; }
   .quote-item img {
-    /* Картинка не будет шире 85% и выше 300px (для мобилок) */
-    max-width: 85%; 
-    max-height: 300px; 
-    width: auto;
-    height: auto;
-    object-fit: contain; /* Картинка не искажается */
-    border: 1px solid #7fb4dd; 
-    padding: 5px; 
-    background: #ffffff; 
-    box-shadow: 0 10px 25px rgba(90, 130, 170, 0.15);
+    max-width: 85%; max-height: 300px; width: auto; height: auto;
+    object-fit: contain; border: 1px solid #7fb4dd; padding: 5px; 
+    background: #ffffff; box-shadow: 0 10px 25px rgba(90, 130, 170, 0.15);
     transition: transform 0.5s;
   }
   .quote-item img:hover { transform: scale(1.02); }
-  
-  /* Убрали смещение влево/вправо, теперь всё по центру */
   .quote-item.left { padding: 0; text-align: center; }
   .quote-item.right { padding: 0; text-align: center; }
 
@@ -245,6 +232,7 @@
 
   .place-box { font-size: 20px; color: #14293c; line-height: 1.7; }
   .place-box small { display: block; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #4a7ba8; margin-top: 8px; }
+  
   .btn {
     display: inline-block; margin-top: 18px; padding: 13px 32px;
     border: 1px solid #7fb4dd; background: transparent; color: #4a7ba8;
@@ -304,6 +292,7 @@
         <div class="env-corner ec-br"></div>
         <div class="flap"></div>
       </div>
+      
       <div class="seal"><span>М & А</span></div>
       
       <div class="hint">
@@ -314,7 +303,6 @@
     </div>
   </div>
 
-  <!-- Убрали атрибут loop, теперь песня играет один раз -->
   <audio id="bgMusic">
     <source src="music.mp3" type="audio/mpeg">
   </audio>
@@ -378,7 +366,8 @@
       <div class="place-box">
         Республика Дагестан
         <small>Банкетный зал «Ислам»</small>
-        <a href="#" target="_blank" class="btn">Открыть на карте</a>
+        <!-- Вставили твою ссылку на карту -->
+        <a href="https://yandex.ru/maps/-/CXbEE28b" target="_blank" class="btn">Открыть на карте</a>
       </div>
 
       <div class="final">
@@ -398,21 +387,19 @@
   const musicBtn = document.getElementById('musicBtn');
   let opened = false;
 
-  // Настройки звука
-  const maxVolume = 0.2; // Максимальная громкость (20%)
-  const fadeInTime = 3; // Секунды на плавное появление
-  const fadeOutTime = 4; // Секунды на плавное затухание
+  const maxVolume = 0.2;
+  const fadeInTime = 3;
+  const fadeOutTime = 4;
 
   env.addEventListener('click', () => {
     if (opened) return;
     opened = true;
     env.classList.add('opened');
     
-    // Запуск музыки с плавным появлением
     music.volume = 0;
     music.play().then(() => { 
       musicBtn.classList.add('playing'); 
-      fadeIn(music); // Запускаем плавное появление
+      fadeIn(music);
     }).catch(e => console.log('Автовоспроизведение заблокировано.'));
 
     setTimeout(() => {
@@ -423,10 +410,9 @@
     setTimeout(spawnPetals, 300);
   });
 
-  // Плавное появление звука
   function fadeIn(audio) {
     let vol = 0;
-    const step = maxVolume / (fadeInTime * 10); // Шаг каждые 0.1 сек
+    const step = maxVolume / (fadeInTime * 10);
     const timer = setInterval(() => {
       if (vol < maxVolume) {
         vol += step;
@@ -437,16 +423,12 @@
     }, 100);
   }
 
-  // Плавное затухание звука и отслеживание конца
   function startFadeOut(audio) {
     const timer = setInterval(() => {
-      // Если осталось меньше fadeOutTime секунд до конца
       if (audio.duration && audio.currentTime > (audio.duration - fadeOutTime)) {
-        clearInterval(timer); // Останавливаем проверку, начинаем затухание
-        
+        clearInterval(timer);
         let vol = audio.volume;
         const step = maxVolume / (fadeOutTime * 10);
-        
         const fadeTimer = setInterval(() => {
           if (vol > 0) {
             vol -= step;
@@ -459,19 +441,15 @@
     }, 200);
   }
 
-  // Запускаем слежение за концом песни при первом клике
   music.addEventListener('play', () => {
-    // Небольшая задержка, чтобы duration успел загрузиться
     setTimeout(() => { startFadeOut(music); }, 1000);
   });
 
-  // Если музыка закончилась
   music.addEventListener('ended', () => {
     musicBtn.classList.remove('playing');
-    music.volume = maxVolume; // Сбрасываем настройку громкости
+    music.volume = maxVolume;
   });
 
-  // Кнопка вкл/выкл
   musicBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (music.paused) { 
