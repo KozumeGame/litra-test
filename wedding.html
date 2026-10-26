@@ -7,14 +7,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Marck+Script&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html, body { scroll-behavior: smooth; }
 
   body {
     min-height: 100vh;
-    background: radial-gradient(ellipse at 50% 40%, #1b2a44 0%, #0e1626 70%, #070b13 100%);
+    background: #0e1626;
     font-family: 'Cormorant Garamond', serif;
     overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== ФОНОВЫЙ ЦВЕТОЧНЫЙ ПАТТЕРН ===== */
+  .bg-pattern {
+    position: fixed;
+    inset: 0;
+    background-image: url('bg.jpg'); /* Твой цветочный фон */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    opacity: 0.35; /* Прозрачность, чтобы текст читался */
+    z-index: -2;
+  }
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.95) 100%);
+    z-index: -1;
   }
 
   /* ===== ЭКРАН С КОНВЕРТОМ ===== */
@@ -26,13 +44,10 @@
     justify-content: center;
     perspective: 1400px;
     z-index: 20;
+    background: radial-gradient(ellipse at 50% 40%, #1b2a44 0%, #0e1626 70%, #070b13 100%);
     transition: opacity .9s ease, visibility .9s;
   }
-  .intro.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
+  .intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
   .envelope-wrap {
     position: relative;
@@ -54,12 +69,8 @@
     inset: 0;
     background: linear-gradient(145deg, #ffffff 0%, #eaf2f8 100%);
     border-radius: 6px;
-    box-shadow:
-      0 30px 60px rgba(0,0,0,.55),
-      0 0 0 1px rgba(120,170,210,.6),
-      inset 0 0 40px rgba(150,190,220,.15);
+    box-shadow: 0 30px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(120,170,210,.6), inset 0 0 40px rgba(150,190,220,.15);
   }
-
   .flap {
     position: absolute;
     top: 0; left: 0;
@@ -73,11 +84,7 @@
     border-radius: 6px 6px 0 0;
     box-shadow: 0 6px 18px rgba(90,130,170,.25);
   }
-  .envelope-wrap.opened .flap {
-    transform: rotateX(180deg);
-    z-index: 1;
-  }
-
+  .envelope-wrap.opened .flap { transform: rotateX(180deg); z-index: 1; }
   .envelope::after {
     content: "";
     position: absolute;
@@ -95,16 +102,11 @@
     background: radial-gradient(circle at 35% 30%, #7fb4dd, #3f7bb0 70%, #2c5c88);
     border-radius: 50%;
     z-index: 6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-family: 'Marck Script', cursive;
-    font-size: 26px;
-    color: #ffffff;
+    font-size: 26px; color: #ffffff;
     text-shadow: 0 1px 3px rgba(0,0,0,.3);
-    box-shadow:
-      0 4px 14px rgba(0,0,0,.4),
-      inset 0 0 10px rgba(200,230,255,.4);
+    box-shadow: 0 4px 14px rgba(0,0,0,.4), inset 0 0 10px rgba(200,230,255,.4);
     transition: transform .6s, opacity .6s;
     letter-spacing: 1px;
   }
@@ -115,29 +117,15 @@
     border: 1px dashed rgba(255,255,255,.6);
     border-radius: 50%;
   }
-  .envelope-wrap.opened .seal {
-    transform: translate(-50%, -50%) scale(.4) rotate(25deg);
-    opacity: 0;
-  }
+  .envelope-wrap.opened .seal { transform: translate(-50%, -50%) scale(.4) rotate(25deg); opacity: 0; }
 
   .hint {
-    position: absolute;
-    bottom: -58px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #a9cae6;
-    font-size: 17px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    animation: pulse 2.4s ease-in-out infinite;
-    transition: opacity .4s;
+    position: absolute; bottom: -58px; left: 50%; transform: translateX(-50%);
+    color: #a9cae6; font-size: 17px; letter-spacing: 3px; text-transform: uppercase;
+    white-space: nowrap; animation: pulse 2.4s ease-in-out infinite; transition: opacity .4s;
   }
   .envelope-wrap.opened .hint { opacity: 0; }
-  @keyframes pulse {
-    0%,100% { opacity: .45; }
-    50% { opacity: 1; }
-  }
+  @keyframes pulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
 
   /* ===== ДЛИННЫЙ ЛИСТ ===== */
   .sheet {
@@ -146,45 +134,28 @@
     transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.19,1,.22,1);
     pointer-events: none;
   }
-  .sheet.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
+  .sheet.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
   .page {
     max-width: 720px;
     margin: 0 auto;
     padding: 70px 34px 80px;
-    background: linear-gradient(180deg, #ffffff 0%, #f4faff 55%, #e9f3fb 100%);
+    background: transparent; /* Фон теперь глобальный */
     position: relative;
-    box-shadow: 0 0 120px rgba(80,130,180,.25);
   }
-  /* рамка по краям страницы */
-  .page::before {
-    content: "";
-    position: absolute;
-    inset: 22px;
-    border: 1.5px solid rgba(120,170,210,.55);
-    border-radius: 3px;
-    pointer-events: none;
-  }
-  .page::after {
-    content: "";
-    position: absolute;
-    inset: 28px;
-    border: 1px solid rgba(120,170,210,.25);
-    border-radius: 2px;
-    pointer-events: none;
+  
+  /* Рамка вокруг текста, чтобы он не терялся на фоне */
+  .content-box {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 40px rgba(90, 130, 170, 0.1);
+    border: 1px solid rgba(120, 170, 210, 0.3);
+    margin-bottom: 30px;
   }
 
-  .orn {
-    text-align: center;
-    font-size: 20px;
-    color: #5a9bd0;
-    letter-spacing: 8px;
-    margin-bottom: 18px;
-  }
+  .orn { text-align: center; font-size: 20px; color: #5a9bd0; letter-spacing: 8px; margin-bottom: 18px; }
 
   .page h1 {
     font-family: 'Marck Script', cursive;
@@ -196,225 +167,147 @@
     margin: 6px 0 2px;
   }
   .amp {
-    display: block;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(26px, 5.5vw, 40px);
-    color: #5a9bd0;
-    margin: 4px 0;
+    display: block; font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(26px, 5.5vw, 40px); color: #5a9bd0; margin: 4px 0;
   }
 
   .sub {
-    text-align: center;
-    font-size: 14px;
-    letter-spacing: 7px;
-    text-transform: uppercase;
-    color: #4a7ba8;
-    margin: 16px 0 8px;
+    text-align: center; font-size: 14px; letter-spacing: 7px; text-transform: uppercase;
+    color: #4a7ba8; margin: 16px 0 8px;
   }
 
   .divider {
-    width: 150px;
-    height: 1px;
+    width: 150px; height: 1px;
     background: linear-gradient(90deg, transparent, #7fb4dd, transparent);
     margin: 30px auto;
   }
 
-  .date-block {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin: 8px 0;
-    color: #274a6b;
-  }
-  .date-block .day {
-    font-size: clamp(56px, 12vw, 88px);
-    font-weight: 600;
-    line-height: 1;
-  }
-  .date-block .month-year {
-    text-align: left;
-    font-size: 17px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    line-height: 1.5;
-    color: #4a7ba8;
-  }
+  .date-block { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 8px 0; color: #274a6b; }
+  .date-block .day { font-size: clamp(56px, 12vw, 88px); font-weight: 600; line-height: 1; }
+  .date-block .month-year { text-align: left; font-size: 17px; letter-spacing: 3px; text-transform: uppercase; line-height: 1.5; color: #4a7ba8; }
 
   .section-title {
-    text-align: center;
-    font-size: 12px;
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    color: #4a7ba8;
-    margin-bottom: 22px;
+    text-align: center; font-size: 12px; letter-spacing: 6px; text-transform: uppercase;
+    color: #4a7ba8; margin-bottom: 22px;
   }
 
   .text {
-    font-size: 18px;
-    color: #33506b;
-    line-height: 1.85;
-    text-align: center;
-    font-style: italic;
-    max-width: 540px;
-    margin: 0 auto;
+    font-size: 18px; color: #33506b; line-height: 1.85; text-align: center;
+    font-style: italic; max-width: 540px; margin: 0 auto;
   }
   .text p { margin-bottom: 16px; }
 
-  /* ===== ФОТО КОЛЛАЖ ===== */
-  .collage {
+  /* ===== ЦИТАТЫ (Каллиграфия) ===== */
+  .quote-block {
+    text-align: center;
+    margin: 40px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    border: 1px dashed rgba(120, 170, 210, 0.4);
+  }
+  .quote-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+    opacity: 0.9;
+  }
+
+  /* ===== ФОТО КОЛЛАЖ (Стиль журнала) ===== */
+  .journal-photo {
     position: relative;
-    max-width: 580px;
-    margin: 0 auto;
-    min-height: 360px;
+    margin: 30px auto;
+    max-width: 90%;
+    text-align: center;
   }
-  .ph {
-    position: absolute;
-    border-radius: 4px;
-    background: linear-gradient(145deg, #eaf2f8, #d0e2f0);
-    box-shadow: 0 10px 30px rgba(90,130,170,.28), 0 0 0 6px #ffffff, 0 0 0 7px rgba(120,170,210,.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6a9bc0;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    overflow: hidden;
-    transition: transform .5s;
+  .journal-photo img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 15px 40px rgba(90, 130, 170, 0.25), 0 0 0 10px #ffffff, 0 0 0 11px rgba(120, 170, 210, 0.4);
+    transition: transform 0.5s;
   }
-  .ph img { width: 100%; height: 100%; object-fit: cover; }
-  .ph:hover { transform: scale(1.03) rotate(0deg) !important; z-index: 5; }
+  .journal-photo img:hover { transform: scale(1.02); }
 
-  .ph1 { width: 44%; aspect-ratio: 3/4; top: 0; left: 4%; transform: rotate(-5deg); }
-  .ph2 { width: 40%; aspect-ratio: 1/1; top: 8%; right: 4%; transform: rotate(6deg); }
-  .ph3 { width: 38%; aspect-ratio: 4/3; bottom: 0; left: 22%; transform: rotate(3deg); z-index: 3; }
+  /* Чередование фото (лево/право) */
+  .journal-photo.left { text-align: left; }
+  .journal-photo.right { text-align: right; }
 
-  /* кольца */
-  .rings { text-align: center; margin: 6px 0 4px; }
-  .rings-img {
-    display: inline-flex;
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #ffffff, #d6e6f2 70%);
-    box-shadow: 0 10px 30px rgba(90,130,170,.28), 0 0 0 6px #ffffff, 0 0 0 7px rgba(120,170,210,.5);
-    align-items: center;
-    justify-content: center;
-    font-size: 42px;
-    overflow: hidden;
-  }
-  .rings-img img { width: 100%; height: 100%; object-fit: cover; }
-  .rings-caption {
-    margin-top: 14px;
-    font-size: 13px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: #4a7ba8;
-  }
-
-  /* отсчёт */
+  /* ===== ОТСЧЁТ ===== */
   .countdown { display: flex; justify-content: center; gap: 18px; margin-top: 6px; }
   .cd-item { min-width: 60px; text-align: center; }
   .cd-num { font-size: 36px; font-weight: 600; color: #274a6b; line-height: 1; }
-  .cd-label {
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #4a7ba8;
-    margin-top: 6px;
-  }
+  .cd-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #4a7ba8; margin-top: 6px; }
 
-  /* дресс-код */
-  .dress {
-    text-align: center;
-    font-size: 17px;
-    color: #33506b;
-    line-height: 1.7;
-  }
-  .dress-swatches {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin: 16px 0 12px;
-  }
-  .sw {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(90,130,170,.3), inset 0 0 0 1px rgba(120,170,210,.4);
-  }
+  /* ===== ДРЕСС-КОД ===== */
+  .dress { text-align: center; font-size: 17px; color: #33506b; line-height: 1.7; }
+  .dress-swatches { display: flex; justify-content: center; gap: 14px; margin: 16px 0 12px; }
+  .sw { width: 44px; height: 44px; border-radius: 50%; box-shadow: 0 4px 12px rgba(90,130,170,.3), inset 0 0 0 1px rgba(120,170,210,.4); }
   .sw1 { background: #ffffff; box-shadow: 0 4px 12px rgba(90,130,170,.25), inset 0 0 0 1px rgba(120,170,210,.5); }
   .sw2 { background: #a9cae6; }
   .sw3 { background: #5a9bd0; }
   .sw4 { background: #274a6b; }
 
-  /* место */
+  /* ===== МЕСТО ===== */
   .place-box { text-align: center; font-size: 18px; color: #33506b; line-height: 1.7; }
-  .place-box small {
-    display: block;
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #4a7ba8;
-    margin-top: 8px;
-  }
+  .place-box small { display: block; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #4a7ba8; margin-top: 8px; }
   .btn {
-    display: inline-block;
-    margin-top: 18px;
-    padding: 11px 28px;
-    border: 1px solid #5a9bd0;
-    background: transparent;
-    color: #3f7bb0;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 13px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border-radius: 2px;
-    transition: background .3s, color .3s;
-    cursor: pointer;
+    display: inline-block; margin-top: 18px; padding: 11px 28px;
+    border: 1px solid #5a9bd0; background: transparent; color: #3f7bb0;
+    font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 4px;
+    text-transform: uppercase; text-decoration: none; border-radius: 2px;
+    transition: background .3s, color .3s; cursor: pointer;
   }
   .btn:hover { background: #5a9bd0; color: #fff; }
 
   .final { text-align: center; margin-top: 10px; }
-  .final .names {
-    font-family: 'Marck Script', cursive;
-    font-size: clamp(36px, 8vw, 56px);
-    color: #274a6b;
-    line-height: 1.1;
-  }
-  .final .d {
-    font-size: 14px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: #4a7ba8;
-    margin-top: 12px;
-  }
+  .final .names { font-family: 'Marck Script', cursive; font-size: clamp(36px, 8vw, 56px); color: #274a6b; line-height: 1.1; }
+  .final .d { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: #4a7ba8; margin-top: 12px; }
 
-  .petal {
+  /* ===== МУЗЫКА (Кнопка) ===== */
+  .music-btn {
     position: fixed;
-    top: -20px;
-    width: 10px; height: 10px;
+    bottom: 24px; right: 24px;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(90, 155, 208, 0.9);
+    color: #fff;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s, background 0.3s;
+  }
+  .music-btn:hover { transform: scale(1.1); background: #3f7bb0; }
+  .music-btn svg { width: 24px; height: 24px; fill: currentColor; }
+  .music-btn.playing svg { animation: spin 2s linear infinite; }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+
+  /* Лепестки */
+  .petal {
+    position: fixed; top: -20px; width: 10px; height: 10px;
     background: radial-gradient(circle at 30% 30%, #ffffff, #a9cae6);
-    border-radius: 50% 0 50% 50%;
-    opacity: .8;
-    pointer-events: none;
-    z-index: 5;
+    border-radius: 50% 0 50% 50%; opacity: .8; pointer-events: none; z-index: 5;
     animation: fall linear forwards;
   }
-  @keyframes fall {
-    to { transform: translateY(105vh) rotate(360deg); opacity: 0; }
-  }
+  @keyframes fall { to { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
 
   @media (max-width: 560px) {
     .page { padding: 50px 22px 60px; }
-    .collage { min-height: 300px; }
+    .content-box { padding: 25px 15px; }
+    .journal-photo img { max-width: 100%; }
   }
 </style>
 </head>
 <body>
 
-  <!-- ЭКРАН С КОНВЕРТОМ -->
+  <!-- Фон -->
+  <div class="bg-pattern"></div>
+  <div class="bg-overlay"></div>
+
+  <!-- Экран с конвертом -->
   <div class="intro" id="intro">
     <div class="envelope-wrap" id="env">
       <div class="envelope">
@@ -425,83 +318,107 @@
     </div>
   </div>
 
-  <!-- ДЛИННЫЙ ЛИСТ -->
+  <!-- Аудио (фоновая музыка) -->
+  <audio id="bgMusic" loop>
+    <!-- Ссылка на трек (замени на свой файл music.mp3) -->
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Кнопка музыки -->
+  <button class="music-btn" id="musicBtn" title="Включить/выключить музыку">
+    <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+  </button>
+
+  <!-- Длинный лист -->
   <div class="sheet" id="sheet">
     <div class="page">
 
-      <div class="orn">✦ ✦ ✦</div>
-      <div class="sub">Приглашение на свадьбу</div>
-      <h1>Мухаммад<span class="amp">&</span>Асият</h1>
+      <div class="content-box">
+        <div class="orn">✦ ✦ ✦</div>
+        <div class="sub">Приглашение на свадьбу</div>
+        <h1>Мухаммад<span class="amp">&</span>Асият</h1>
 
-      <div class="divider"></div>
+        <div class="divider"></div>
 
-      <div class="date-block">
-        <div class="day">01</div>
-        <div class="month-year">ноября<br>2026</div>
-      </div>
-
-      <div class="divider"></div>
-
-      <p class="text">
-        Дорогие родные и близкие!<br>
-        В этот особенный для нас день мы хотим быть рядом<br>
-        с самыми дорогими людьми — с вами.<br><br>
-        С радостью приглашаем вас разделить с нами<br>
-        самый счастливый день нашей жизни.
-      </p>
-
-      <div class="divider"></div>
-
-      <div class="section-title">До торжества осталось</div>
-      <div class="countdown">
-        <div class="cd-item"><div class="cd-num" id="cd-d">--</div><div class="cd-label">дней</div></div>
-        <div class="cd-item"><div class="cd-num" id="cd-h">--</div><div class="cd-label">часов</div></div>
-        <div class="cd-item"><div class="cd-num" id="cd-m">--</div><div class="cd-label">минут</div></div>
-        <div class="cd-item"><div class="cd-num" id="cd-s">--</div><div class="cd-label">секунд</div></div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="rings">
-        <div class="rings-img">💍</div>
-        <div class="rings-caption">Два сердца — одна судьба</div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="section-title">Наши мгновения</div>
-      <div class="collage">
-        <div class="ph ph1">фото</div>
-        <div class="ph ph2">фото</div>
-        <div class="ph ph3">фото</div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="section-title">Дресс-код</div>
-      <div class="dress">
-        Будем рады, если вы поддержите<br>нашу цветовую палитру
-        <div class="dress-swatches">
-          <div class="sw sw1"></div>
-          <div class="sw sw2"></div>
-          <div class="sw sw3"></div>
-          <div class="sw sw4"></div>
+        <div class="date-block">
+          <div class="day">01</div>
+          <div class="month-year">ноября<br>2026</div>
         </div>
-        <small style="font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#4a7ba8;">
-          белый · голубой · синий
-        </small>
+
+        <div class="divider"></div>
+
+        <p class="text">
+          Приглашаем вас на свадьбу<br>
+          Мухаммада и Асият.<br><br>
+          Будем счастливы разделить с вами<br>
+          этот особенный день.
+        </p>
       </div>
 
-      <div class="divider"></div>
-
-      <div class="section-title">Место проведения</div>
-      <div class="place-box">
-        Республика Дагестан
-        <small>Банкетный зал «Название»</small>
-        <a href="#" class="btn">Открыть на карте</a>
+      <div class="content-box">
+        <div class="section-title">До торжества осталось</div>
+        <div class="countdown">
+          <div class="cd-item"><div class="cd-num" id="cd-d">--</div><div class="cd-label">дней</div></div>
+          <div class="cd-item"><div class="cd-num" id="cd-h">--</div><div class="cd-label">часов</div></div>
+          <div class="cd-item"><div class="cd-num" id="cd-m">--</div><div class="cd-label">минут</div></div>
+          <div class="cd-item"><div class="cd-num" id="cd-s">--</div><div class="cd-label">секунд</div></div>
+        </div>
       </div>
 
-      <div class="divider"></div>
+      <!-- Цитата 1 -->
+      <div class="quote-block">
+        <img src="quote1.jpg" alt="Пусть каждое твое действие..." class="quote-img">
+      </div>
+
+      <!-- Фото 1 -->
+      <div class="journal-photo left">
+        <img src="photo1.jpg" alt="Фото 1">
+      </div>
+
+      <!-- Цитата 2 -->
+      <div class="quote-block">
+        <img src="quote2.jpg" alt="С нежностью и любовью..." class="quote-img">
+      </div>
+
+      <!-- Фото 2 -->
+      <div class="journal-photo right">
+        <img src="photo2.jpg" alt="Фото 2">
+      </div>
+
+      <!-- Цитата 3 -->
+      <div class="quote-block">
+        <img src="quote3.jpg" alt="Красиво быть счастливыми людьми..." class="quote-img">
+      </div>
+
+      <!-- Фото 3 -->
+      <div class="journal-photo left">
+        <img src="photo3.jpg" alt="Фото 3">
+      </div>
+
+      <div class="content-box">
+        <div class="section-title">Дресс-код</div>
+        <div class="dress">
+          Будем рады, если вы поддержите<br>нашу цветовую палитру
+          <div class="dress-swatches">
+            <div class="sw sw1"></div>
+            <div class="sw sw2"></div>
+            <div class="sw sw3"></div>
+            <div class="sw sw4"></div>
+          </div>
+          <small style="font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#4a7ba8;">
+            белый · голубой · синий
+          </small>
+        </div>
+      </div>
+
+      <div class="content-box">
+        <div class="section-title">Место проведения</div>
+        <div class="place-box">
+          Республика Дагестан
+          <small>Банкетный зал «Название»</small>
+          <a href="#" class="btn">Открыть на карте</a>
+        </div>
+      </div>
 
       <div class="final">
         <div class="names">Мухаммад & Асият</div>
@@ -516,12 +433,22 @@
   const intro = document.getElementById('intro');
   const env = document.getElementById('env');
   const sheet = document.getElementById('sheet');
+  const music = document.getElementById('bgMusic');
+  const musicBtn = document.getElementById('musicBtn');
   let opened = false;
 
+  // Открытие конверта
   env.addEventListener('click', () => {
     if (opened) return;
     opened = true;
     env.classList.add('opened');
+    
+    // Включаем музыку (заказчица просила, чтобы звучала сразу)
+    music.volume = 0.3; // Тихо на фоне
+    music.play().then(() => {
+      musicBtn.classList.add('playing');
+    }).catch(e => console.log('Автовоспроизведение заблокировано:', e));
+
     setTimeout(() => {
       intro.classList.add('hidden');
       sheet.classList.add('show');
@@ -530,6 +457,19 @@
     setTimeout(spawnPetals, 300);
   });
 
+  // Кнопка музыки
+  musicBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (music.paused) {
+      music.play();
+      musicBtn.classList.add('playing');
+    } else {
+      music.pause();
+      musicBtn.classList.remove('playing');
+    }
+  });
+
+  // Лепестки
   function spawnPetals() {
     for (let i = 0; i < 16; i++) {
       setTimeout(() => {
@@ -544,6 +484,7 @@
     }
   }
 
+  // Отсчёт
   const target = new Date('2026-11-01T00:00:00').getTime();
   function tick() {
     let diff = target - Date.now();
