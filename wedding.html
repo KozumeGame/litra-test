@@ -174,10 +174,10 @@
 
   .orn { font-size: 22px; color: #4a7ba8; letter-spacing: 8px; margin-bottom: 18px; }
 
-  /* ===== ИМЕНА (Ограничены) ===== */
+  /* ===== ИМЕНА (Верхние = как нижние) ===== */
   .page h1 {
     font-family: 'Great Vibes', cursive;
-    font-size: clamp(40px, 10vw, 90px); /* Сделали меньше для мобилок */
+    font-size: clamp(40px, 9vw, 60px); /* Сделали как в финале, чтобы точно влезало */
     color: #14293c; 
     line-height: 1.2; 
     font-weight: 400;
@@ -188,8 +188,8 @@
   
   .amp {
     font-family: 'Great Vibes', cursive; 
-    font-size: clamp(30px, 8vw, 70px); 
-    color: #4a7ba8; 
+    font-size: clamp(30px, 7vw, 50px); 
+    color: #4a7ba8; /* Голубой цвет, как ты просил */
     margin: 0 10px; 
     vertical-align: middle;
   }
@@ -212,11 +212,11 @@
 
   /* ===== ТЕКСТ (Аккуратный) ===== */
   .text {
-    font-size: 22px; /* Чуть уменьшили */
+    font-size: 22px; 
     color: #1e3a52; 
     line-height: 1.7; 
     font-weight: 600;
-    max-width: 90%; /* Ограничили ширину */
+    max-width: 90%; 
     margin: 0 auto 30px;
     text-shadow: 0 1px 6px rgba(255,255,255,0.9); 
     font-style: italic;
@@ -253,7 +253,7 @@
   .final { margin-top: 40px; }
   .final .names { 
     font-family: 'Great Vibes', cursive; 
-    font-size: clamp(36px, 8vw, 60px); /* Значительно уменьшили */
+    font-size: clamp(40px, 9vw, 60px); 
     color: #14293c; 
     line-height: 1.2; 
   }
@@ -286,13 +286,13 @@
     .page { padding: 50px 15px 60px; border-width: 12px; }
     .page::before { inset: 4px; }
     .quote-item img { max-width: 95%; max-height: 220px; }
-    .text { font-size: 19px; max-width: 95%; } /* Текст на телефоне еще компактнее */
+    .text { font-size: 19px; max-width: 95%; } 
     .hint { font-size: 12px; gap: 6px; white-space: normal; text-align: center; width: 90vw; }
     
-    /* Четко задаем размеры для мобилок, чтобы ничего не убегало */
+    /* Для мобилок задаем жесткий размер, чтобы 100% влезло */
     .page h1 { font-size: 38px; } 
-    .amp { font-size: 28px; margin: 0 5px; }
-    .final .names { font-size: 34px; }
+    .amp { font-size: 32px; margin: 0 5px; }
+    .final .names { font-size: 38px; }
   }
 </style>
 </head>
@@ -333,6 +333,7 @@
       <div class="orn">✦ ✦ ✦</div>
       <div class="sub">Приглашение на свадьбу</div>
       
+      <!-- Тут верхние имена и голубой амперсанд -->
       <h1>Мухаммад <span class="amp">&</span> Асият</h1>
 
       <div class="divider"></div>
