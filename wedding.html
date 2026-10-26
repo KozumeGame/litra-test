@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Мухаммад & Асият — Приглашение</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Alex+Brush&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { scroll-behavior: smooth; }
@@ -17,10 +17,8 @@
     position: relative;
   }
 
-  /* ===== ФОН СТРАНИЦЫ (чуть голубее) ===== */
   .bg-pattern {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background-image: url('bg.jpg');
     background-size: cover;
     background-position: center;
@@ -29,22 +27,16 @@
     z-index: -2;
   }
   .bg-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: linear-gradient(180deg, rgba(236, 245, 252, 0.72) 0%, rgba(222, 238, 250, 0.88) 100%);
     z-index: -1;
   }
 
-  /* ===== ЭКРАН С КОНВЕРТОМ (фон стал голубее) ===== */
+  /* ===== КОНВЕРТ ===== */
   .intro {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    perspective: 1400px;
-    z-index: 20;
-    /* Был тёмно-синий/ночной — сделал более голубым */
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    perspective: 1400px; z-index: 20;
     background: radial-gradient(ellipse at 50% 40%, #5b8fb9 0%, #3a6a94 55%, #24486b 100%);
     transition: opacity .9s ease, visibility .9s;
   }
@@ -52,132 +44,109 @@
 
   .envelope-wrap {
     position: relative;
-    width: 540px;
-    max-width: 92vw;
+    width: 540px; max-width: 92vw;
     aspect-ratio: 1.45 / 1;
     cursor: pointer;
     transition: transform .8s cubic-bezier(.19,1,.22,1), opacity .9s;
     transform-style: preserve-3d;
   }
-  .envelope-wrap.opened {
-    transform: translateY(60px) scale(.82);
-    opacity: 0;
-    pointer-events: none;
-  }
+  .envelope-wrap.opened { transform: translateY(60px) scale(.82); opacity: 0; pointer-events: none; }
 
   .envelope {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: linear-gradient(145deg, #ffffff 0%, #e0eefa 100%);
     border-radius: 8px;
-    box-shadow:
-      0 40px 80px rgba(0,0,0,.45),
-      0 0 0 2px rgba(200, 225, 245, 0.9),
-      inset 0 0 60px rgba(150,190,220,.2);
+    box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 2px rgba(200, 225, 245, 0.9), inset 0 0 60px rgba(150,190,220,.2);
   }
   .envelope::before {
-    content: "";
-    position: absolute;
-    inset: 18px;
+    content: ""; position: absolute; inset: 18px;
     border: 1px solid rgba(120, 170, 210, 0.5);
-    border-radius: 4px;
-    pointer-events: none;
+    border-radius: 4px; pointer-events: none;
   }
 
   .flap {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 62%;
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 62%;
     background: linear-gradient(180deg, #ffffff 0%, #c9e2f5 100%);
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top center;
     transition: transform 1s cubic-bezier(.65,0,.35,1);
-    z-index: 4;
-    border-radius: 8px 8px 0 0;
+    z-index: 4; border-radius: 8px 8px 0 0;
     box-shadow: 0 8px 25px rgba(90,130,170,.3);
   }
   .envelope-wrap.opened .flap { transform: rotateX(180deg); z-index: 1; }
 
-  /* Печать — красивее */
+  /* ПЕЧАТЬ — выровнена */
   .seal {
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 110px; height: 110px;
+    position: absolute; top: 50%; left: 50%;
+    width: 106px; height: 106px;
     transform: translate(-50%, -50%);
     background: radial-gradient(circle at 35% 30%, #8ac2e8, #4a8bc2 60%, #2c5c88);
     border-radius: 50%;
     z-index: 6;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Great Vibes', cursive;
-    font-size: 34px;
+    font-family: 'Alex Brush', cursive;
+    font-size: 30px;
+    line-height: 1;
     color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0,0,0,.4);
-    box-shadow:
-      0 8px 20px rgba(0,0,0,.45),
-      inset 0 0 15px rgba(200,230,255,.6),
-      0 0 0 4px #ffffff;
+    text-shadow: 0 1px 3px rgba(0,0,0,.35);
+    box-shadow: 0 8px 20px rgba(0,0,0,.45), inset 0 0 15px rgba(200,230,255,.6), 0 0 0 4px #ffffff;
     transition: transform .6s, opacity .6s;
-    letter-spacing: 2px;
+    letter-spacing: 0;
+    padding-bottom: 2px; /* компенсация рукописного шрифта */
   }
   .seal::before {
-    content: "";
-    position: absolute;
-    inset: 10px;
+    content: ""; position: absolute; inset: 10px;
     border: 1.5px dashed rgba(255,255,255,.7);
     border-radius: 50%;
   }
-  .seal::after {
-    content: "✦";
-    position: absolute;
-    bottom: 8px;
-    font-size: 14px;
-    color: rgba(255,255,255,0.8);
-  }
   .envelope-wrap.opened .seal { transform: translate(-50%, -50%) scale(.4) rotate(25deg); opacity: 0; }
 
+  /* ПОДСКАЗКА — интереснее */
   .hint {
-    position: absolute; bottom: -58px; left: 50%; transform: translateX(-50%);
-    color: #ffffff; font-size: 18px; letter-spacing: 3px; text-transform: uppercase;
-    white-space: nowrap; animation: pulse 2.4s ease-in-out infinite; transition: opacity .4s;
+    position: absolute; bottom: -64px; left: 50%; transform: translateX(-50%);
+    color: #ffffff; font-size: 15px; letter-spacing: 2px;
+    text-transform: uppercase; white-space: nowrap;
+    animation: pulse 2.4s ease-in-out infinite;
+    transition: opacity .4s;
     font-family: 'Playfair Display', serif;
-    text-shadow: 0 2px 8px rgba(0,0,0,.4);
+    text-shadow: 0 2px 8px rgba(0,0,0,.5);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hint .env-icon {
+    font-size: 20px;
+    animation: bounce 1.8s ease-in-out infinite;
+    display: inline-block;
   }
   .envelope-wrap.opened .hint { opacity: 0; }
-  @keyframes pulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+  @keyframes pulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
   /* ===== ЛИСТ ===== */
   .sheet {
-    opacity: 0;
-    transform: translateY(40px);
+    opacity: 0; transform: translateY(40px);
     transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.19,1,.22,1);
     pointer-events: none;
   }
   .sheet.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-  .page {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 60px 24px 80px;
-    position: relative;
-    text-align: center;
-  }
+  .page { max-width: 680px; margin: 0 auto; padding: 60px 24px 80px; position: relative; text-align: center; }
 
   .orn { font-size: 22px; color: #5a9bd0; letter-spacing: 8px; margin-bottom: 18px; }
 
-  /* Имена — рукописный, крупный, красивый */
+  /* ИМЕНА — Alex Brush, ровный рукописный */
   .page h1 {
-    font-family: 'Great Vibes', cursive;
-    font-size: clamp(60px, 13vw, 116px);
+    font-family: 'Alex Brush', cursive;
+    font-size: clamp(60px, 13vw, 110px);
     color: #1e3a52;
-    line-height: 1.05;
+    line-height: 1.1;
     font-weight: 400;
-    margin: 6px 0 2px;
-    text-shadow: 0 4px 18px rgba(255,255,255,0.95), 0 0 24px rgba(120,170,210,0.35);
+    margin: 10px 0 0;
+    text-shadow: 0 4px 18px rgba(255,255,255,0.95), 0 0 24px rgba(120,170,210,0.3);
   }
   .amp {
     display: block; font-family: 'Playfair Display', serif; font-style: italic;
-    font-size: clamp(32px, 6.5vw, 52px); color: #4a8bc2; margin: 8px 0;
+    font-size: clamp(30px, 6vw, 46px); color: #4a8bc2; margin: 4px 0;
   }
 
   .sub {
@@ -201,41 +170,36 @@
     color: #4a7ba8; margin-bottom: 22px; font-weight: 600;
   }
 
-  /* Текст между цитатами — крупнее, жирнее, читабельнее */
+  /* ТЕКСТ — ещё крупнее и жирнее */
   .text {
-    font-size: 23px;
-    color: #1e3a52;
+    font-size: 25px;
+    color: #14293c;
     line-height: 1.75;
-    font-weight: 500;
-    max-width: 560px;
+    font-weight: 600;
+    max-width: 580px;
     margin: 0 auto 30px;
     text-shadow: 0 1px 6px rgba(255,255,255,0.95);
     font-style: italic;
   }
   .text p { margin-bottom: 16px; }
 
-  /* Цитаты */
   .quote-item { margin: 50px 0; }
   .quote-item img {
-    max-width: 85%;
-    height: auto;
+    max-width: 85%; height: auto;
     border-radius: 8px;
     box-shadow: 0 12px 34px rgba(90, 130, 170, 0.25);
-    background: #fff;
-    padding: 10px;
+    background: #fff; padding: 10px;
     transition: transform 0.5s;
   }
   .quote-item img:hover { transform: scale(1.02); }
   .quote-item.left { text-align: left; padding-left: 5%; }
   .quote-item.right { text-align: right; padding-right: 5%; }
 
-  /* Отсчёт */
   .countdown { display: flex; justify-content: center; gap: 18px; margin-top: 6px; margin-bottom: 30px; }
   .cd-item { min-width: 62px; text-align: center; }
   .cd-num { font-size: 38px; font-weight: 600; color: #1e3a52; line-height: 1; font-family: 'Playfair Display', serif; }
   .cd-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #4a7ba8; margin-top: 6px; }
 
-  /* Место */
   .place-box { font-size: 20px; color: #1e3a52; line-height: 1.7; }
   .place-box small { display: block; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #4a7ba8; margin-top: 8px; }
   .btn {
@@ -248,21 +212,15 @@
   .btn:hover { background: #5a9bd0; color: #fff; }
 
   .final { margin-top: 40px; }
-  .final .names { font-family: 'Great Vibes', cursive; font-size: clamp(44px, 9vw, 68px); color: #1e3a52; line-height: 1.1; }
+  .final .names { font-family: 'Alex Brush', cursive; font-size: clamp(44px, 9vw, 68px); color: #1e3a52; line-height: 1.2; }
   .final .d { font-size: 15px; letter-spacing: 5px; text-transform: uppercase; color: #4a7ba8; margin-top: 12px; font-family: 'Playfair Display', serif; }
 
-  /* Музыка */
   .music-btn {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    background: rgba(90, 155, 208, 0.92);
-    color: #fff;
-    border: none;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    z-index: 100;
+    position: fixed; bottom: 24px; right: 24px;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(90, 155, 208, 0.92); color: #fff;
+    border: none; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 100;
     box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     transition: transform 0.3s, background 0.3s;
   }
@@ -271,7 +229,6 @@
   .music-btn.playing svg { animation: spin 2s linear infinite; }
   @keyframes spin { 100% { transform: rotate(360deg); } }
 
-  /* Лепестки */
   .petal {
     position: fixed; top: -20px; width: 10px; height: 10px;
     background: radial-gradient(circle at 30% 30%, #ffffff, #a9cae6);
@@ -284,7 +241,8 @@
     .page { padding: 40px 15px 60px; }
     .quote-item.left, .quote-item.right { padding: 0; }
     .quote-item img { max-width: 95%; }
-    .text { font-size: 20px; }
+    .text { font-size: 21px; }
+    .hint { font-size: 12px; gap: 6px; white-space: normal; text-align: center; width: 90vw; }
   }
 </style>
 </head>
@@ -293,18 +251,20 @@
   <div class="bg-pattern"></div>
   <div class="bg-overlay"></div>
 
-  <!-- КОНВЕРТ -->
   <div class="intro" id="intro">
     <div class="envelope-wrap" id="env">
       <div class="envelope">
         <div class="flap"></div>
       </div>
       <div class="seal">М & А</div>
-      <div class="hint">Нажмите, чтобы открыть</div>
+      <div class="hint">
+        <span class="env-icon">✉</span>
+        Коснитесь конверта, чтобы открыть приглашение
+        <span class="env-icon">✉</span>
+      </div>
     </div>
   </div>
 
-  <!-- МУЗЫКА -->
   <audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
   </audio>
@@ -313,7 +273,6 @@
     <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
   </button>
 
-  <!-- ЛИСТ -->
   <div class="sheet" id="sheet">
     <div class="page">
 
@@ -377,7 +336,6 @@
       <div class="place-box">
         Республика Дагестан
         <small>Банкетный зал «Название»</small>
-        <!-- Сюда вставь ссылку на карту вместо # -->
         <a href="#" target="_blank" class="btn">Открыть на карте</a>
       </div>
 
@@ -402,12 +360,8 @@
     if (opened) return;
     opened = true;
     env.classList.add('opened');
-
     music.volume = 0.25;
-    music.play().then(() => {
-      musicBtn.classList.add('playing');
-    }).catch(e => console.log('Автовоспроизведение заблокировано браузером.'));
-
+    music.play().then(() => { musicBtn.classList.add('playing'); }).catch(e => console.log('Автовоспроизведение заблокировано.'));
     setTimeout(() => {
       intro.classList.add('hidden');
       sheet.classList.add('show');
@@ -418,13 +372,8 @@
 
   musicBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (music.paused) {
-      music.play();
-      musicBtn.classList.add('playing');
-    } else {
-      music.pause();
-      musicBtn.classList.remove('playing');
-    }
+    if (music.paused) { music.play(); musicBtn.classList.add('playing'); }
+    else { music.pause(); musicBtn.classList.remove('playing'); }
   });
 
   function spawnPetals() {
