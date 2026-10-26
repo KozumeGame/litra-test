@@ -107,18 +107,12 @@
     height: 140px;
     transform: translate(-50%, -50%);
     z-index: 6;
-    
     background-image: url('seal.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    
     filter: drop-shadow(0 8px 12px rgba(0,0,0,0.4));
-    
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    
+    display: flex; align-items: center; justify-content: center;
     transition: transform 1.2s cubic-bezier(.34,1.56,.64,1), opacity 1s ease-in, filter 0.6s;
   }
 
@@ -180,15 +174,25 @@
 
   .orn { font-size: 22px; color: #4a7ba8; letter-spacing: 8px; margin-bottom: 18px; }
 
+  /* ===== ИМЕНА (ИСПРАВЛЕНЫ) ===== */
   .page h1 {
     font-family: 'Great Vibes', cursive;
-    font-size: clamp(64px, 14vw, 120px);
-    color: #14293c; line-height: 1.1; font-weight: 400;
-    margin: 10px 0 0; text-shadow: 0 4px 18px rgba(255,255,255,0.95);
+    font-size: clamp(50px, 12vw, 100px); /* Чуть уменьшили для мобилок, чтобы влезало */
+    color: #14293c; 
+    line-height: 1.1; 
+    font-weight: 400;
+    margin: 10px 0 0; 
+    text-shadow: 0 4px 18px rgba(255,255,255,0.95);
+    white-space: nowrap; /* Запрещаем перенос строк */
   }
+  
   .amp {
-    font-family: 'Playfair Display', serif; font-style: italic;
-    font-size: clamp(34px, 7vw, 52px); color: #4a7ba8; margin: 0 10px;
+    font-family: 'Great Vibes', cursive; /* Амперсанд теперь как имена */
+    font-style: normal; /* Убрали курсив, так как шрифт и так рукописный */
+    font-size: clamp(40px, 9vw, 80px); /* Сделали его крупным */
+    color: #4a7ba8; 
+    margin: 0 15px; /* Добавили отступы по бокам, чтобы буквы не наезжали */
+    vertical-align: middle;
   }
 
   .sub {
@@ -275,6 +279,9 @@
     .quote-item img { max-width: 95%; max-height: 240px; }
     .text { font-size: 21px; }
     .hint { font-size: 12px; gap: 6px; white-space: normal; text-align: center; width: 90vw; }
+    /* На мобилках делаем шрифт чуть меньше, чтобы точно влезло */
+    .page h1 { font-size: 46px; } 
+    .amp { font-size: 38px; margin: 0 5px; }
   }
 </style>
 </head>
@@ -292,9 +299,7 @@
         <div class="env-corner ec-br"></div>
         <div class="flap"></div>
       </div>
-      
       <div class="seal"><span>М & А</span></div>
-      
       <div class="hint">
         <span class="env-icon">✉</span>
         Коснитесь конверта, чтобы открыть приглашение
@@ -366,7 +371,6 @@
       <div class="place-box">
         Республика Дагестан
         <small>Банкетный зал «Ислам»</small>
-        <!-- Вставили твою ссылку на карту -->
         <a href="https://yandex.ru/maps/-/CXbEE28b" target="_blank" class="btn">Открыть на карте</a>
       </div>
 
@@ -380,6 +384,7 @@
   </div>
 
 <script>
+  // ... скрипт остается без изменений ...
   const intro = document.getElementById('intro');
   const env = document.getElementById('env');
   const sheet = document.getElementById('sheet');
