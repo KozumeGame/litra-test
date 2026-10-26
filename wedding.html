@@ -67,7 +67,6 @@
     box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 0 2px rgba(200, 225, 245, 0.9), inset 0 0 60px rgba(150,190,220,.3);
   }
   
-  /* Двойная линия по краю */
   .envelope::before {
     content: ""; position: absolute; inset: 16px;
     border: 1px solid rgba(74, 123, 168, 0.4);
@@ -79,7 +78,6 @@
     border-radius: 2px; pointer-events: none;
   }
 
-  /* Уголки (привязаны строго к краям) */
   .env-corner {
     position: absolute; width: 26px; height: 26px;
     border: 2px solid #c9a86a; 
@@ -102,7 +100,6 @@
   }
   .envelope-wrap.opened .flap { transform: rotateX(180deg); z-index: 1; }
 
-  /* ===== ПЕЧАТЬ (Строгий шрифт, идеальная центровка) ===== */
   .seal {
     position: absolute; top: 50%; left: 50%;
     width: 110px; height: 110px;
@@ -110,19 +107,14 @@
     background: radial-gradient(circle at 30% 30%, #a1d2f2, #4a8bc2 50%, #2c5c88 90%);
     border-radius: 50%;
     z-index: 6;
-    
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     text-align: center;
-    
     color: #ffffff;
-    font-family: 'Playfair Display', serif; /* Строгий классический шрифт */
+    font-family: 'Playfair Display', serif; 
     font-style: italic;
     font-size: 32px; 
     line-height: 1;
     white-space: nowrap; 
-    
     text-shadow: 0 2px 5px rgba(0,0,0,.4);
     box-shadow: 
       0 10px 25px rgba(0,0,0,.5), 
@@ -138,7 +130,6 @@
     border-radius: 50%;
   }
 
-  /* Текст печати (центрируем идеально) */
   .seal span {
     display: block;
     transform: translateY(-2px); 
@@ -150,7 +141,6 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   }
 
-  /* ===== ПОДСКАЗКА ===== */
   .hint {
     position: absolute; bottom: -64px; left: 50%; transform: translateX(-50%);
     color: #ffffff; font-size: 15px; letter-spacing: 2px;
@@ -193,7 +183,6 @@
 
   .orn { font-size: 22px; color: #4a7ba8; letter-spacing: 8px; margin-bottom: 18px; }
 
-  /* Имена */
   .page h1 {
     font-family: 'Great Vibes', cursive;
     font-size: clamp(64px, 14vw, 120px);
@@ -221,7 +210,6 @@
 
   .section-title { font-size: 14px; letter-spacing: 6px; text-transform: uppercase; color: #4a7ba8; margin-bottom: 22px; font-weight: 600; }
 
-  /* Текст */
   .text {
     font-size: 26px; color: #1e3a52; line-height: 1.7; font-weight: 600;
     max-width: 580px; margin: 0 auto 30px;
@@ -229,16 +217,26 @@
   }
   .text p { margin-bottom: 16px; }
 
-  .quote-item { margin: 50px 0; }
+  /* ===== ЦИТАТЫ (Центрированы, ограничены по высоте) ===== */
+  .quote-item { margin: 50px 0; text-align: center; }
   .quote-item img {
-    max-width: 85%; height: auto;
-    border: 1px solid #7fb4dd; padding: 5px; background: #ffffff; 
+    /* Картинка не будет шире 85% и выше 300px (для мобилок) */
+    max-width: 85%; 
+    max-height: 300px; 
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Картинка не искажается */
+    border: 1px solid #7fb4dd; 
+    padding: 5px; 
+    background: #ffffff; 
     box-shadow: 0 10px 25px rgba(90, 130, 170, 0.15);
     transition: transform 0.5s;
   }
   .quote-item img:hover { transform: scale(1.02); }
-  .quote-item.left { text-align: left; padding-left: 5%; }
-  .quote-item.right { text-align: right; padding-right: 5%; }
+  
+  /* Убрали смещение влево/вправо, теперь всё по центру */
+  .quote-item.left { padding: 0; text-align: center; }
+  .quote-item.right { padding: 0; text-align: center; }
 
   .countdown { display: flex; justify-content: center; gap: 18px; margin-top: 6px; margin-bottom: 30px; }
   .cd-item { min-width: 62px; text-align: center; }
@@ -286,8 +284,7 @@
     .sheet { padding: 15px 10px 40px; }
     .page { padding: 50px 15px 60px; border-width: 12px; }
     .page::before { inset: 4px; }
-    .quote-item.left, .quote-item.right { padding: 0; }
-    .quote-item img { max-width: 95%; }
+    .quote-item img { max-width: 95%; max-height: 240px; }
     .text { font-size: 21px; }
     .hint { font-size: 12px; gap: 6px; white-space: normal; text-align: center; width: 90vw; }
   }
@@ -317,7 +314,8 @@
     </div>
   </div>
 
-  <audio id="bgMusic" loop>
+  <!-- Убрали атрибут loop, теперь песня играет один раз -->
+  <audio id="bgMusic">
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
@@ -342,12 +340,11 @@
 
       <div class="divider"></div>
 
-      <!-- НОВЫЙ ТЕКСТ ОТ ЗАКАЗЧИКОВ -->
       <p class="text">
         В нашей жизни скоро произойдёт самое важное и трогательное событие — мы создаём свою семью. И нам очень хочется, чтобы этот день был наполнен не только цветами и музыкой, но и улыбками самых близких людей.
       </p>
 
-      <div class="quote-item left">
+      <div class="quote-item">
         <img src="quote1.jpg" alt="Цитата 1">
       </div>
 
@@ -355,7 +352,7 @@
         С радостью и волнением приглашаем вас разделить с нами тепло нашего сердца в день нашей свадьбы.
       </p>
 
-      <div class="quote-item right">
+      <div class="quote-item">
         <img src="quote2.jpg" alt="Цитата 2">
       </div>
 
@@ -363,7 +360,7 @@
         Ваше присутствие — самый ценный подарок для нас. Пусть этот день запомнится нам всем радостью и улыбками.
       </p>
 
-      <div class="quote-item left">
+      <div class="quote-item">
         <img src="quote3.jpg" alt="Цитата 3">
       </div>
 
@@ -401,12 +398,23 @@
   const musicBtn = document.getElementById('musicBtn');
   let opened = false;
 
+  // Настройки звука
+  const maxVolume = 0.2; // Максимальная громкость (20%)
+  const fadeInTime = 3; // Секунды на плавное появление
+  const fadeOutTime = 4; // Секунды на плавное затухание
+
   env.addEventListener('click', () => {
     if (opened) return;
     opened = true;
     env.classList.add('opened');
-    music.volume = 0.25;
-    music.play().then(() => { musicBtn.classList.add('playing'); }).catch(e => console.log('Автовоспроизведение заблокировано.'));
+    
+    // Запуск музыки с плавным появлением
+    music.volume = 0;
+    music.play().then(() => { 
+      musicBtn.classList.add('playing'); 
+      fadeIn(music); // Запускаем плавное появление
+    }).catch(e => console.log('Автовоспроизведение заблокировано.'));
+
     setTimeout(() => {
       intro.classList.add('hidden');
       sheet.classList.add('show');
@@ -415,10 +423,68 @@
     setTimeout(spawnPetals, 300);
   });
 
+  // Плавное появление звука
+  function fadeIn(audio) {
+    let vol = 0;
+    const step = maxVolume / (fadeInTime * 10); // Шаг каждые 0.1 сек
+    const timer = setInterval(() => {
+      if (vol < maxVolume) {
+        vol += step;
+        audio.volume = Math.min(vol, maxVolume);
+      } else {
+        clearInterval(timer);
+      }
+    }, 100);
+  }
+
+  // Плавное затухание звука и отслеживание конца
+  function startFadeOut(audio) {
+    const timer = setInterval(() => {
+      // Если осталось меньше fadeOutTime секунд до конца
+      if (audio.duration && audio.currentTime > (audio.duration - fadeOutTime)) {
+        clearInterval(timer); // Останавливаем проверку, начинаем затухание
+        
+        let vol = audio.volume;
+        const step = maxVolume / (fadeOutTime * 10);
+        
+        const fadeTimer = setInterval(() => {
+          if (vol > 0) {
+            vol -= step;
+            audio.volume = Math.max(vol, 0);
+          } else {
+            clearInterval(fadeTimer);
+          }
+        }, 100);
+      }
+    }, 200);
+  }
+
+  // Запускаем слежение за концом песни при первом клике
+  music.addEventListener('play', () => {
+    // Небольшая задержка, чтобы duration успел загрузиться
+    setTimeout(() => { startFadeOut(music); }, 1000);
+  });
+
+  // Если музыка закончилась
+  music.addEventListener('ended', () => {
+    musicBtn.classList.remove('playing');
+    music.volume = maxVolume; // Сбрасываем настройку громкости
+  });
+
+  // Кнопка вкл/выкл
   musicBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (music.paused) { music.play(); musicBtn.classList.add('playing'); }
-    else { music.pause(); musicBtn.classList.remove('playing'); }
+    if (music.paused) { 
+      music.volume = 0;
+      music.play(); 
+      musicBtn.classList.add('playing'); 
+      fadeIn(music);
+      startFadeOut(music);
+    }
+    else { 
+      music.pause(); 
+      musicBtn.classList.remove('playing'); 
+    }
   });
 
   function spawnPetals() {
