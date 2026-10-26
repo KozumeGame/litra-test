@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мухаммад & Асият — Приглашение</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Marck+Script&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 50% 40%, #3d2b1f 0%, #1a110b 70%, #0d0805 100%);
+    font-family: 'Cormorant Garamond', serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    perspective: 1400px;
+  }
+
+  /* ===== КОНВЕРТ ===== */
+  .envelope-wrap {
+    position: relative;
+    width: 520px;
+    max-width: 92vw;
+    aspect-ratio: 1.45 / 1;
+    cursor: pointer;
+    transition: transform .8s cubic-bezier(.19,1,.22,1), opacity .9s;
+    transform-style: preserve-3d;
+  }
+  .envelope-wrap.opened {
+    transform: translateY(60px) scale(.82);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .envelope {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #f7efe2 0%, #e8d8c0 100%);
+    border-radius: 6px;
+    box-shadow:
+      0 30px 60px rgba(0,0,0,.55),
+      0 0 0 1px rgba(212,175,110,.5),
+      inset 0 0 40px rgba(180,140,90,.15);
+  }
+
+  /* верхний клапан */
+  .flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 62%;
+    background: linear-gradient(180deg, #efe2cc 0%, #dcc9a8 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 1s cubic-bezier(.65,0,.35,1);
+    z-index: 4;
+    border-radius: 6px 6px 0 0;
+    box-shadow: 0 6px 18px rgba(120,90,50,.25);
+  }
+  .envelope-wrap.opened .flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+  }
+
+  /* золотая окантовка */
+  .envelope::after {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1.5px solid rgba(180,140,80,.55);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+
+  /* сургучная печать */
+  .seal {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 96px; height: 96px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at 35% 30%, #b8302f, #7d1414 70%, #5c0c0c);
+    border-radius: 50%;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Marck Script', cursive;
+    font-size: 26px;
+    color: #f4d9a8;
+    text-shadow: 0 1px 2px rgba(0,0,0,.4);
+    box-shadow:
+      0 4px 14px rgba(0,0,0,.4),
+      inset 0 0 10px rgba(255,180,150,.3);
+    transition: transform .6s, opacity .6s;
+    letter-spacing: 1px;
+  }
+  .seal::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed rgba(244,217,168,.55);
+    border-radius: 50%;
+  }
+  .envelope-wrap.opened .seal {
+    transform: translate(-50%, -50%) scale(.4) rotate(25deg);
+    opacity: 0;
+  }
+
+  /* подсказка */
+  .hint {
+    position: absolute;
+    bottom: -58px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #d8b98a;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    animation: pulse 2.4s ease-in-out infinite;
+    transition: opacity .4s;
+  }
+  .envelope-wrap.opened .hint { opacity: 0; }
+  @keyframes pulse {
+    0%,100% { opacity: .45; }
+    50% { opacity: 1; }
+  }
+
+  /* ===== КАРТОЧКА-ПРИГЛАШЕНИЕ ===== */
+  .card {
+    position: fixed;
+    top: 50%; left: 50%;
+    width: 440px;
+    max-width: 88vw;
+    max-height: 88vh;
+    overflow-y: auto;
+    transform: translate(-50%, -50%) scale(.85);
+    opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(170deg, #fbf6ec 0%, #f0e4cd 100%);
+    border-radius: 4px;
+    padding: 46px 34px 38px;
+    text-align: center;
+    box-shadow:
+      0 40px 90px rgba(0,0,0,.6),
+      0 0 0 1px rgba(180,140,80,.5),
+      inset 0 0 0 6px rgba(255,255,255,.5),
+      inset 0 0 0 7.5px rgba(180,140,80,.35);
+    transition: transform 1s cubic-bezier(.19,1,.22,1), opacity 1s;
+    z-index: 10;
+  }
+  .card.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .card::-webkit-scrollbar { width: 0; }
+
+  .orn {
+    font-size: 20px;
+    color: #b8912f;
+    letter-spacing: 8px;
+    margin-bottom: 14px;
+  }
+
+  .card h1 {
+    font-family: 'Marck Script', cursive;
+    font-size: clamp(40px, 9vw, 58px);
+    color: #5a3a1a;
+    line-height: 1.05;
+    margin: 4px 0 2px;
+    font-weight: 400;
+  }
+  .amp {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 30px;
+    color: #b8912f;
+    margin: 2px 0;
+  }
+
+  .sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #8a6a3a;
+    margin: 18px 0 8px;
+  }
+
+  .divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #b8912f, transparent);
+    margin: 20px auto;
+  }
+
+  .date-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin: 10px 0 4px;
+    color: #5a3a1a;
+  }
+  .date-block .day {
+    font-size: 58px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .date-block .month-year {
+    text-align: left;
+    font-size: 16px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1.5;
+    color: #8a6a3a;
+  }
+
+  .place {
+    font-size: 17px;
+    color: #5a3a1a;
+    line-height: 1.6;
+    margin-top: 6px;
+  }
+  .place small {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #a07d4a;
+    margin-top: 6px;
+  }
+
+  .text {
+    font-size: 16px;
+    color: #6b4e2a;
+    line-height: 1.7;
+    margin: 22px 0 6px;
+    font-style: italic;
+  }
+
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .cd-item {
+    min-width: 54px;
+  }
+  .cd-num {
+    font-size: 30px;
+    font-weight: 600;
+    color: #5a3a1a;
+    line-height: 1;
+  }
+  .cd-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #a07d4a;
+    margin-top: 4px;
+  }
+
+  .petal {
+    position: fixed;
+    top: -20px;
+    width: 10px; height: 10px;
+    background: radial-gradient(circle at 30% 30%, #f7d9b0, #d9a86a);
+    border-radius: 50% 0 50% 50%;
+    opacity: .7;
+    pointer-events: none;
+    z-index: 5;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 36px 22px 30px; }
+    .date-block .day { font-size: 46px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- КОНВЕРТ -->
+  <div class="envelope-wrap" id="env">
+    <div class="envelope">
+      <div class="flap"></div>
+    </div>
+    <div class="seal">М & А</div>
+    <div class="hint">Нажмите, чтобы открыть</div>
+  </div>
+
+  <!-- ПРИГЛАШЕНИЕ -->
+  <div class="card" id="card">
+    <div class="orn">✦ ✦ ✦</div>
+    <div class="sub">Приглашение на свадьбу</div>
+    <h1>Мухаммад<span class="amp">&</span>Асият</h1>
+
+    <div class="divider"></div>
+
+    <div class="date-block">
+      <div class="day">01</div>
+      <div class="month-year">ноября<br>2026</div>
+    </div>
+
+    <div class="place">
+      Республика Дагестан
+      <small>Банкетный зал «Название»</small>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="text">
+      С радостью приглашаем вас разделить с нами<br>
+      самый счастливый день нашей жизни
+    </p>
+
+    <div class="countdown" id="countdown">
+      <div class="cd-item"><div class="cd-num" id="cd-d">--</div><div class="cd-label">дней</div></div>
+      <div class="cd-item"><div class="cd-num" id="cd-h">--</div><div class="cd-label">часов</div></div>
+      <div class="cd-item"><div class="cd-num" id="cd-m">--</div><div class="cd-label">минут</div></div>
+      <div class="cd-item"><div class="cd-num" id="cd-s">--</div><div class="cd-label">секунд</div></div>
+    </div>
+
+    <div class="orn" style="margin-top:26px;">✦ ✦ ✦</div>
+  </div>
+
+<script>
+  const env = document.getElementById('env');
+  const card = document.getElementById('card');
+  let opened = false;
+
+  env.addEventListener('click', () => {
+    if (opened) return;
+    opened = true;
+    env.classList.add('opened');
+    setTimeout(() => card.classList.add('show'), 550);
+    setTimeout(spawnPetals, 300);
+  });
+
+  // лепестки
+  function spawnPetals() {
+    for (let i = 0; i < 18; i++) {
+      setTimeout(() => {
+        const p = document.createElement('div');
+        p.className = 'petal';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = (4 + Math.random() * 4) + 's';
+        p.style.width = p.style.height = (6 + Math.random() * 8) + 'px';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 9000);
+      }, i * 180);
+    }
+  }
+
+  // обратный отсчёт до 1 ноября 2026
+  const target = new Date('2026-11-01T00:00:00').getTime();
+
+  function tick() {
+    const now = Date.now();
+    let diff = target - now;
+    if (diff < 0) diff = 0;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor(diff % 86400000 / 3600000);
+    const m = Math.floor(diff % 3600000 / 60000);
+    const s = Math.floor(diff % 60000 / 1000);
+    document.getElementById('cd-d').textContent = d;
+    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
