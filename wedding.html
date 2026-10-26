@@ -174,10 +174,10 @@
 
   .orn { font-size: 22px; color: #4a7ba8; letter-spacing: 8px; margin-bottom: 18px; }
 
-  /* ===== ИМЕНА (Верхние = как нижние) ===== */
+  /* ===== ИМЕНА (Одинаковые) ===== */
   .page h1 {
     font-family: 'Great Vibes', cursive;
-    font-size: clamp(40px, 9vw, 60px); /* Сделали как в финале, чтобы точно влезало */
+    font-size: clamp(40px, 9vw, 60px); 
     color: #14293c; 
     line-height: 1.2; 
     font-weight: 400;
@@ -189,7 +189,7 @@
   .amp {
     font-family: 'Great Vibes', cursive; 
     font-size: clamp(30px, 7vw, 50px); 
-    color: #4a7ba8; /* Голубой цвет, как ты просил */
+    color: #4a7ba8; 
     margin: 0 10px; 
     vertical-align: middle;
   }
@@ -210,7 +210,7 @@
 
   .section-title { font-size: 14px; letter-spacing: 6px; text-transform: uppercase; color: #4a7ba8; margin-bottom: 22px; font-weight: 600; }
 
-  /* ===== ТЕКСТ (Аккуратный) ===== */
+  /* ===== ТЕКСТ ===== */
   .text {
     font-size: 22px; 
     color: #1e3a52; 
@@ -249,13 +249,19 @@
   }
   .btn:hover { background: #7fb4dd; color: #fff; }
 
-  /* ===== ФИНАЛ (Нижние имена) ===== */
+  /* ===== ФИНАЛ (Нижние имена теперь такие же, но чуть меньше) ===== */
   .final { margin-top: 40px; }
   .final .names { 
     font-family: 'Great Vibes', cursive; 
-    font-size: clamp(40px, 9vw, 60px); 
+    font-size: clamp(36px, 8vw, 50px); /* Сделали размер идентичным верхнему */
     color: #14293c; 
     line-height: 1.2; 
+    margin-bottom: 10px;
+  }
+  .final .amp {
+    font-size: clamp(26px, 6vw, 40px); /* Амперсанд тоже уменьшили и сделали голубым */
+    color: #4a7ba8;
+    margin: 0 8px;
   }
   .final .d { font-size: 15px; letter-spacing: 5px; text-transform: uppercase; color: #4a7ba8; margin-top: 12px; font-family: 'Playfair Display', serif; }
 
@@ -289,10 +295,12 @@
     .text { font-size: 19px; max-width: 95%; } 
     .hint { font-size: 12px; gap: 6px; white-space: normal; text-align: center; width: 90vw; }
     
-    /* Для мобилок задаем жесткий размер, чтобы 100% влезло */
     .page h1 { font-size: 38px; } 
     .amp { font-size: 32px; margin: 0 5px; }
-    .final .names { font-size: 38px; }
+    
+    /* Жестко задаем размер для низа на телефоне */
+    .final .names { font-size: 34px; }
+    .final .amp { font-size: 28px; }
   }
 </style>
 </head>
@@ -333,7 +341,7 @@
       <div class="orn">✦ ✦ ✦</div>
       <div class="sub">Приглашение на свадьбу</div>
       
-      <!-- Тут верхние имена и голубой амперсанд -->
+      <!-- ТУТ ВЕРХНИЕ ИМЕНА -->
       <h1>Мухаммад <span class="amp">&</span> Асият</h1>
 
       <div class="divider"></div>
@@ -386,8 +394,9 @@
         <a href="https://yandex.ru/maps/-/CXbEE28b" target="_blank" class="btn">Открыть на карте</a>
       </div>
 
+      <!-- ТУТ НИЖНИЕ ИМЕНА (ИСПРАВЛЕНЫ) -->
       <div class="final">
-        <div class="names">Мухаммад & Асият</div>
+        <div class="names">Мухаммад <span class="amp">&</span> Асият</div>
         <div class="d">01 · 11 · 2026</div>
         <div class="orn" style="margin-top:24px;">✦ ✦ ✦</div>
       </div>
