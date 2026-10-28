@@ -11,14 +11,18 @@
 
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { scroll-behavior: smooth; overflow-x: hidden; }
+  
+  /* Запрещаем скролл самой страницы */
+  html, body { 
+    height: 100%; 
+    overflow: hidden; 
+    background: #2a1f1a;
+  }
 
   body {
-    background: #2a1f1a; 
     font-family: 'Cormorant Garamond', serif;
     display: flex; align-items: center; justify-content: center;
     perspective: 1400px;
-    min-height: 100vh;
   }
 
   /* ===== ЭКРАН С ДОКУМЕНТОМ (ПАРОЛЬ) ===== */
@@ -138,7 +142,8 @@
   .paper.show { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
   .paper.fly-away { transform: translateY(100vh) scale(0.5) rotate(10deg); opacity: 0; }
 
-  .paper-inner { max-width: 600px; margin: 0 auto; padding: 60px 30px 80px; color: #3b2f2f; position: relative; }
+  .paper-inner { max-width: 600px; margin: 0 auto; padding: 60px 30px 40px; color: #3b2f2f; position: relative; }
+  
   .ornament { text-align: center; font-size: 24px; color: #8b6f47; letter-spacing: 10px; margin-bottom: 30px; }
   .paper h1 { font-family: 'Great Vibes', cursive; font-size: clamp(50px, 12vw, 70px); color: #6b4c3a; text-align: center; margin-bottom: 40px; line-height: 1.1; }
   
@@ -157,7 +162,7 @@
   .photo-frame { display: block; margin: 30px auto; text-align: center; position: relative; }
   .photo-frame img { width: 100%; max-width: 450px; height: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #dcd3c6; }
 
-  .btn-area { display: flex; justify-content: center; margin-top: 50px; }
+  .btn-area { display: flex; justify-content: center; margin-top: 40px; padding-bottom: 20px; }
   .btn-next {
     padding: 8px 16px; background: transparent; border: 1px solid #8b6f47; color: #8b6f47;
     font-family: 'Playfair Display', serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
@@ -193,7 +198,7 @@
 
   .dark-content {
     position: relative; z-index: 2; max-width: 550px; margin: 0 auto;
-    padding: 150px 25px 30px; /* Убрали нижний отступ */
+    padding: 150px 25px 50px; 
     display: flex; flex-direction: column; gap: 150px; 
   }
 
@@ -237,7 +242,7 @@
 
   .final-block {
     display: flex; flex-direction: column; align-items: center;
-    padding-bottom: 10px; /* Убрали пустоту */
+    padding-bottom: 10px; 
     opacity: 0; transform: translateY(80px);
     transition: opacity 2s cubic-bezier(.19,1,.22,1), transform 2s cubic-bezier(.19,1,.22,1);
     position: relative;
@@ -249,7 +254,7 @@
   .cursor { display: inline-block; width: 2px; height: 30px; background-color: #ff6b9d; margin-left: 5px; animation: blink 0.8s infinite; vertical-align: bottom; }
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
-  /* КОТИК (БЕЗ СВЕЧЕНИЯ) */
+  /* КОТИК */
   .cat-wrapper { position: relative; width: 70px; height: 70px; cursor: pointer; z-index: 5; opacity: 0; transition: opacity 1s; }
   .final-block.in-view .cat-wrapper { opacity: 1; }
   .secret-cat { 
@@ -282,6 +287,8 @@
     .floating-player { width: 50px; height: 50px; bottom: 15px; right: 15px; }
     .document { padding: 30px 20px; }
     .document h2 { font-size: 36px; }
+    .dark-content { padding: 100px 20px 30px; gap: 100px; }
+    .paper-inner { padding: 40px 20px 30px; }
   }
 </style>
 </head>
@@ -290,8 +297,8 @@
   <div class="password-screen" id="passwordScreen">
     <div class="document" id="document">
       <div class="doc-header">Совершенно секретно</div>
-      <h2>Доступ разрешен</h2>
-      <p>Для получения этого письма, пожалуйста, поставьте свою подпись. Введите важную дату (ДДММ).</p>
+      <h2>Личное послание</h2>
+      <p>Это письмо предназначено только для одного человека. Пожалуйста, подтвердите свою личность. Введите важную дату (ДДММ).</p>
       
       <div class="input-area">
         <label>Подпись</label>
@@ -317,7 +324,6 @@
       
       <p class="first">Я долго думал, как передать тебе то, что чувствую. Слова на бумаге кажутся такими простыми, но когда речь заходит о тебе, <b>Фатима</b>, внутри меня целая вселенная.</p>
       
-      <div class="photo-caption">Тот самый закат, о котором я думаю</div>
       <div class="photo-frame">
         <img src="love_photo1.jpg" alt="Котик">
       </div>
@@ -379,7 +385,6 @@
         <span class="deco deco-pink d-star3">✦</span>
 
         <div class="dark-text">
-          <!-- Тут поменяли расширение на .png -->
           <img src="love_art3.png" alt="Руки" class="inline-img img-right">
           Но больше всего, моя милая Фатима, я люблю твои глаза. В них я вижу целый космос, в котором хочу утонуть. Они глубже любого океана, и когда ты смотришь на меня, я <span class="pink-word">чувствую себя дома</span>. В этих глазах вся моя жизнь.
           <br><br>
@@ -420,7 +425,6 @@
     </div>
   </div>
 
-  <!-- Убрали loop, чтобы музыка играла один раз -->
   <audio id="bgMusic">
     <source src="love_music_tvgirl.mp3" type="audio/mpeg">
   </audio>
@@ -497,15 +501,15 @@
     paper.classList.add('fly-away');
     
     // Медленное появление музыки (из тьмы)
-    bgMusic.volume = 0; // Начинаем с нуля
+    bgMusic.volume = 0; 
     bgMusic.play().catch(e => console.log('Музыка заблокирована'));
     
     let vol = 0;
     const fadeIn = setInterval(() => {
-      // Медленно поднимаем громкость до 0.15 (15%)
-      if (vol < 0.15) { vol += 0.005; bgMusic.volume = vol; }
+      // Поднимаем громкость на 0.01 каждые 500 мс. Итого до 0.15 за 7.5 секунд.
+      if (vol < 0.15) { vol += 0.01; bgMusic.volume = vol; }
       else { clearInterval(fadeIn); }
-    }, 150); // Каждые 150 мс. Итого займет около 4-5 секунд.
+    }, 500); 
     
     setTimeout(() => {
       paper.style.display = 'none'; 
