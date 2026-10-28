@@ -23,28 +23,20 @@
 
   /* ===== ЭКРАН С ДОКУМЕНТОМ (ПАРОЛЬ) ===== */
   .password-screen {
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 50; 
-    background: radial-gradient(ellipse at 50% 50%, #2b1f16 0%, #110a06 100%);
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    z-index: 50; background: radial-gradient(ellipse at 50% 50%, #2b1f16 0%, #110a06 100%);
     background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 4px);
     transition: opacity 1s ease, visibility 1s;
   }
   .password-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
   .document {
-    background: #fdfbf7;
-    background-image: radial-gradient(#e6e0d3 1px, transparent 1px); background-size: 20px 20px;
-    width: 90%; max-width: 450px;
-    padding: 40px 30px;
-    border-radius: 4px;
+    background: #fdfbf7; background-image: radial-gradient(#e6e0d3 1px, transparent 1px); background-size: 20px 20px;
+    width: 90%; max-width: 450px; padding: 40px 30px; border-radius: 4px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 10px #1f1612, 0 0 0 12px #4a3b32; 
-    position: relative;
-    text-align: center;
-    transform: translateY(0);
-    transition: transform 1s cubic-bezier(.19,1,.22,1), opacity 1s;
+    position: relative; text-align: center;
+    transform: translateY(0); transition: transform 1s cubic-bezier(.19,1,.22,1), opacity 1s;
   }
-
   .document.hidden { transform: translateY(100vh) rotate(10deg); opacity: 0; }
 
   .doc-header {
@@ -52,22 +44,14 @@
     color: #8b6f47; text-transform: uppercase; margin-bottom: 20px;
     border-bottom: 1px solid #dcd3c6; padding-bottom: 10px;
   }
-
-  .document h2 {
-    font-family: 'Great Vibes', cursive; font-size: 42px; color: #3b2f2f; margin-bottom: 15px; line-height: 1;
-  }
-
-  .document p {
-    font-size: 18px; line-height: 1.6; color: #4a3b32; margin-bottom: 25px; font-style: italic;
-  }
+  .document h2 { font-family: 'Great Vibes', cursive; font-size: 42px; color: #3b2f2f; margin-bottom: 15px; line-height: 1; }
+  .document p { font-size: 18px; line-height: 1.6; color: #4a3b32; margin-bottom: 25px; font-style: italic; }
 
   .input-area { margin-top: 30px; display: flex; flex-direction: column; align-items: center; }
-
   .input-area label {
     font-family: 'Playfair Display', serif; font-size: 12px; letter-spacing: 2px;
     color: #8b6f47; text-transform: uppercase; margin-bottom: 10px;
   }
-
   .signature-input {
     width: 120px; background: transparent; border: none; border-bottom: 2px solid #4a3b32;
     font-family: 'Great Vibes', cursive; font-size: 32px; color: #3b2f2f;
@@ -164,6 +148,12 @@
   .highlight-word { font-family: 'Great Vibes', cursive; font-size: 38px; color: #8e2a35; font-style: normal; line-height: 1; }
   .red-text { color: #8e2a35; font-weight: 600; font-style: normal; }
 
+  .photo-caption {
+    font-family: 'Playfair Display', serif; font-size: 13px; letter-spacing: 3px;
+    text-transform: uppercase; color: #8b6f47; text-align: center;
+    margin-bottom: 10px; font-style: normal;
+  }
+
   .photo-frame { display: block; margin: 30px auto; text-align: center; position: relative; }
   .photo-frame img { width: 100%; max-width: 450px; height: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #dcd3c6; }
 
@@ -184,7 +174,7 @@
   .dark-scene.active { opacity: 1; pointer-events: auto; }
 
   .floating-player {
-    position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px;
+    position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
     z-index: 100; cursor: pointer; opacity: 0; pointer-events: none;
     transition: opacity 1s ease, transform 0.3s ease;
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
@@ -203,7 +193,8 @@
 
   .dark-content {
     position: relative; z-index: 2; max-width: 550px; margin: 0 auto;
-    padding: 150px 25px 100px; display: flex; flex-direction: column; gap: 150px; 
+    padding: 150px 25px 30px; /* Убрали нижний отступ */
+    display: flex; flex-direction: column; gap: 150px; 
   }
 
   .info-block {
@@ -246,7 +237,8 @@
 
   .final-block {
     display: flex; flex-direction: column; align-items: center;
-    padding-bottom: 50px; opacity: 0; transform: translateY(80px);
+    padding-bottom: 10px; /* Убрали пустоту */
+    opacity: 0; transform: translateY(80px);
     transition: opacity 2s cubic-bezier(.19,1,.22,1), transform 2s cubic-bezier(.19,1,.22,1);
     position: relative;
   }
@@ -257,9 +249,13 @@
   .cursor { display: inline-block; width: 2px; height: 30px; background-color: #ff6b9d; margin-left: 5px; animation: blink 0.8s infinite; vertical-align: bottom; }
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
+  /* КОТИК (БЕЗ СВЕЧЕНИЯ) */
   .cat-wrapper { position: relative; width: 70px; height: 70px; cursor: pointer; z-index: 5; opacity: 0; transition: opacity 1s; }
   .final-block.in-view .cat-wrapper { opacity: 1; }
-  .secret-cat { width: 100%; height: 100%; object-fit: contain; animation: cat-idle 2s ease-in-out infinite alternate; filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.6)); }
+  .secret-cat { 
+    width: 100%; height: 100%; object-fit: contain; 
+    animation: cat-idle 2s ease-in-out infinite alternate; 
+  }
   @keyframes cat-idle { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-5px) scale(1.05); } }
 
   .meow-text { position: absolute; top: -20px; left: -10px; font-family: 'Comic Sans MS', cursive, sans-serif; font-size: 14px; color: #ff6b9d; text-shadow: 0 0 5px rgba(255, 107, 157, 0.8); opacity: 0; pointer-events: none; transform: translateY(0); white-space: nowrap; }
@@ -321,6 +317,7 @@
       
       <p class="first">Я долго думал, как передать тебе то, что чувствую. Слова на бумаге кажутся такими простыми, но когда речь заходит о тебе, <b>Фатима</b>, внутри меня целая вселенная.</p>
       
+      <div class="photo-caption">Тот самый закат, о котором я думаю</div>
       <div class="photo-frame">
         <img src="love_photo1.jpg" alt="Котик">
       </div>
@@ -333,6 +330,7 @@
       
       <p>Это письмо, лишь маленькая часть того, что я хочу тебе сказать. И это только начало...</p>
 
+      <div class="photo-caption">В ожидании нашей встречи</div>
       <div class="photo-frame">
         <img src="love_photo2.jpg" alt="Силуэт">
       </div>
@@ -353,7 +351,6 @@
 
     <div class="dark-content">
       
-      <!-- Блок 1 (Вебтун 1) -->
       <div class="info-block">
         <span class="deco deco-pink d-star1">✦</span>
         <span class="deco deco-blue d-heart1">♡</span>
@@ -365,7 +362,6 @@
         </div>
       </div>
 
-      <!-- Блок 2 (Вебтун 2) -->
       <div class="info-block">
         <span class="deco deco-pink d-star2">✦</span>
         <span class="deco deco-pink d-heart2">♡</span>
@@ -373,25 +369,24 @@
 
         <div class="dark-text">
           <img src="love_art2.jpg" alt="Вебтун" class="inline-img img-left">
-          Мы так редко видимся. Время без тебя тянется бесконечно, а наши встречи пролетают как один миг. Я прокручиваю в голове наши разговоры, вспоминаю каждую мелочь. И даже в этой темноте, ты мой единственный свет. <br><br>
-          <span class="pink-word">Пиши мне почаще, Фатим, я всегда жду уведомления от тебя.</span>
+          Мы так редко видимся из-за всех этих преград и обстоятельств. Время без тебя тянется бесконечно, а наши встречи пролетают как один миг. Я прокручиваю в голове наши разговоры, вспоминаю каждую мелочь. И даже в этой темноте, ты мой единственный свет. <br><br>
+          <span class="pink-word">Я всегда жду каждого твоего сообщения, Фатим. И буду ждать столько, сколько потребуется.</span>
         </div>
       </div>
 
-      <!-- Блок 3 (Неоновые руки) -->
       <div class="info-block">
         <span class="deco deco-blue d-flower">❀</span>
         <span class="deco deco-pink d-star3">✦</span>
 
         <div class="dark-text">
-          <img src="love_art3.jpg" alt="Руки" class="inline-img img-right">
+          <!-- Тут поменяли расширение на .png -->
+          <img src="love_art3.png" alt="Руки" class="inline-img img-right">
           Но больше всего, моя милая Фатима, я люблю твои глаза. В них я вижу целый космос, в котором хочу утонуть. Они глубже любого океана, и когда ты смотришь на меня, я <span class="pink-word">чувствую себя дома</span>. В этих глазах вся моя жизнь.
           <br><br>
           Я хочу, чтобы ты знала, ты самое важное, что случилось со мной. Я люблю тебя не за что-то, а просто за то, что ты есть. За твой смех, за твои глаза, за то, что ты моя.
         </div>
       </div>
 
-      <!-- Финальный блок -->
       <div class="final-block">
         <span class="deco deco-pink d-heart1" style="top: 0; left: 10%;">♡</span>
         <span class="deco deco-blue d-star1" style="top: 10%; right: 5%;">✦</span>
@@ -425,7 +420,8 @@
     </div>
   </div>
 
-  <audio id="bgMusic" loop>
+  <!-- Убрали loop, чтобы музыка играла один раз -->
+  <audio id="bgMusic">
     <source src="love_music_tvgirl.mp3" type="audio/mpeg">
   </audio>
 
@@ -500,8 +496,16 @@
   btnNext.addEventListener('click', () => {
     paper.classList.add('fly-away');
     
-    bgMusic.volume = 0.4;
+    // Медленное появление музыки (из тьмы)
+    bgMusic.volume = 0; // Начинаем с нуля
     bgMusic.play().catch(e => console.log('Музыка заблокирована'));
+    
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+      // Медленно поднимаем громкость до 0.15 (15%)
+      if (vol < 0.15) { vol += 0.005; bgMusic.volume = vol; }
+      else { clearInterval(fadeIn); }
+    }, 150); // Каждые 150 мс. Итого займет около 4-5 секунд.
     
     setTimeout(() => {
       paper.style.display = 'none'; 
@@ -613,7 +617,7 @@
     if (isMusicPlaying) {
       let vol = bgMusic.volume;
       const fadeOut = setInterval(() => {
-        if (vol > 0.05) { vol -= 0.05; bgMusic.volume = vol; }
+        if (vol > 0.01) { vol -= 0.01; bgMusic.volume = vol; }
         else {
           clearInterval(fadeOut);
           bgMusic.pause();
@@ -626,7 +630,7 @@
       bgMusic.play();
       let vol = 0;
       const fadeIn = setInterval(() => {
-        if (vol < 0.05) { vol += 0.05; bgMusic.volume = vol; }
+        if (vol < 0.15) { vol += 0.01; bgMusic.volume = vol; }
         else { clearInterval(fadeIn); }
       }, 100);
       isMusicPlaying = true;
