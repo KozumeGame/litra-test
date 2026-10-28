@@ -12,18 +12,8 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
-  /* Запрещаем скролл самой страницы */
-  html, body { 
-    height: 100%; 
-    overflow: hidden; 
-    background: #2a1f1a;
-  }
-
-  body {
-    font-family: 'Cormorant Garamond', serif;
-    display: flex; align-items: center; justify-content: center;
-    perspective: 1400px;
-  }
+  html, body { height: 100%; overflow: hidden; background: #2a1f1a; }
+  body { font-family: 'Cormorant Garamond', serif; display: flex; align-items: center; justify-content: center; perspective: 1400px; }
 
   /* ===== ЭКРАН С ДОКУМЕНТОМ (ПАРОЛЬ) ===== */
   .password-screen {
@@ -43,30 +33,19 @@
   }
   .document.hidden { transform: translateY(100vh) rotate(10deg); opacity: 0; }
 
-  .doc-header {
-    font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 4px;
-    color: #8b6f47; text-transform: uppercase; margin-bottom: 20px;
-    border-bottom: 1px solid #dcd3c6; padding-bottom: 10px;
-  }
+  .doc-header { font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 4px; color: #8b6f47; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid #dcd3c6; padding-bottom: 10px; }
   .document h2 { font-family: 'Great Vibes', cursive; font-size: 42px; color: #3b2f2f; margin-bottom: 15px; line-height: 1; }
   .document p { font-size: 18px; line-height: 1.6; color: #4a3b32; margin-bottom: 25px; font-style: italic; }
 
   .input-area { margin-top: 30px; display: flex; flex-direction: column; align-items: center; }
-  .input-area label {
-    font-family: 'Playfair Display', serif; font-size: 12px; letter-spacing: 2px;
-    color: #8b6f47; text-transform: uppercase; margin-bottom: 10px;
-  }
+  .input-area label { font-family: 'Playfair Display', serif; font-size: 12px; letter-spacing: 2px; color: #8b6f47; text-transform: uppercase; margin-bottom: 10px; }
   .signature-input {
     width: 120px; background: transparent; border: none; border-bottom: 2px solid #4a3b32;
     font-family: 'Great Vibes', cursive; font-size: 32px; color: #3b2f2f;
     text-align: center; outline: none; letter-spacing: 5px; transition: border-color 0.3s;
   }
   .signature-input:focus { border-bottom-color: #ff6b9d; }
-
-  .error-msg {
-    color: #b33a3a; font-size: 14px; margin-top: 10px; height: 20px;
-    font-family: 'Montserrat', sans-serif; opacity: 0; transition: opacity 0.3s;
-  }
+  .error-msg { color: #b33a3a; font-size: 14px; margin-top: 10px; height: 20px; font-family: 'Montserrat', sans-serif; opacity: 0; transition: opacity 0.3s; }
   .error-msg.show { opacity: 1; }
 
   /* ===== КОНВЕРТ ===== */
@@ -77,10 +56,7 @@
   }
   .envelope-scene.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(5px); }
-    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-  }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(5px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
 
   .envelope-wrap {
     position: relative; width: 520px; max-width: 90vw; aspect-ratio: 1.4 / 1; cursor: pointer;
@@ -90,14 +66,8 @@
   .envelope-wrap.show-envelope { animation: fadeInUp 1.5s cubic-bezier(.19,1,.22,1) both; }
   .envelope-wrap.opened { transform: translateY(80px) scale(0.9); opacity: 0; pointer-events: none; }
 
-  .envelope {
-    position: absolute; inset: 0; background: linear-gradient(145deg, #f4ecd8 0%, #e3d5b8 100%);
-    border-radius: 6px; box-shadow: 0 30px 60px rgba(0,0,0,.7);
-  }
-  .envelope::before {
-    content: ""; position: absolute; inset: 15px;
-    border: 1px solid rgba(139, 111, 71, 0.4); border-radius: 3px;
-  }
+  .envelope { position: absolute; inset: 0; background: linear-gradient(145deg, #f4ecd8 0%, #e3d5b8 100%); border-radius: 6px; box-shadow: 0 30px 60px rgba(0,0,0,.7); }
+  .envelope::before { content: ""; position: absolute; inset: 15px; border: 1px solid rgba(139, 111, 71, 0.4); border-radius: 3px; }
   .flap {
     position: absolute; top: 0; left: 0; width: 100%; height: 60%;
     background: linear-gradient(180deg, #f7efd9 0%, #ddcca9 100%);
@@ -106,12 +76,7 @@
     z-index: 4; border-radius: 6px 6px 0 0;
   }
   .envelope-wrap.opened .flap { transform: rotateX(180deg); z-index: 1; }
-
-  .ribbon {
-    position: absolute; top: 50%; left: 0; width: 100%; height: 20px; transform: translateY(-50%);
-    background: linear-gradient(180deg, #8e2a35, #6e1f28, #4a1319);
-    z-index: 5; transition: transform 1s ease-in, opacity 1s;
-  }
+  .ribbon { position: absolute; top: 50%; left: 0; width: 100%; height: 20px; transform: translateY(-50%); background: linear-gradient(180deg, #8e2a35, #6e1f28, #4a1319); z-index: 5; transition: transform 1s ease-in, opacity 1s; }
   .seal {
     position: absolute; top: 50%; left: 50%; width: 90px; height: 90px; transform: translate(-50%, -50%);
     background: radial-gradient(circle at 35% 30%, #b33a3a, #7a1f1f 60%, #4a0f0f);
@@ -124,11 +89,7 @@
   .envelope-wrap.opened .seal { transform: translate(-50%, -50%) translateY(300px) rotate(15deg) scale(0.8); opacity: 0; }
   .envelope-wrap.opened .ribbon { transform: translateY(-50%) translateY(200px) scaleY(0.5); opacity: 0; }
 
-  .hint {
-    position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%);
-    color: #d8c3a5; font-size: 15px; letter-spacing: 3px; text-transform: uppercase;
-    font-family: 'Playfair Display', serif; white-space: nowrap; animation: pulse 2.5s infinite;
-  }
+  .hint { position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%); color: #d8c3a5; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; font-family: 'Playfair Display', serif; white-space: nowrap; animation: pulse 2.5s infinite; }
   @keyframes pulse { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
 
   /* ===== СВЕТЛЫЙ ЛИСТОК ===== */
@@ -143,22 +104,13 @@
   .paper.fly-away { transform: translateY(100vh) scale(0.5) rotate(10deg); opacity: 0; }
 
   .paper-inner { max-width: 600px; margin: 0 auto; padding: 60px 30px 40px; color: #3b2f2f; position: relative; }
-  
   .ornament { text-align: center; font-size: 24px; color: #8b6f47; letter-spacing: 10px; margin-bottom: 30px; }
   .paper h1 { font-family: 'Great Vibes', cursive; font-size: clamp(50px, 12vw, 70px); color: #6b4c3a; text-align: center; margin-bottom: 40px; line-height: 1.1; }
-  
   .paper p { font-size: 22px; line-height: 1.8; margin-bottom: 25px; font-style: italic; text-align: justify; }
   .paper p.first::first-letter { font-family: 'Great Vibes', cursive; font-size: 70px; float: left; line-height: 0.8; margin-right: 10px; margin-top: 5px; color: #8e2a35; }
-  
   .highlight-word { font-family: 'Great Vibes', cursive; font-size: 38px; color: #8e2a35; font-style: normal; line-height: 1; }
   .red-text { color: #8e2a35; font-weight: 600; font-style: normal; }
-
-  .photo-caption {
-    font-family: 'Playfair Display', serif; font-size: 13px; letter-spacing: 3px;
-    text-transform: uppercase; color: #8b6f47; text-align: center;
-    margin-bottom: 10px; font-style: normal;
-  }
-
+  .photo-caption { font-family: 'Playfair Display', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: #8b6f47; text-align: center; margin-bottom: 10px; font-style: normal; }
   .photo-frame { display: block; margin: 30px auto; text-align: center; position: relative; }
   .photo-frame img { width: 100%; max-width: 450px; height: auto; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #dcd3c6; }
 
@@ -198,7 +150,7 @@
 
   .dark-content {
     position: relative; z-index: 2; max-width: 550px; margin: 0 auto;
-    padding: 150px 25px 50px; 
+    padding: 150px 25px 100px; /* Увеличили нижний отступ, чтобы блок точно попал в зону видимости */
     display: flex; flex-direction: column; gap: 150px; 
   }
 
@@ -242,7 +194,7 @@
 
   .final-block {
     display: flex; flex-direction: column; align-items: center;
-    padding-bottom: 10px; 
+    padding-bottom: 50px; 
     opacity: 0; transform: translateY(80px);
     transition: opacity 2s cubic-bezier(.19,1,.22,1), transform 2s cubic-bezier(.19,1,.22,1);
     position: relative;
@@ -254,13 +206,9 @@
   .cursor { display: inline-block; width: 2px; height: 30px; background-color: #ff6b9d; margin-left: 5px; animation: blink 0.8s infinite; vertical-align: bottom; }
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
-  /* КОТИК */
   .cat-wrapper { position: relative; width: 70px; height: 70px; cursor: pointer; z-index: 5; opacity: 0; transition: opacity 1s; }
   .final-block.in-view .cat-wrapper { opacity: 1; }
-  .secret-cat { 
-    width: 100%; height: 100%; object-fit: contain; 
-    animation: cat-idle 2s ease-in-out infinite alternate; 
-  }
+  .secret-cat { width: 100%; height: 100%; object-fit: contain; animation: cat-idle 2s ease-in-out infinite alternate; }
   @keyframes cat-idle { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-5px) scale(1.05); } }
 
   .meow-text { position: absolute; top: -20px; left: -10px; font-family: 'Comic Sans MS', cursive, sans-serif; font-size: 14px; color: #ff6b9d; text-shadow: 0 0 5px rgba(255, 107, 157, 0.8); opacity: 0; pointer-events: none; transform: translateY(0); white-space: nowrap; }
@@ -287,7 +235,7 @@
     .floating-player { width: 50px; height: 50px; bottom: 15px; right: 15px; }
     .document { padding: 30px 20px; }
     .document h2 { font-size: 36px; }
-    .dark-content { padding: 100px 20px 30px; gap: 100px; }
+    .dark-content { padding: 100px 20px 100px; gap: 100px; }
     .paper-inner { padding: 40px 20px 30px; }
   }
 </style>
@@ -506,7 +454,6 @@
     
     let vol = 0;
     const fadeIn = setInterval(() => {
-      // Поднимаем громкость на 0.01 каждые 500 мс. Итого до 0.15 за 7.5 секунд.
       if (vol < 0.15) { vol += 0.01; bgMusic.volume = vol; }
       else { clearInterval(fadeIn); }
     }, 500); 
@@ -525,7 +472,8 @@
     blocks.forEach(block => {
       const rect = block.getBoundingClientRect();
       
-      if (rect.top < windowHeight * 0.85 && rect.bottom > 0) {
+      // Если блок показался в зоне видимости (с запасом 100px снизу, чтобы на телефоне точно срабатывало)
+      if (rect.top < windowHeight - 50 && rect.bottom > 0) {
         block.classList.add('in-view');
         
         if (block.classList.contains('final-block') && !block.classList.contains('typed')) {
