@@ -150,8 +150,35 @@
 
   .dark-content {
     position: relative; z-index: 2; max-width: 550px; margin: 0 auto;
-    padding: 150px 25px 100px; /* Увеличили нижний отступ, чтобы блок точно попал в зону видимости */
-    display: flex; flex-direction: column; gap: 150px; 
+    padding: 60px 25px 150px; /* Уменьшили верхний отступ */
+    display: flex; flex-direction: column; gap: 120px; 
+  }
+
+  /* НОВЫЙ ЗАГОЛОВОК В САМОМ ВЕРХУ */
+  .dark-intro {
+    text-align: center;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInIntro 2s ease forwards;
+    animation-delay: 1.5s;
+  }
+  @keyframes fadeInIntro {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .dark-intro h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 45px;
+    color: #ff6b9d;
+    text-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
+    margin-bottom: 10px;
+  }
+  .dark-intro p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #a0b8e0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
   }
 
   .info-block {
@@ -235,7 +262,8 @@
     .floating-player { width: 50px; height: 50px; bottom: 15px; right: 15px; }
     .document { padding: 30px 20px; }
     .document h2 { font-size: 36px; }
-    .dark-content { padding: 100px 20px 100px; gap: 100px; }
+    .dark-content { padding: 40px 20px 100px; gap: 80px; }
+    .dark-intro h2 { font-size: 36px; }
     .paper-inner { padding: 40px 20px 30px; }
   }
 </style>
@@ -305,7 +333,13 @@
 
     <div class="dark-content">
       
-      <div class="info-block">
+      <!-- НОВЫЙ ЗАГОЛОВОК В САМОМ ВЕРХУ -->
+      <div class="dark-intro">
+        <h2>Ты — мой свет</h2>
+        <p>даже когда вокруг ночь</p>
+      </div>
+
+      <div class="info-block" id="block1">
         <span class="deco deco-pink d-star1">✦</span>
         <span class="deco deco-blue d-heart1">♡</span>
         <span class="deco deco-blue d-sparkle1">✧</span>
@@ -316,7 +350,7 @@
         </div>
       </div>
 
-      <div class="info-block">
+      <div class="info-block" id="block2">
         <span class="deco deco-pink d-star2">✦</span>
         <span class="deco deco-pink d-heart2">♡</span>
         <span class="deco deco-blue d-sparkle2">✧</span>
@@ -328,7 +362,7 @@
         </div>
       </div>
 
-      <div class="info-block">
+      <div class="info-block" id="block3">
         <span class="deco deco-blue d-flower">❀</span>
         <span class="deco deco-pink d-star3">✦</span>
 
@@ -340,7 +374,7 @@
         </div>
       </div>
 
-      <div class="final-block">
+      <div class="final-block" id="finalBlock">
         <span class="deco deco-pink d-heart1" style="top: 0; left: 10%;">♡</span>
         <span class="deco deco-blue d-star1" style="top: 10%; right: 5%;">✦</span>
 
@@ -429,10 +463,15 @@
   const meowText = document.getElementById('meowText');
   const petHint = document.getElementById('petHint');
   const floatingPlayer = document.getElementById('floatingPlayer');
+  
+  // Блоки, за которыми следим
+  const block3 = document.getElementById('block3');
+  const finalBlock = document.getElementById('finalBlock');
 
   let isOpened = false;
   let catClicks = 0;
   let isMusicPlaying = true;
+  let finalTyped = false; // Флаг, чтобы текст напечатался только раз
 
   envelopeWrap.addEventListener('click', () => {
     if (isOpened) return;
@@ -448,7 +487,6 @@
   btnNext.addEventListener('click', () => {
     paper.classList.add('fly-away');
     
-    // Медленное появление музыки (из тьмы)
     bgMusic.volume = 0; 
     bgMusic.play().catch(e => console.log('Музыка заблокирована'));
     
@@ -465,50 +503,40 @@
     }, 1000);
   });
 
-  function checkScroll() {
-    const blocks = document.querySelectorAll('.info-block, .final-block');
+  // Отслеживаем скролл
+  darkScene.addEventListener('scroll', () => {
     const windowHeight = window.innerHeight;
     
-    blocks.forEach(block => {
+    // 1. Анимация появления блоков
+    document.querySelectorAll('.info-block').forEach(block => {
       const rect = block.getBoundingClientRect();
-      
-      // Если блок показался в зоне видимости (с запасом 100px снизу, чтобы на телефоне точно срабатывало)
       if (rect.top < windowHeight - 50 && rect.bottom > 0) {
         block.classList.add('in-view');
-        
-        if (block.classList.contains('final-block') && !block.classList.contains('typed')) {
-          block.classList.add('typed');
-          setTimeout(startCornerTyping, 1000);
-          startPetHint(); 
-        }
-      } 
-      else if (rect.top > windowHeight) {
-        block.classList.remove('in-view');
       }
     });
-  }
 
-  function updateVine() {
-    if (!darkScene.classList.contains('active')) return;
-    
+    // 2. Рост лозы
     const scrollTop = darkScene.scrollTop;
     const scrollHeight = darkScene.scrollHeight - darkScene.clientHeight;
-    
     let scrollPercent = scrollTop / scrollHeight;
     if (scrollPercent > 1) scrollPercent = 1;
     if (scrollPercent < 0) scrollPercent = 0;
+    const offset = 3000 - (3000 * scrollPercent);
+    vineElements.forEach(el => { el.style.strokeDashoffset = offset; });
 
-    const pathLength = 3000;
-    const offset = pathLength - (pathLength * scrollPercent);
-    
-    vineElements.forEach(el => {
-      el.style.strokeDashoffset = offset;
-    });
-  }
-
-  darkScene.addEventListener('scroll', () => {
-    checkScroll();
-    updateVine();
+    // 3. Появление котика и текста, когда доскроллили до 3-го блока
+    const rect3 = block3.getBoundingClientRect();
+    // Если третий блок (с глазами) показался хотя бы наполовину
+    if (rect3.top < windowHeight * 0.6) {
+      finalBlock.classList.add('in-view');
+      
+      // Запускаем печать один раз
+      if (!finalTyped) {
+        finalTyped = true;
+        setTimeout(startCornerTyping, 500);
+        startPetHint();
+      }
+    }
   });
 
   function startCornerTyping() {
