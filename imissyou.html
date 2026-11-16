@@ -49,7 +49,7 @@
     100% { transform: translateY(-10px) rotate(10deg); }
   }
 
-  /* Анимация помады */
+  /* Анимация жирной помады */
   .block.visible .lipstick-smear {
     animation: drawSmear 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
@@ -199,12 +199,11 @@
   .red-box .text-calligraphy { color: var(--cream); text-align: left; margin-bottom: 20px; }
   .red-box .text-serif { color: var(--cream); font-style: italic; }
 
-  /* Картинки с эффектом параллакса внутри рамки */
   .img-polaroid {
     background: #fff; padding: 12px 12px 35px 12px;
     box-shadow: 0 25px 50px rgba(0,0,0,0.25), 0 5px 15px rgba(0,0,0,0.1); 
     border-radius: 2px; display: inline-block; width: 100%;
-    overflow: hidden; /* Скрываем все, что вылезает за рамку */
+    overflow: hidden; 
   }
   .img-polaroid img { 
     width: 100%; 
@@ -212,7 +211,7 @@
     object-fit: cover; 
     min-height: 200px; 
     background: #eee;
-    transition: transform 0.1s linear; /* Плавный параллакс */
+    transition: transform 0.1s linear; 
   }
   .polaroid-caption { font-family: 'Caveat', cursive; font-size: 22px; color: var(--deep-red); text-align: center; margin-top: 8px; }
 
@@ -404,17 +403,18 @@
 
   <div class="divider-line"></div>
 
-  <!-- Блок 5 (Поцелуй) с аккуратной помадой -->
+  <!-- Блок 5 (Поцелуй) с ЖИРНОЙ помадой -->
   <div class="block" style="position: relative;">
     
     <svg class="deco deco-star-big" style="top: -30px; right: 10%;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
     <svg class="deco deco-star-small" style="top: -10px; right: 5%;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
 
-    <!-- Аккуратная помада-зигзаг -->
-    <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 100%; height: 450px; z-index: 0; pointer-events: none;">
-      <svg viewBox="0 0 500 300" style="width: 100%; height: 100%; fill: none; stroke: #8e2a35; stroke-width: 18; stroke-linecap: round; stroke-linejoin: round; opacity: 0.6;">
+    <!-- ЖИРНАЯ помада-зигзаг на фоне -->
+    <div style="position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 120%; height: 550px; z-index: 0; pointer-events: none;">
+      <!-- stroke-width: 90 - это и есть та самая жирность. stroke: #a82233 - темно-красный -->
+      <svg viewBox="0 0 500 400" style="width: 100%; height: 100%; fill: none; stroke: #a82233; stroke-width: 90; stroke-linecap: round; stroke-linejoin: round; filter: blur(2px);">
         <!-- Вправо, влево, вправо, влево, вниз -->
-        <path class="lipstick-smear" d="M 50,50 L 450,50 L 50,120 L 450,120 L 50,190 L 250,250 L 250,350" stroke-dasharray="2000" stroke-dashoffset="2000" />
+        <path class="lipstick-smear" d="M 50,50 L 450,50 L 50,150 L 450,150 L 50,250 L 250,300 L 250,420" stroke-dasharray="3000" stroke-dashoffset="3000" />
       </svg>
     </div>
 
@@ -429,7 +429,7 @@
         </div>
       </div>
       
-      <div class="text-serif" style="margin-top: 10px; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto; position: relative; z-index: 2; background: rgba(244, 235, 225, 0.85); padding: 15px; border-radius: 4px;">
+      <div class="text-serif" style="margin-top: 10px; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto; position: relative; z-index: 2; background: rgba(244, 235, 225, 0.9); padding: 15px; border-radius: 4px;">
         Когда ты далеко <span class="highlight-text">милая</span> я особенно понимаю насколько ты важна. А когда мы наконец встречаемся хоть и ненадолго и ты начинаешь меня лапать мне так приятно и щекотно от этого. В эти моменты я чувствую что всё в порядке потому что ты рядом.
       </div>
     </div>
@@ -640,22 +640,17 @@
     lines.forEach(line => observer.observe(line));
     observer.observe(document.getElementById('finalDark'));
 
-    // Правильный параллакс (внутри рамки, без исчезновения)
+    // Аккуратный параллакс
     window.addEventListener('scroll', () => {
-      const scrolled = window.scrollY;
       const windowHeight = window.innerHeight;
 
       document.querySelectorAll('.img-polaroid img').forEach(img => {
         const rect = img.parentElement.getBoundingClientRect();
         
-        // Проверяем, находится ли рамка в зоне видимости
         if (rect.top < windowHeight && rect.bottom > 0) {
-          // Вычисляем прогресс от 0 до 1
           const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
-          
-          // Двигаем картинку внутри рамки. Увеличиваем scale, чтобы не было пустых краев при сдвиге
-          const moveY = (progress - 0.5) * 40; 
-          img.style.transform = `scale(1.15) translateY(${moveY}px)`;
+          const moveY = (progress - 0.5) * 15; 
+          img.style.transform = `translateY(${moveY}px)`;
         }
       });
     });
