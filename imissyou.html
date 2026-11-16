@@ -12,11 +12,11 @@
     --pink: #d89da3;     
     --cream: #f4ebe1;    
     --text: #1f1816;     
+    --highlight: #8e2a35; 
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* Фон с текстурой бумаги */
   body {
     background-color: var(--cream);
     background-image: 
@@ -34,7 +34,29 @@
     background: radial-gradient(circle at 50% 30%, rgba(110, 29, 40, 0.06) 0%, transparent 60%);
   }
 
-  /* --- ЭКРАН ВХОДА --- */
+  /* Декоративные элементы (SVG) */
+  .deco {
+    position: absolute; pointer-events: none; z-index: 3; opacity: 0.7;
+    animation: floatDeco 4s ease-in-out infinite alternate;
+  }
+  .deco-star-big { width: 24px; height: 24px; fill: var(--highlight); }
+  .deco-star-small { width: 14px; height: 14px; fill: var(--highlight); }
+  .deco-heart { width: 18px; height: 18px; fill: var(--highlight); }
+  .deco-star-pink { fill: var(--pink); }
+  
+  @keyframes floatDeco {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-10px) rotate(10deg); }
+  }
+
+  /* Анимация для мазка помады */
+  .block.visible .lipstick-smear {
+    animation: drawSmear 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  @keyframes drawSmear {
+    to { stroke-dashoffset: 0; }
+  }
+
   .login-screen {
     position: fixed; inset: 0; z-index: 100;
     background: radial-gradient(circle at 50% 50%, var(--wine) 0%, var(--deep-red) 100%);
@@ -121,7 +143,6 @@
   .btn-enter:hover { background: var(--wine); }
   .btn-enter:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* Основной контент */
   .main-content {
     opacity: 0; transition: opacity 1.5s ease;
     max-width: 800px; margin: 0 auto; padding: 80px 25px;
@@ -129,15 +150,13 @@
   }
   .main-content.show { opacity: 1; }
 
-  .hero-title { text-align: center; margin-bottom: 80px; }
+  .hero-title { text-align: center; margin-bottom: 80px; position: relative; }
   .hero-title h1 { font-family: 'Caveat', cursive; font-size: 64px; color: var(--deep-red); line-height: 1; margin-bottom: 15px; }
   .hero-title p { font-family: 'Montserrat', sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--wine); }
 
-  /* Блоки */
   .block { margin-bottom: 120px; opacity: 0; transform: translateY(30px); transition: opacity 1s ease, transform 1s ease; position: relative; }
   .block.visible { opacity: 1; transform: translateY(0); }
 
-  /* Декоративная линия */
   .divider-line {
     width: 0; height: 1px; background: var(--wine); margin: 40px auto;
     transition: width 2s cubic-bezier(.19,1,.22,1); position: relative;
@@ -150,7 +169,6 @@
   .divider-line.visible { width: 100%; }
   .divider-line.visible::after { opacity: 1; }
 
-  /* Тексты */
   .text-calligraphy {
     font-family: 'Caveat', cursive;
     font-size: 30px; line-height: 1.5; color: var(--deep-red);
@@ -168,7 +186,12 @@
     opacity: 1; transform: translateY(0);
   }
   
-  /* Красная карточка */
+  .highlight-text {
+    color: var(--highlight);
+    font-weight: 600;
+    font-style: italic;
+  }
+
   .red-box {
     background: var(--deep-red); padding: 45px 40px; border-radius: 4px;
     color: var(--cream); box-shadow: 0 15px 30px rgba(74, 18, 25, 0.3);
@@ -176,7 +199,6 @@
   .red-box .text-calligraphy { color: var(--cream); text-align: left; margin-bottom: 20px; }
   .red-box .text-serif { color: var(--cream); font-style: italic; }
 
-  /* Картинки с глубокими тенями */
   .img-polaroid {
     background: #fff; padding: 12px 12px 35px 12px;
     box-shadow: 0 25px 50px rgba(0,0,0,0.25), 0 5px 15px rgba(0,0,0,0.1); 
@@ -187,20 +209,18 @@
   .img-polaroid img { width: 100%; display: block; object-fit: cover; }
   .polaroid-caption { font-family: 'Caveat', cursive; font-size: 22px; color: var(--deep-red); text-align: center; margin-top: 8px; }
 
-  /* Раскладки */
-  .layout-left-img { display: flex; gap: 40px; align-items: center; }
+  .layout-left-img { display: flex; gap: 40px; align-items: center; position: relative; }
   .layout-left-img .img-wrap { width: 45%; transform: rotate(-2deg); }
-  .layout-left-img .text-wrap { width: 55%; }
+  .layout-left-img .text-wrap { width: 55%; position: relative; }
 
   .layout-overlap { position: relative; padding-top: 40px; }
   .layout-overlap .red-box { width: 70%; padding: 40px 30px 40px 40px; }
   .layout-overlap .img-wrap { position: absolute; right: 0; bottom: -20px; width: 55%; z-index: 2; transform: rotate(1deg); }
 
-  .layout-text-only { text-align: center; padding: 0 20px; }
+  .layout-text-only { text-align: center; padding: 0 20px; position: relative; }
   .layout-text-only .text-calligraphy { font-size: 38px; }
   .layout-text-only .text-serif { margin-top: 20px; max-width: 650px; margin-left: auto; margin-right: auto; }
 
-  /* ФИНАЛ */
   .final-dark-section {
     background: #150a0c; padding: 100px 20px; border-radius: 40px 40px 0 0;
     margin-top: 50px; text-align: center; display: flex; flex-direction: column; align-items: center;
@@ -225,7 +245,6 @@
   .cursor { display: inline-block; width: 3px; height: 40px; background: var(--pink); animation: blink 1s infinite; vertical-align: bottom; margin-left: 5px; }
   @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
-  /* Котик */
   .cat-container {
     position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center;
     margin-bottom: 20px;
@@ -241,7 +260,6 @@
   
   .cat-hint { margin-top: 15px; font-family: 'Montserrat', sans-serif; font-size: 11px; color: var(--pink); letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; z-index: 1; position: relative; }
 
-  /* Пластинка */
   .vinyl-player {
     position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
     z-index: 90; cursor: pointer; opacity: 0; pointer-events: none;
@@ -272,7 +290,6 @@
   .vinyl-player.playing .vinyl-disc { animation: spin 3s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  /* Вспышка */
   .flash-effect {
     position: fixed; inset: 0; background: var(--wine); opacity: 0;
     pointer-events: none; z-index: 999; transition: opacity 0.2s ease;
@@ -286,15 +303,14 @@
     .layout-overlap .img-wrap { position: relative; width: 90%; margin: -30px auto 0; right: auto; bottom: auto; }
     .hero-title h1 { font-size: 48px; }
     .login-box { padding: 30px 20px; }
+    .deco { display: none; } /* На телефонах убираем, чтобы не мешали */
   }
 </style>
 </head>
 <body>
 
-<!-- Экран вспышки -->
 <div class="flash-effect" id="flashEffect"></div>
 
-<!-- ЭКРАН ВХОДА -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <h2>Тут есть кое-что для тебя</h2>
@@ -320,7 +336,6 @@
   </div>
 </div>
 
-<!-- КОНТЕНТ -->
 <div class="main-content" id="mainContent">
   
   <div class="hero-title">
@@ -332,14 +347,13 @@
   <div class="block layout-left-img">
     <div class="img-wrap">
       <div class="img-polaroid">
-        <img src="snow_cats.jpg" alt="Котята">
-        <div class="polaroid-caption">Мои любимые</div>
+        <img src="imissyou/snow_cats.jpg" alt="Котята">
       </div>
     </div>
     <div class="text-wrap">
       <div class="text-serif">
         Прелестный снег... А скоро зима. Ты прекрасно знаешь как я люблю это время года. И знаешь почему?<br><br>
-        Потому что даже в самый лютый холод когда мы рядом мне становится невероятно тепло. Самая холодная зима с тобой превращается в самое жаркое лето. Ты моё личное солнце Фатим. Даже когда на улице метель в моей душе цветут сады стоит мне только вспомнить о тебе.
+        Потому что даже в самый лютый холод когда мы рядом мне становится невероятно тепло. Самая холодная зима с тобой превращается в самое жаркое лето. Ты моё <span class="highlight-text">личное солнце</span>. Даже когда на улице метель в моей душе цветут сады стоит мне только вспомнить о тебе.
       </div>
     </div>
   </div>
@@ -351,13 +365,13 @@
     <div class="red-box">
       <div class="text-calligraphy">Твой личный шеф</div>
       <div class="text-serif">
-        Ты знаешь зайка я готов на многое ради тебя. Даже надеть фартук и ухаживать за тобой. Особенно когда у тебя тяжкие дни и ты устаешь.<br><br>
+        Ты знаешь <span style="color: var(--pink); font-weight: 600;">зайка</span> я готов на многое ради тебя. Даже надеть фартук и ухаживать за тобой. Особенно когда у тебя тяжкие дни и ты устаешь.<br><br>
         Скажи мне что приготовить и я сделаю для тебя всё что пожелаешь. Хочу чтобы ты знала я готов ради тебя на любые подвиги даже если они происходят на кухне. Главное чтобы ты улыбалась.
       </div>
     </div>
     <div class="img-wrap">
       <div class="img-polaroid">
-        <img src="chef_lion.jpg" alt="Лев">
+        <img src="imissyou/chef_lion.jpg" alt="Лев">
         <div class="polaroid-caption">Ле Аля Дэ омлетто</div>
       </div>
     </div>
@@ -365,91 +379,111 @@
 
   <div class="divider-line"></div>
 
-  <!-- Блок 3 -->
+  <!-- Блок 3 (Тигр) -->
   <div class="block layout-text-only">
     <div class="text-calligraphy">
       Пожалуйста отдыхай.<br>
       Не работай до отказа ножек.
     </div>
     <div class="text-serif">
-      Я правда волнуюсь за тебя. Ты слишком много на себя берешь а я хочу чтобы ты иногда просто выдыхала и отдыхала моя любимая. Ты заслуживаешь покоя. Мир не рухнет если ты уделишь минутку себе. Ложись укрывайся пледом и просто позволь себе ничего не делать. Ты всегда можешь опереться на меня.
+      Я правда волнуюсь за тебя. Ты слишком много на себя берешь а я хочу чтобы ты иногда просто выдыхала и отдыхала <span class="highlight-text">моя любимая</span>. Ты заслуживаешь покоя. Мир не рухнет если ты уделишь минутку себе. Ложись укрывайся пледом и просто позволь себе ничего не делать. Ты всегда можешь опереться на меня.
     </div>
-    <div class="img-wrap" style="width: 60%; max-width: 300px; margin: 30px auto 0; transform: rotate(-2deg);">
+    <div class="img-wrap" style="width: 60%; max-width: 300px; margin: 20px auto 40px; transform: rotate(-2deg); position: relative; z-index: 2;">
       <div class="img-polaroid">
-        <img src="tiger_rest.jpg" alt="Тигр">
-        <div class="polaroid-caption">Братух не шелести</div>
+        <img src="imissyou/tiger_rest.jpg" alt="Тигр">
       </div>
     </div>
   </div>
 
   <div class="divider-line"></div>
 
-  <!-- Блок 5 -->
-  <div class="block">
-    <div class="text-calligraphy" style="margin-bottom: 30px;">
-      Мне так не хватает твоего тепла рядом.
+  <!-- Блок 5 (Поцелуй) с мазком помады и звездочками -->
+  <div class="block" style="position: relative;">
+    
+    <!-- Декоративные элементы (Звездочки) -->
+    <svg class="deco deco-star-big" style="top: -30px; right: 10%;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    <svg class="deco deco-star-small" style="top: -10px; right: 5%;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+
+    <!-- Фоновый мазок помадой -->
+    <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 120%; height: 400px; z-index: 0; opacity: 0.3; pointer-events: none;">
+      <svg viewBox="0 0 500 300" style="width: 100%; height: 100%; fill: none; stroke: #8e2a35; stroke-width: 25; stroke-linecap: round; stroke-linejoin: round; filter: blur(4px);">
+        <path class="lipstick-smear" d="M 50,50 Q 150,20 250,80 T 400,150 Q 250,200 150,250 T 450,280" stroke-dasharray="1000" stroke-dashoffset="1000" />
+      </svg>
     </div>
-    <div class="img-wrap" style="width: 80%; max-width: 500px; margin: 0 auto; transform: rotate(1.5deg);">
-      <div class="img-polaroid">
-        <img src="art_kiss.jpg" alt="Поцелуй">
-        <div class="polaroid-caption">Только ты</div>
+
+    <!-- Контент блока -->
+    <div style="position: relative; z-index: 1;">
+      <div class="text-calligraphy" style="margin-bottom: 20px;">
+        Мне так не хватает твоего тепла рядом.
       </div>
-    </div>
-    <div class="text-serif" style="margin-top: 30px; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
-      Когда ты далеко милая я особенно понимаю насколько ты важна. А когда мы наконец встречаемся хоть и ненадолго и ты начинаешь меня лапать мне так приятно и щекотно от этого. В эти моменты я чувствую что всё в порядке потому что ты рядом.
+      
+      <div class="img-wrap" style="width: 80%; max-width: 500px; margin: 0 auto 30px; transform: rotate(1.5deg); position: relative; z-index: 2;">
+        <div class="img-polaroid">
+          <img src="imissyou/art_kiss.jpg" alt="Поцелуй">
+        </div>
+      </div>
+      
+      <div class="text-serif" style="margin-top: 10px; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto; position: relative; z-index: 2; background: rgba(244, 235, 225, 0.7); padding: 10px; border-radius: 4px;">
+        Когда ты далеко <span class="highlight-text">милая</span> я особенно понимаю насколько ты важна. А когда мы наконец встречаемся хоть и ненадолго и ты начинаешь меня лапать мне так приятно и щекотно от этого. В эти моменты я чувствую что всё в порядке потому что ты рядом.
+      </div>
     </div>
   </div>
 
   <div class="divider-line"></div>
 
-  <!-- Блок 6 -->
+  <!-- Блок 6 (Грудь) с сердечком -->
   <div class="block layout-left-img" style="flex-direction: row-reverse;">
+    
+    <svg class="deco deco-heart" style="top: -10px; left: 40%;" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+
     <div class="img-wrap" style="transform: rotate(-1deg);">
       <div class="img-polaroid">
-        <img src="hug_art.jpg" alt="Thank you god">
-        <div class="polaroid-caption">Спасибо вселенной</div>
+        <img src="imissyou/hug_art.jpg" alt="Thank you god">
       </div>
     </div>
     <div class="text-wrap">
       <div class="text-serif">
-        Знаешь я заметил одну интересную особенность. Кажется у меня есть официальное разрешение быть твоей личной подушкой безопасности. <br><br>
+        Знаешь я заметил одну интересную особенность. Кажется у меня есть официальное разрешение быть твоей <span class="highlight-text">личной подушкой безопасности</span>.<br><br>
         Ты прижимаешься устраиваешься поудобнее и в этот момент я чувствую себя самым нужным человеком на планете. Хотя признаюсь честно иногда мне кажется что ты любишь мою грудь чуть больше чем меня самого.<br><br>
-        Но я не против. Пользуйся мне не жалко. Главное чтобы тебе было уютно и спокойно.
+        Но я не против. Пользуйся мне не жалко. Главное чтобы тебе было <span class="highlight-text">уютно и спокойно</span>.
       </div>
     </div>
   </div>
 
   <div class="divider-line"></div>
 
-  <!-- Блок 7 -->
+  <!-- Блок 7 (Одержимость) со звездочкой -->
   <div class="block layout-overlap" style="display: flex; align-items: center; justify-content: flex-start; padding-top: 20px;">
     <div class="img-wrap" style="position: absolute; left: 0; width: 45%; transform: rotate(-3deg); z-index: 2;">
       <div class="img-polaroid">
-        <img src="obsession_art.jpg" alt="Одержимость">
-        <div class="polaroid-caption">Моя вселенная</div>
+        <img src="imissyou/obsession_art.jpg" alt="Одержимость">
+        <div class="polaroid-caption">My lovely F</div>
       </div>
     </div>
     <div class="red-box" style="width: 70%; position: relative; z-index: 1; padding: 40px 30px 40px 80px; margin-left: auto;">
+      
+      <svg class="deco deco-star-big deco-star-pink" style="top: -15px; right: 10%;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+
       <div class="text-calligraphy" style="text-align: center; margin-bottom: 15px;">Ты нужна мне.</div>
       <div class="text-serif" style="text-align: center;">
-        Не просто нужна. Я одержим тобой Фатим. Твоим голосом твоим взглядом каждой твоей эмоцией. Ты как мой личный воздух без которого я не могу дышать~
+        Не просто нужна. Я одержим тобой <span style="color: var(--pink); font-weight: 600;">Фатим</span>. Твоим голосом твоим взглядом каждой твоей эмоцией. Ты как мой личный воздух без которого я не могу дышать~
       </div>
     </div>
   </div>
 
   <div class="divider-line"></div>
 
-  <!-- Блок 8 -->
+  <!-- Блок 8 (Манхва) -->
   <div class="block layout-overlap" style="display: flex; align-items: center; justify-content: flex-end; padding-top: 20px;">
     <div class="red-box" style="width: 70%; position: relative; z-index: 1; padding: 40px 80px 40px 30px; margin-right: auto;">
       <div class="text-serif">
         Я люблю тебя в любом настроении. Даже если ты придумала себе что-то в голове или обиделась на выдуманный сон я всё равно на твоей стороне.<br><br>
-        Просто знай это. Мне не нужно чтобы ты была идеальной или всегда права. Мне нужно чтобы ты была счастлива. И я сделаю для этого всё что в моих силах.
+        Просто знай это. Мне не нужно чтобы ты была идеальной или всегда права. Мне нужно чтобы ты была <span style="color: var(--pink); font-weight: 600;">счастлива</span>. И я сделаю для этого всё что в моих силах.
       </div>
     </div>
     <div class="img-wrap" style="position: absolute; right: 0; width: 45%; transform: rotate(2deg); z-index: 2;">
       <div class="img-polaroid">
-        <img src="sorry_art.jpg" alt="Манхва">
+        <img src="imissyou/sorry_art.jpg" alt="Манхва">
         <div class="polaroid-caption">Прости любимая</div>
       </div>
     </div>
@@ -457,17 +491,21 @@
 
   <div class="divider-line"></div>
 
-  <!-- Большой блок -->
+  <!-- Большой блок с декоративными звездочками -->
   <div class="block layout-text-only" style="margin-bottom: 120px;">
+    
+    <svg class="deco deco-star-big" style="top: 10px; left: 10%;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    <svg class="deco deco-star-small" style="top: 50px; left: 15%;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+
     <div class="text-calligraphy" style="color: var(--wine); margin-bottom: 30px;">
       А теперь... хватит шуток, давай к главному.
     </div>
     <div class="text-serif" style="max-width: 700px; margin: 0 auto; text-align: justify; text-align-last: center; font-size: 1.5rem;">
-      Мы давно ведь не общаемся нормально. Точнее нет. Кажется что целую вечность мы не можем просто поболтать как раньше. Два или три дня без наших разговоров кажутся мне невероятно долгими а в груди поселяется тихая тоска. 
+      Мы давно ведь не общаемся нормально. Точнее нет. Кажется что целую вечность мы не можем просто поболтать как раньше. <span class="highlight-text">Два или три дня</span> без наших разговоров кажутся мне невероятно долгими а в груди поселяется тихая тоска. 
       <br><br>
-      Я очень скучаю по нашим ночным беседам по твоему голосу по тому как мы могли говорить обо всём на свете до самого утра. Мне не хватает этого ощущения что мы с тобой на одной волне что между нами нет никаких преград. 
+      Я очень скучаю по нашим ночным беседам по твоему голосу по тому как мы могли говорить обо всём на свете до самого утра. Мне не хватает этих моментов когда мы просто болтаем ни о чем и я чувствую что ты рядом. Даже если мы далеко друг от друга.
       <br><br>
-      Я хочу чтобы ты знала. Как бы ни были заняты наши дни как бы ни складывались обстоятельства ты всегда остаешься для меня самым важным человеком. И я всегда жду того момента когда мы снова сможем поговорить по душам. Ты мой дом Фатим. И я очень тебя люблю.
+      Я хочу чтобы ты знала. Как бы ни были заняты наши дни как бы ни складывались обстоятельства ты всегда остаешься для меня <span class="highlight-text">самым важным человеком</span>. И я всегда жду того момента когда мы снова сможем поговорить по душам. Ты мой дом Фатим. И я очень тебя люблю.
     </div>
   </div>
 
@@ -477,7 +515,7 @@
     
     <div class="cat-container">
       <div class="cat-interactive" id="catBtn">
-        <img src="final_cat.png" alt="Котик">
+        <img src="imissyou/final_cat.png" alt="Котик">
       </div>
       <div class="cat-hint" id="catHint">Нажми на котика</div>
     </div>
@@ -489,25 +527,21 @@
 
 </div>
 
-<!-- ПЛАСТИНКА -->
 <div class="vinyl-player" id="vinylPlayer">
   <div class="vinyl-disc">
     <div class="vinyl-label"></div>
   </div>
 </div>
 
-<!-- МУЗЫКА -->
 <audio id="bgMusic" loop>
-  <source src="glory_box.mp3" type="audio/mpeg">
+  <source src="imissyou/glory_box.mp3" type="audio/mpeg">
 </audio>
 
-<!-- ЗВУК МЯУ -->
 <audio id="meowSound" preload="auto">
-  <source src="meow.mp3" type="audio/mpeg">
+  <source src="imissyou/meow.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-  // --- ЛОГИКА ВХОДА ---
   const loginScreen = document.getElementById('loginScreen');
   const mainContent = document.getElementById('mainContent');
   const nameInput = document.getElementById('nameInput');
@@ -581,7 +615,6 @@
     }, 800);
   });
 
-  // --- АНИМАЦИИ ---
   function initAnimations() {
     const blocks = document.querySelectorAll('.block');
     const lines = document.querySelectorAll('.divider-line');
@@ -602,9 +635,16 @@
 
     window.addEventListener('scroll', () => {
       const scrolled = window.scrollY;
-      document.querySelectorAll('.img-polaroid').forEach((img, i) => {
-        const speed = 0.03 + (i % 3) * 0.015;
+      
+      const leftRightImgs = document.querySelectorAll('.layout-left-img .img-polaroid, .layout-overlap .img-polaroid');
+      leftRightImgs.forEach((img, i) => {
+        const speed = 0.02 + (i % 2) * 0.01; 
         img.style.transform = `translateY(${scrolled * speed}px)`;
+      });
+
+      const centerImgs = document.querySelectorAll('.layout-text-only .img-polaroid, .block > .img-wrap > .img-polaroid');
+      centerImgs.forEach((img) => {
+        img.style.transform = `translateY(${scrolled * 0.01}px)`; 
       });
     });
   }
@@ -628,7 +668,6 @@
     setTimeout(type, 500);
   }
 
-  // --- КОТИК ---
   const catBtn = document.getElementById('catBtn');
   const catHint = document.getElementById('catHint');
   const meowSound = document.getElementById('meowSound');
@@ -671,18 +710,15 @@
     }
   });
 
-  // --- МУЗЫКА (Плавный fade-in и fade-out) ---
   const vinylPlayer = document.getElementById('vinylPlayer');
   const bgMusic = document.getElementById('bgMusic');
   let isPlaying = false;
   let fadeInterval = null;
 
-  // Устанавливаем стартовую громкость
   bgMusic.volume = 0;
 
   vinylPlayer.addEventListener('click', () => {
     if (isPlaying) {
-      // Плавное затухание
       let vol = bgMusic.volume;
       clearInterval(fadeInterval);
       fadeInterval = setInterval(() => {
@@ -697,7 +733,6 @@
         }
       }, 50);
     } else {
-      // Плавное нарастание
       bgMusic.play().catch(e => console.log('Музыка заблокирована браузером'));
       vinylPlayer.classList.add('playing');
       isPlaying = true;
@@ -705,7 +740,7 @@
       let vol = 0;
       clearInterval(fadeInterval);
       fadeInterval = setInterval(() => {
-        if (vol < 0.15) { // Максимальная громкость 0.15 (тихо)
+        if (vol < 0.15) { 
           vol += 0.005;
           bgMusic.volume = Math.min(0.15, vol);
         } else {
