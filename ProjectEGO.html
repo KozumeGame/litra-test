@@ -545,7 +545,6 @@ function setupInputs() {
     const pos = getPos(e);
     if (!match.aiming) {
       match.hoverDisc = (!match.moving && !match.goalLock) ? findNearestDisc(pos) : null;
-Используйте код с осторожностью.
 canvas.style.cursor = match.hoverDisc ? 'grab' : 'default';
 return;
 }
