@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BLUE LOCK: EGO STRIKE 5v5</title>
+<style>
+  :root { --bg:#070b14; --panel:#0f172a; --border:#1e293b; --p1:#38bdf8; --p2:#f43f5e; --text:#f8fafc; --muted:#94a3b8; }
+  * { box-sizing:border-box; margin:0; padding:0; user-select:none; -webkit-user-select:none; font-family:'Segoe UI',Roboto,sans-serif; }
+  body { background:var(--bg); color:var(--text); overflow:hidden; height:100dvh; display:flex; justify-content:center; align-items:center; }
+  .screen { display:none; width:100%; max-width:480px; height:100dvh; flex-direction:column; position:relative; background:radial-gradient(circle at center,#0f1c38 0%,#060911 100%); border-left:1px solid var(--border); border-right:1px solid var(--border); }
+  .screen.active { display:flex; }
+  #title-screen { justify-content:center; align-items:center; text-align:center; padding:24px; gap:22px; }
+  .logo-badge { font-size:12px; letter-spacing:4px; color:var(--p1); border:1px solid var(--p1); padding:4px 12px; border-radius:99px; box-shadow:0 0 15px rgba(56,189,248,0.3); }
+  .main-title { font-size:38px; font-weight:900; letter-spacing:2px; line-height:1.1; text-shadow:0 0 25px rgba(56,189,248,0.6); }
+  .main-title span { color:var(--p2); text-shadow:0 0 25px rgba(244,63,94,0.6); }
+  .btn-primary { background:linear-gradient(135deg,#0284c7,#2563eb); color:#fff; border:none; padding:15px 28px; font-size:15px; font-weight:800; letter-spacing:1px; border-radius:12px; cursor:pointer; box-shadow:0 0 20px rgba(37,99,235,0.5); text-transform:uppercase; width:100%; max-width:300px; }
+  .btn-primary:active { transform:scale(0.96); }
+  .btn-secondary { background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border); padding:12px 24px; font-size:13px; font-weight:700; border-radius:10px; cursor:pointer; width:100%; max-width:300px; }
+  #coin-overlay { position:absolute; inset:0; background:rgba(5,8,16,0.94); z-index:50; display:none; flex-direction:column; align-items:center; justify-content:center; gap:20px; text-align:center; padding:20px; }
+  #coin-overlay.active { display:flex; }
+  .coin { width:110px; height:110px; border-radius:50%; border:4px solid var(--p1); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px; box-shadow:0 0 35px var(--p1); animation:spinCoin 1.1s ease-out; }
+  @keyframes spinCoin { 0% { transform:rotateY(0deg) scale(0.5); } 100% { transform:rotateY(1080deg) scale(1); } }
+  .draft-bar { padding:8px 10px; background:var(--panel); border-bottom:1px solid var(--border); }
+  .draft-bar.p2 { border-bottom:2px solid var(--p2); }
+  .draft-bar.p1 { border-top:2px solid var(--p1); border-bottom:none; margin-top:auto; }
+  .bar-header { display:flex; justify-content:space-between; font-size:11px; font-weight:800; margin-bottom:6px; }
+  .slots { display:grid; grid-template-columns:repeat(5,1fr); gap:5px; }
+  .slot { background:#070b14; border:1px dashed #334155; border-radius:8px; height:44px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:10px; text-align:center; padding:2px; overflow:hidden; }
+  .slot.filled { border-style:solid; background:#1e293b; }
+  .slot.gk { border-color:#eab308; }
+  .slot b { font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+  .tabs { display:flex; gap:4px; padding:8px 10px; background:#090e1a; }
+  .tab { flex:1; padding:7px 0; text-align:center; font-size:11px; font-weight:800; background:#111827; border:1px solid var(--border); border-radius:6px; color:var(--muted); cursor:pointer; }
+  .tab.active { background:#1d4ed8; color:#fff; border-color:#60a5fa; }
+  .roster-grid { flex:1; overflow-y:auto; padding:8px 10px; display:grid; grid-template-columns:repeat(2,1fr); gap:8px; align-content:start; }
+  .char-card { background:linear-gradient(145deg,#111827,#0b1120); border:1px solid #26334d; border-radius:10px; padding:8px; cursor:pointer; position:relative; }
+  .char-card.picked { opacity:0.35; pointer-events:none; filter:grayscale(1); }
+  .char-card.picked::after { content:'ВЫБРАНО'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13px; color:#fff; background:rgba(0,0,0,0.55); border-radius:10px; }
+  .c-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+  .c-role { font-size:9px; font-weight:900; padding:2px 5px; border-radius:4px; background:#1e293b; }
+  .c-name { font-size:13px; font-weight:800; margin-bottom:3px; }
+  .c-desc { font-size:10px; color:var(--muted); line-height:1.25; }
+  #modal-confirm { position:absolute; inset:0; background:rgba(3,6,14,0.88); z-index:40; display:none; align-items:center; justify-content:center; padding:16px; }
+  #modal-confirm.active { display:flex; }
+  .modal-box { background:#0f172a; border:2px solid var(--p1); border-radius:16px; padding:18px; width:100%; max-width:360px; }
+  .stat-row { display:grid; grid-template-columns:45px 1fr 28px; align-items:center; gap:8px; font-size:11px; font-weight:700; margin:6px 0; }
+  .stat-bar { height:7px; background:#1e293b; border-radius:4px; overflow:hidden; }
+  .stat-fill { height:100%; background:var(--p1); }
+  #match-screen { justify-content:space-between; background:#050811; }
+  .hud-panel { background:#0b1120; padding:6px 8px; border-bottom:1px solid #1e293b; z-index:10; }
+  .hud-panel.p1 { border-top:1px solid #1e293b; border-bottom:none; }
+  .hud-top { display:flex; justify-content:space-between; align-items:center; font-size:11px; font-weight:800; margin-bottom:5px; }
+  .skills-row { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
+  .skill-btn { background:#131c31; border:1px solid #334155; border-radius:7px; padding:5px 2px; text-align:center; color:#fff; cursor:pointer; }
+  .skill-btn.ready { border-color:#38bdf8; box-shadow:0 0 8px rgba(56,189,248,0.35); }
+  .skill-btn.def-ready { border-color:#f59e0b; box-shadow:0 0 8px rgba(245,158,11,0.35); }
+  .skill-btn.flow { background:linear-gradient(180deg,#1e1b4b,#311042); border-color:#e879f9; }
+  .skill-btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .sb-name { font-size:9px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sb-act { font-size:8px; color:#94a3b8; margin-top:2px; }
+  #canvas-wrap { flex:1; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  canvas { display:block; width:100%; height:100%; touch-action:none; }
+  #banner-overlay { position:absolute; inset:0; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; opacity:0; transition:opacity 0.25s; z-index:20; }
+  #banner-overlay.show { opacity:1; }
+  .banner-big { font-size:32px; font-weight:900; letter-spacing:2px; text-shadow:0 0 25px #000,0 0 15px var(--p1); text-transform:uppercase; }
+  .banner-sub { font-size:13px; font-weight:800; color:#facc15; text-shadow:0 2px 8px #000; margin-top:4px; }
+</style>
+</head>
+<body>
+
+<div id="title-screen" class="screen active">
+  <div class="logo-badge">PROJECT EGOIST • 2 PLAYERS</div>
+  <div class="main-title">BLUE LOCK<br><span>EGO STRIKE</span></div>
+  <p style="font-size:13px;color:var(--muted);max-width:300px;line-height:1.4;">Собери пятёрку мечты на драфте, комбинируй до 3 пасов подряд, пробуждай <b>Поток 100%</b> и сокруши соперника на одном экране!</p>
+  <button class="btn-primary" onclick="startCoinToss()">НАЧАТЬ ДРАФТ (5x5)</button>
+  <button class="btn-secondary" onclick="alert('ПРАВИЛА:\n1. Тяни свою фишку как рогатку.\n2. Если мяч после удара задел твоего союзника — это ПАС (до 3 раз за ход), бьёшь снова!\n3. Набирай 100% Потока за пасы, отборы и голы для ауры до конца матча.\n4. Защитные кнопки жмутся в ход врага ДО того, как он потянет рогатку!')">КАК ИГРАТЬ</button>
+</div>
+
+<div id="draft-screen" class="screen">
+  <div id="coin-overlay">
+    <div class="coin" id="coin-visual">EGO</div>
+    <h2 id="coin-text">Бросаем монетку...</h2>
+    <button class="btn-primary" id="coin-btn" style="display:none;" onclick="closeCoinToss()">К ВЫБОРУ КОМАНД</button>
+  </div>
+  <div class="draft-bar p2">
+    <div class="bar-header"><span style="color:var(--p2);">ИГРОК 2 (ВЕРХ • КРАСНЫЕ)</span><span id="p2-count">0 / 5</span></div>
+    <div class="slots" id="slots-p2"></div>
+  </div>
+  <div style="background:#0d1526;padding:6px 10px;text-align:center;font-size:12px;font-weight:800;border-bottom:1px solid var(--border);" id="turn-banner">ОЧЕРЕДЬ ВЫБОРА...</div>
+  <div class="tabs">
+    <div class="tab active" onclick="filterRole('ALL',this)">ВСЕ (18)</div>
+    <div class="tab" onclick="filterRole('FW',this)">FW</div>
+    <div class="tab" onclick="filterRole('MF',this)">MF</div>
+    <div class="tab" onclick="filterRole('DF',this)">DF</div>
+    <div class="tab" onclick="filterRole('GK',this)">GK</div>
+  </div>
+  <div class="roster-grid" id="roster-grid"></div>
+  <div id="start-match-box" style="display:none;padding:12px;text-align:center;background:#090e1a;">
+    <button class="btn-primary" onclick="initMatch()">В БОЙ! НАЧАТЬ МАТЧ</button>
+  </div>
+  <div class="draft-bar p1">
+    <div class="bar-header"><span style="color:var(--p1);">ИГРОК 1 (НИЗ • СИНИЕ)</span><span id="p1-count">0 / 5</span></div>
+    <div class="slots" id="slots-p1"></div>
+  </div>
+  <div id="modal-confirm"><div class="modal-box" id="modal-content"></div></div>
+</div>
+
+<div id="match-screen" class="screen">
+  <div class="hud-panel p2">
+    <div class="hud-top">
+      <span style="color:var(--p2);">П2: <b id="score-p2">0</b> | ПАСЫ: <b id="pass-p2">0/3</b></span>
+      <span id="timer-display" style="color:#facc15;">03:00</span>
+      <span id="turn-p2" style="color:var(--p2);">ОЖИДАНИЕ</span>
+    </div>
+    <div class="skills-row" id="skills-p2"></div>
+  </div>
+  <div id="canvas-wrap">
+    <canvas id="pitch"></canvas>
+    <div id="banner-overlay"><div class="banner-big" id="banner-title">GOAL!</div><div class="banner-sub" id="banner-sub">CHEMICAL REACTION</div></div>
+  </div>
+  <div class="hud-panel p1">
+    <div class="hud-top">
+      <span style="color:var(--p1);">П1: <b id="score-p1">0</b> | ПАСЫ: <b id="pass-p1">0/3</b></span>
+      <button onclick="if(confirm('Вернуться в меню?')) location.reload()" style="background:#1e293b;border:none;color:#94a3b8;font-size:10px;padding:2px 8px;border-radius:4px;cursor:pointer;">МЕНЮ</button>
+      <span id="turn-p1" style="color:var(--p1);">ВАШ ХОД</span>
+    </div>
+    <div class="skills-row" id="skills-p1"></div>
+  </div>
+</div>
+
+<script>
+const HEROES = new Array(
+{ id:'isagi', name:'Исаги', full:'Исаги Йоичи', role:'FW', color:'#22c55e', spd:84, pwr:86, mass:74, ctrl:90, type:'atk', cd:3, passDesc:'Прямой удар: +40% силы после паса.', actName:'Адаптация', actDesc:'Встаёт строго за мячом на линию удара в ворота.', flowDesc:'Мета-видение: удар после паса доворачивает мимо вратаря.' },
+{ id:'barou', name:'Баро', full:'Баро Шоэй', role:'FW', color:'#ef4444', spd:82, pwr:96, mass:95, ctrl:72, type:'atk', cd:4, passDesc:'Король-таран: тяжело сдвинуть, мощно толкает врагов.', actName:'Рывок Короля', actDesc:'Рывок вперёд, расталкивающий защитников с пути.', flowDesc:'Охота на свет: телепорт к мячу союзника и суперудар!' },
+{ id:'nagi', name:'Наги', full:'Наги Сейширо', role:'FW', color:'#e2e8f0', spd:80, pwr:88, mass:76, ctrl:99, type:'atk', cd:3, passDesc:'Гений траппинга: любой пас гасится и липнет к ногам.', actName:'Разворот', actDesc:'Оббегает мяч и встаёт лицом к воротам соперника.', flowDesc:'Чёрная дыра: мяч липнет с большого радиуса + удар +35%.' },
+{ id:'kunigami', name:'Кунигами', full:'Кунигами Ренске', role:'FW', color:'#f97316', spd:78, pwr:95, mass:94, ctrl:70, type:'def', cd:4, passDesc:'Пушечная левая нога и высокая масса в борьбе.', actName:'Опека', actDesc:'В ход врага: прилипает к ближайшему сопернику и тормозит его.', flowDesc:'Киборг-герой: увеличенный радиус опеки и мощь.' },
+{ id:'kaiser', name:'Кайзер', full:'Михаэль Кайзер', role:'FW', color:'#3b82f6', spd:86, pwr:98, mass:80, ctrl:84, type:'atk', cd:4, passDesc:'Императорский замах: молниеносная скорость мяча.', actName:'Кайзер Импакт', actDesc:'Сверхбыстрый лазерный удар по прямой.', flowDesc:'Магнус-Импакт: удар с мощной подкруткой.' },
+{ id:'ronaldo', name:'Роналду', full:'Криштиану Роналду', role:'FW', color:'#a855f7', spd:90, pwr:97, mass:88, ctrl:85, type:'atk', cd:4, passDesc:'Атлет: мощнейший базовый удар и сильный корпус.', actName:'Наклбол', actDesc:'Пушечный удар с вилянием мяча в воздухе.', flowDesc:'Режим CR7: максимальная мощь и скорость фишки.' },
+{ id:'mbappe', name:'Мбаппе', full:'Килиан Мбаппе', role:'FW', color:'#06b6d4', spd:99, pwr:88, mass:72, ctrl:85, type:'atk', cd:3, passDesc:'Сверхскорость: максимальная дальность рогатки.', actName:'Рывок пули', actDesc:'Пролетает сквозь мяч с сохранением скорости.', flowDesc:'Чемпион: максимальная скорость фишки на каждый удар.' },
+{ id:'sae', name:'Саэ', full:'Итоши Саэ', role:'MF', color:'#ec4899', spd:86, pwr:82, mass:70, ctrl:99, type:'atk', cd:3, passDesc:'Идеальный пас: мяч сам тормозит у ног союзника.', actName:'Эластико', actDesc:'Закрученный удар/пас по дуге в обход защиты.', flowDesc:'Магнит-траектория: пас сам доворачивает к союзнику.' },
+{ id:'messi', name:'Месси', full:'Лионель Месси', role:'MF', color:'#facc15', spd:92, pwr:89, mass:68, ctrl:99, type:'atk', cd:3, passDesc:'Магнит-дриблинг: не отлетает назад после касания мяча.', actName:'В девятку', actDesc:'Сильная подкрутка мяча по дуге с ускорением.', flowDesc:'Режим Бога: постоянная подкрутка и манёвренность.' },
+{ id:'bachira', name:'Бачира', full:'Бачира Мегуру', role:'MF', color:'#eab308', spd:95, pwr:80, mass:65, ctrl:94, type:'atk', cd:3, passDesc:'Лёгкость монстра: высокая скорость самой фишки.', actName:'Финт-рикошет', actDesc:'После отскока от борта мяч ускоряется.', flowDesc:'Танец Монстра: повышенная скорость и отскок.' },
+{ id:'rin', name:'Рин', full:'Итоши Рин', role:'MF', color:'#14b8a6', spd:87, pwr:91, mass:78, ctrl:95, type:'atk', cd:3, passDesc:'Холодный расчёт: линия прицела в 2 раза длиннее.', actName:'Марионетка', actDesc:'Удар по хитрой дуге с точной доводкой.', flowDesc:'Разрушитель: удар расталкивает защитников.' },
+{ id:'aiku', name:'Айку', full:'Оливер Айку', role:'DF', color:'#8b5cf6', spd:80, pwr:80, mass:92, ctrl:84, type:'def', cd:4, passDesc:'Змеиный перехват: радиус касания мяча больше.', actName:'Блок-стена', actDesc:'В ход врага: расширяется на +45% на 1 удар.', flowDesc:'Абсолютная защита: при перехвате гасит мяч.' },
+{ id:'vandijk', name:'Ван Дейк', full:'Вирджил ван Дейк', role:'DF', color:'#ea580c', spd:72, pwr:86, mass:98, ctrl:82, type:'atk', cd:3, passDesc:'Скала: максимальная масса, почти не отлетает.', actName:'Длинный вынос', actDesc:'Сверхмощный пас через всё поле в атаку.', flowDesc:'Капитан: максимальная устойчивость в защите.' },
+{ id:'lorenzo', name:'Лоренцо', full:'Дон Лоренцо', role:'DF', color:'#10b981', spd:88, pwr:78, mass:84, ctrl:92, type:'def', cd:4, passDesc:'Зомби-отскок: резкий отбив мяча с сохранением скорости.', actName:'Пожиратель', actDesc:'В ход врага: отключает навык врага и крадёт 15% Потока.', flowDesc:'300 миллионов: быстрый возврат мяча в атаку.' },
+{ id:'ramos', name:'Рамос', full:'Серхио Рамос', role:'DF', color:'#dc2626', spd:76, pwr:84, mass:96, ctrl:74, type:'def', cd:4, passDesc:'Жёсткий корпус: сильно отталкивает атакующих.', actName:'Подкат', actDesc:'В ход врага: ставит радар-ловушку и выбивает мяч.', flowDesc:'90-я минута: масса и сила удара на максимуме.' },
+{ id:'gagamaru', name:'Гагамару', full:'Гагамару Гин', role:'GK', color:'#f59e0b', spd:85, pwr:80, mass:82, ctrl:86, type:'def', cd:3, passDesc:'Рефлекс зверя: отбитый мяч летит к ближайшему союзнику.', actName:'Скорпион', actDesc:'В ход врага: смещается по линии ворот напротив мяча.', flowDesc:'Инстинкт Потока: радиус сейва +30% до конца матча.' },
+{ id:'neuer', name:'Нойер', full:'Мануэль Нойер', role:'GK', color:'#0ea5e9', spd:82, pwr:88, mass:90, ctrl:85, type:'def', cd:4, passDesc:'Вратарь-гоняла: высокая скорость и дальний вынос.', actName:'Стена Нойера', actDesc:'В ход врага: расширяется на воротах на 1 удар.', flowDesc:'Чистильщик: мощный вынос и высокая устойчивость.' },
+{ id:'courtois', name:'Куртуа', full:'Тибо Куртуа', role:'GK', color:'#84cc16', spd:70, pwr:82, mass:94, ctrl:80, type:'def', cd:4, passDesc:'Длинные руки: самый крупный базовый размер вратаря.', actName:'Растяжка', actDesc:'В ход врага: расширяет зону перехвата на 1 удар.', flowDesc:'Стена Мадрида: не отлетает от суперударов.' }
+);
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function playTone(freq, type, dur, vol=0.15) {
+try {
+if (!audioCtx) audioCtx = new AudioCtx();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+osc.connect(gain); gain.connect(audioCtx.destination);
+osc.start(); osc.stop(audioCtx.currentTime + dur);
+} catch(e) {}
+}
+const sfxKick = () => playTone(160, 'triangle', 0.14, 0.25);
+const sfxWall = () => playTone(280, 'sine', 0.08, 0.12);
+const sfxSkill = () => { playTone(520, 'sawtooth', 0.18, 0.15); setTimeout(()=>playTone(780, 'sine', 0.22, 0.15), 80); };
+const sfxFlow = () => { playTone(440, 'square', 0.15, 0.15); setTimeout(()=>playTone(660, 'square', 0.15, 0.15), 100); setTimeout(()=>playTone(880, 'square', 0.3, 0.2), 200); };
+const sfxGoal = () => { const notes = new Array(523, 659, 784, 1046); notes.forEach((f,i)=>setTimeout(()=>playTone(f,'triangle',0.35,0.22), i*110)); };
+let draftState = { p1: new Array(), p2: new Array(), firstPicker: 1, filter: 'ALL' };
+const PICK_ORDER = new Array(1, 2, 2, 1, 1, 2, 2, 1, 1, 2);
+function startCoinToss() {
+document.getElementById('title-screen').classList.remove('active');
+document.getElementById('draft-screen').classList.add('active');
+document.getElementById('coin-overlay').classList.add('active');
+const winner = Math.random() < 0.5 ? 1 : 2;
+draftState.firstPicker = winner;
+setTimeout(() => {
+document.getElementById('coin-visual').innerText = winner === 1 ? 'П1' : 'П2';
+document.getElementById('coin-visual').style.borderColor = winner === 1 ? '#38bdf8' : '#f43f5e';
+document.getElementById('coin-text').innerHTML = 'Первым выбирает ИГРОК ' + winner + '!';
+document.getElementById('coin-btn').style.display = 'block';
+sfxSkill();
+}, 1100);
+}
+function closeCoinToss() {
+document.getElementById('coin-overlay').classList.remove('active');
+renderDraft();
+}
+function getCurrentPicker() {
+const totalPicked = draftState.p1.length + draftState.p2.length;
+if (totalPicked >= 10) return 0;
+const base = PICK_ORDER.at(totalPicked);
+return draftState.firstPicker === 1 ? base : (base === 1 ? 2 : 1);
+}
+function filterRole(role, el) {
+draftState.filter = role;
+document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+el.classList.add('active');
+renderRoster();
+}
+function renderDraft() {
+renderSlots(1); renderSlots(2); renderRoster();
+const picker = getCurrentPicker();
+const banner = document.getElementById('turn-banner');
+if (picker === 0) {
+banner.innerHTML = 'СОСТАВЫ УКОМПЛЕКТОВАНЫ!';
+document.getElementById('roster-grid').style.display = 'none';
+document.getElementById('start-match-box').style.display = 'block';
+} else {
+const team = picker === 1 ? draftState.p1 : draftState.p2;
+const needGK = team.length === 4 && !team.some(h => h.role === 'GK');
+banner.innerHTML = 'ВЫБИРАЕТ: ИГРОК ' + picker + ' ' + (needGK ? '(НУЖЕН ВРАТАРЬ GK!)' : '');
+}
+}
+function renderSlots(p) {
+  const team = p === 1 ? draftState.p1 : draftState.p2;
+  document.getElementById('p' + p + '-count').innerText = team.length + ' / 5';
+  const box = document.getElementById('slots-p' + p);
+  box.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const h = team.at(i);
+    const div = document.createElement('div');
+    div.className = 'slot' + (h ? ' filled' : '') + (i === 4 ? ' gk' : '');
+    if (h) {
+      div.style.borderColor = h.color;
+      div.innerHTML = '<span style="font-size:8px;color:' + h.color + ';font-weight:900;">' + h.role + '</span><b>' + h.name + '</b>';
+    } else {
+      div.innerHTML = '<span style="color:#475569;">' + (i===4?'GK':'СЛОТ') + '</span>';
+    }
+    box.appendChild(div);
+  }
+}
+
+function renderRoster() {
+  const grid = document.getElementById('roster-grid');
+  grid.innerHTML = '';
+  const pickedIds = draftState.p1.concat(draftState.p2).map(h => h.id);
+  const picker = getCurrentPicker();
+  const team = picker === 1 ? draftState.p1 : draftState.p2;
+  const hasGK = team.some(h => h.role === 'GK');
+  const mustPickGK = team.length === 4 && !hasGK;
+
+  HEROES.filter(h => draftState.filter === 'ALL' || h.role === draftState.filter).forEach(h => {
+    const isPicked = pickedIds.includes(h.id);
+    const blockedRole = (h.role === 'GK' && hasGK) || (mustPickGK && h.role !== 'GK');
+    const card = document.createElement('div');
+    card.className = 'char-card' + (isPicked || blockedRole ? ' picked' : '');
+    card.style.borderLeft = '4px solid ' + h.color;
+    card.innerHTML =
+      '<div class="c-top">' +
+        '<span class="c-role" style="color:' + h.color + ';">' + h.role + '</span>' +
+        '<span style="font-size:9px;color:#94a3b8;">SPD ' + h.spd + ' • PWR ' + h.pwr + '</span>' +
+      '</div>' +
+      '<div class="c-name">' + h.full + '</div>' +
+      '<div class="c-desc"><b style="color:#f8fafc;">' + h.actName + ':</b> ' + h.actDesc + '</div>';
+    if (!isPicked && !blockedRole && picker !== 0) card.onclick = () => openConfirm(h);
+    grid.appendChild(card);
+  });
+}
+
+function openConfirm(h) {
+  const picker = getCurrentPicker();
+  const modal = document.getElementById('modal-confirm');
+  const box = document.getElementById('modal-content');
+  box.style.borderColor = h.color;
+  box.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+      '<span style="background:' + h.color + ';color:#000;font-weight:900;font-size:11px;padding:3px 9px;border-radius:5px;">' + h.role + '</span>' +
+      '<span style="font-size:11px;color:#94a3b8;">Перезарядка: ' + h.cd + ' хода</span>' +
+    '</div>' +
+    '<h2 style="font-size:21px;margin-bottom:10px;color:#fff;">' + h.full + '</h2>' +
+    '<div class="stat-row"><span>SPD</span><div class="stat-bar"><div class="stat-fill" style="width:' + h.spd + '%;background:' + h.color + ';"></div></div><span>' + h.spd + '</span></div>' +
+    '<div class="stat-row"><span>PWR</span><div class="stat-bar"><div class="stat-fill" style="width:' + h.pwr + '%;background:' + h.color + ';"></div></div><span>' + h.pwr + '</span></div>' +
+    '<div class="stat-row"><span>MASS</span><div class="stat-bar"><div class="stat-fill" style="width:' + h.mass + '%;background:' + h.color + ';"></div></div><span>' + h.mass + '</span></div>' +
+    '<div class="stat-row"><span>CTRL</span><div class="stat-bar"><div class="stat-fill" style="width:' + h.ctrl + '%;background:' + h.color + ';"></div></div><span>' + h.ctrl + '</span></div>' +
+    '<div style="margin-top:12px;font-size:12px;line-height:1.45;background:#090e1a;padding:10px;border-radius:10px;border:1px solid #1e293b;">' +
+      '<p style="margin-bottom:6px;"><b style="color:#38bdf8;">Пассивка:</b> ' + h.passDesc + '</p>' +
+      '<p style="margin-bottom:6px;"><b style="color:#facc15;">Навык (' + h.actName + '):</b> ' + h.actDesc + '</p>' +
+      '<p><b style="color:#e879f9;">Поток 100%:</b> ' + h.flowDesc + '</p>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;margin-top:16px;">' +
+      '<button class="btn-secondary" style="flex:1;" onclick="document.getElementById(\'modal-confirm\').classList.remove(\'active\')">ОТМЕНА</button>' +
+      '<button class="btn-primary" style="flex:1;background:' + h.color + ';color:#000;" onclick="confirmPick(\'' + h.id + '\')">ВЫБРАТЬ (П' + picker + ')</button>' +
+    '</div>';
+  modal.classList.add('active');
+}
+function confirmPick(id) {
+  const hero = HEROES.find(h => h.id === id);
+  const picker = getCurrentPicker();
+  if (picker === 1) draftState.p1.push(hero);
+  else if (picker === 2) draftState.p2.push(hero);
+  document.getElementById('modal-confirm').classList.remove('active');
+  sfxSkill();
+  renderDraft();
+}
+const canvas = document.getElementById('pitch');
+const ctx = canvas.getContext('2d');
+let W = 360, H = 560;
+const GOAL_W = 114, GOAL_D = 26, FRICTION = 0.982;
+let match = { score1:0, score2:0, turn:1, passes:0, timeLeft:180, moving:false, aiming:false, dragDisc:null, dragPos:{x:0,y:0}, discs:new Array(), ball:{x:0,y:0,vx:0,vy:0,r:10,curve:0,knuckle:0,magnetTo:null,lastTouch:null,passTouched:new Array()}, goalLock:false };
+function initMatch() {
+document.getElementById('draft-screen').classList.remove('active');
+document.getElementById('match-screen').classList.add('active');
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+const sortTeam = arr => arr.filter(h=>h.role!=='GK').concat(arr.filter(h=>h.role==='GK'));
+match.discs = new Array();
+sortTeam(draftState.p1).forEach((h, i) => match.discs.push(createDisc(h, 1, i)));
+sortTeam(draftState.p2).forEach((h, i) => match.discs.push(createDisc(h, 2, i)));
+resetPositions(1);
+setupInputs();
+renderSkillButtons();
+setInterval(() => {
+if (!match.goalLock && match.timeLeft > 0) {
+match.timeLeft--;
+const m = String(Math.floor(match.timeLeft / 60)).padStart(2, '0');
+const s = String(match.timeLeft % 60).padStart(2, '0');
+document.getElementById('timer-display').innerText = m + ':' + s;
+if (match.timeLeft === 0 && match.score1 !== match.score2) endMatch();
+}
+}, 1000);
+requestAnimationFrame(gameLoop);
+}
+function resizeCanvas() {
+const wrap = document.getElementById('canvas-wrap');
+W = canvas.width = wrap.clientWidth;
+H = canvas.height = wrap.clientHeight;
+}
+function createDisc(hero, team, idx) {
+const isGK = hero.role === 'GK';
+let baseR = isGK ? (hero.id === 'courtois' ? 23 : 21) : 17;
+if (hero.id === 'aiku') baseR += 2;
+return { hero, team, idx, x:0, y:0, vx:0, vy:0, baseR, r:baseR, mass:hero.mass/50, flow:0, inFlow:false, cdLeft:0, disabledTurn:false, guardTarget:null, tackleTrap:false, ghostPass:false };
+}
+function resetPositions(kickoffTeam) {
+const topY = GOAL_D + 10, botY = H - GOAL_D - 10, fieldH = botY - topY;
+const form1 = new Array({x:W*0.32,y:topY+fieldH*0.58},{x:W*0.68,y:topY+fieldH*0.58},{x:W*0.28,y:topY+fieldH*0.76},{x:W*0.72,y:topY+fieldH*0.76},{x:W*0.50,y:botY-22});
+const form2 = new Array({x:W*0.32,y:topY+fieldH*0.42},{x:W*0.68,y:topY+fieldH*0.42},{x:W*0.28,y:topY+fieldH*0.24},{x:W*0.72,y:topY+fieldH*0.24},{x:W*0.50,y:topY+22});
+match.discs.forEach(d => {
+const pos = d.team === 1 ? form1.at(d.idx) : form2.at(d.idx);
+d.x = pos.x; d.y = pos.y; d.vx = 0; d.vy = 0;
+d.r = d.baseR; d.disabledTurn = false; d.guardTarget = null; d.tackleTrap = false; d.ghostPass = false;
+});
+match.ball = {x:W/2,y:H/2,vx:0,vy:0,r:10,curve:0,knuckle:0,magnetTo:null,lastTouch:null,passTouched:new Array()};
+match.turn = kickoffTeam; match.passes = 0; match.moving = false; match.aiming = false; match.goalLock = false;
+updateHUD();
+}
+function showBanner(title, sub='', color='#38bdf8') {
+const b = document.getElementById('banner-overlay');
+const t = document.getElementById('banner-title');
+t.innerText = title; t.style.textShadow = '0 0 25px #000, 0 0 18px ' + color;
+document.getElementById('banner-sub').innerText = sub;
+b.classList.add('show');
+setTimeout(() => b.classList.remove('show'), 1400);
+}
+function addFlow(disc, amount) {
+if (disc.inFlow) return;
+disc.flow = Math.min(100, disc.flow + amount);
+if (disc.flow >= 100) {
+disc.inFlow = true; sfxFlow();
+showBanner(disc.hero.name + ': ПОТОК 100%!', 'АУРА ДО КОНЦА МАТЧА', disc.hero.color);
+}
+}
+function triggerSkill(discIdx) {
+if (match.moving || match.aiming || match.goalLock) return;
+const d = match.discs.at(discIdx);
+if (!d || d.cdLeft > 0 || d.disabledTurn) return;
+const isMyTurn = d.team === match.turn;
+if (d.hero.type === 'atk' && !isMyTurn) return;
+if (d.hero.type === 'def' && isMyTurn) return;
+const h = d.hero, b = match.ball;
+d.cdLeft = h.cd; sfxSkill();
+showBanner(h.name + ': ' + h.actName.toUpperCase() + '!', '', h.color);
+const enemyGoalY = d.team === 1 ? GOAL_D : H - GOAL_D;
+const myGoalY = d.team === 1 ? H - GOAL_D : GOAL_D;
+  if (h.id === 'isagi') {
+    const ang = Math.atan2(enemyGoalY - b.y, W/2 - b.x);
+    d.x = b.x - Math.cos(ang)*(b.r+d.r+4); d.y = b.y - Math.sin(ang)*(b.r+d.r+4); d.boostShot = 1.35;
+  } else if (h.id === 'barou') {
+    if (d.inFlow) { d.x = b.x; d.y = Math.max(GOAL_D+d.r+4, Math.min(H-GOAL_D-d.r-4, b.y+(d.team===1?26:-26))); d.boostShot = 1.45; }
+    else { d.vy = (d.team===1?-1:1)*12; match.moving = true; }
+  } else if (h.id === 'nagi') {
+    const ang = Math.atan2(enemyGoalY - b.y, W/2 - b.x);
+    d.x = b.x - Math.cos(ang)*(b.r+d.r+3); d.y = b.y - Math.sin(ang)*(b.r+d.r+3);
+if (d.inFlow) d.boostShot = 1.35;
+} else if (h.id === 'kaiser') { d.boostShot = 1.5; if (d.inFlow) d.curvePower = 0.25; }
+else if (h.id === 'ronaldo') { d.boostShot = 1.4; d.knucklePower = 0.6; }
+else if (h.id === 'mbappe') { d.ghostPass = true; d.speedMult = 1.3; }
+else if (h.id === 'sae' || h.id === 'messi' || h.id === 'rin') { d.curvePower = d.team===1?0.22:-0.22; d.boostShot = 1.2; }
+else if (h.id === 'bachira') { d.wallBoost = true; }
+else if (h.id === 'vandijk') { d.boostShot = 1.45; }
+if (h.id === 'aiku' || h.id === 'neuer' || h.id === 'courtois') d.r = d.baseR * 1.45;
+else if (h.id === 'gagamaru') { d.x = Math.max(W/2-GOAL_W/2+15, Math.min(W/2+GOAL_W/2-15, b.x)); d.y = myGoalY + (d.team===1?-18:18); }
+else if (h.id === 'kunigami') {
+let nearest = null, minDist = 130;
+match.discs.forEach(en => { if (en.team !== d.team) { const dist = Math.hypot(en.x-d.x, en.y-d.y); if (dist < minDist) { minDist = dist; nearest = en; } } });
+if (nearest) d.guardTarget = nearest;
+} else if (h.id === 'lorenzo') {
+let nearest = null, minDist = 999;
+match.discs.forEach(en => { if (en.team !== d.team) { const dist = Math.hypot(en.x-b.x, en.y-b.y); if (dist < minDist) { minDist = dist; nearest = en; } } });
+if (nearest) { nearest.disabledTurn = true; const stolen = Math.min(15, nearest.flow); nearest.flow -= stolen; addFlow(d, stolen+10); }
+} else if (h.id === 'ramos') d.tackleTrap = true;
+renderSkillButtons();
+}
+function setupInputs() {
+const getPos = e => {
+const rect = canvas.getBoundingClientRect();
+const t = (e.touches && e.touches.length > 0) ? e.touches.item(0) : e;
+return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+};
+const onStart = e => {
+if (match.moving || match.goalLock) return;
+const pos = getPos(e);
+let found = null, best = 36;
+match.discs.forEach(d => { if (d.team === match.turn) { const dist = Math.hypot(d.x-pos.x, d.y-pos.y); if (dist < best) { best = dist; found = d; } } });
+if (found) { match.aiming = true; match.dragDisc = found; match.dragPos = pos; renderSkillButtons(); }
+};
+const onMove = e => { if (!match.aiming) return; e.preventDefault(); match.dragPos = getPos(e); };
+const onEnd = () => {
+if (!match.aiming || !match.dragDisc) return;
+const d = match.dragDisc, dx = d.x - match.dragPos.x, dy = d.y - match.dragPos.y, dist = Math.hypot(dx, dy);
+match.aiming = false; match.dragDisc = null;
+if (dist > 12) {
+const maxPull = d.hero.id === 'mbappe' || d.inFlow ? 135 : 110;
+const clamped = Math.min(dist, maxPull);
+const spdFactor = (d.hero.spd / 85) * (d.speedMult || 1) * (d.inFlow ? 1.15 : 1);
+const power = (clamped / maxPull) * 16.5 * spdFactor;
+const ang = Math.atan2(dy, dx);
+d.vx = Math.cos(ang) * power; d.vy = Math.sin(ang) * power;
+match.moving = true; match.ball.passTouched = new Array(); sfxKick();
+}
+renderSkillButtons();
+};
+canvas.addEventListener('touchstart', onStart, {passive:false});
+canvas.addEventListener('touchmove', onMove, {passive:false});
+canvas.addEventListener('touchend', onEnd);
+canvas.addEventListener('mousedown', onStart);
+window.addEventListener('mousemove', onMove);
+window.addEventListener('mouseup', onEnd);
+}
+function gameLoop() { updatePhysics(); drawPitch(); requestAnimationFrame(gameLoop); }
+function updatePhysics() {
+if (!match.moving || match.goalLock) return;
+const b = match.ball;
+let anyMoving = false;
+if (Math.hypot(b.vx, b.vy) > 0.5) {
+if (b.curve) { b.vx += -b.vy * b.curve * 0.04; b.vy += b.vx * b.curve * 0.04; }
+if (b.knuckle) b.vx += (Math.random() - 0.5) * b.knuckle * 1.4;
+if (b.magnetTo) {
+const m = b.magnetTo, dist = Math.hypot(m.x - b.x, m.y - b.y);
+if (dist < 110 && dist > 5) { b.vx += ((m.x - b.x)/dist)*0.45; b.vy += ((m.y - b.y)/dist)*0.45; }
+}
+}
+match.discs.forEach(d => {
+if (d.guardTarget) { const t = d.guardTarget; t.vx *= 0.92; t.vy *= 0.92; d.x += (t.x - d.x)*0.14; d.y += (t.y - d.y)*0.14; }
+if (d.tackleTrap && Math.hypot(b.x - d.x, b.y - d.y) < 75) {
+d.tackleTrap = false; const ang = Math.atan2(b.y - d.y, b.x - d.x); d.vx = Math.cos(ang)*14; d.vy = Math.sin(ang)*14;
+}
+d.x += d.vx; d.y += d.vy; d.vx *= FRICTION; d.vy *= FRICTION;
+if (Math.hypot(d.vx, d.vy) < 0.15) { d.vx = 0; d.vy = 0; } else anyMoving = true;
+const minY = GOAL_D + d.r, maxY = H - GOAL_D - d.r;
+if (d.x < d.r) { d.x = d.r; d.vx *= -0.7; }
+if (d.x > W - d.r) { d.x = W - d.r; d.vx *= -0.7; }
+if (d.y < minY) { d.y = minY; d.vy *= -0.7; }
+if (d.y > maxY) { d.y = maxY; d.vy *= -0.7; }
+});
+b.x += b.vx; b.y += b.vy; b.vx *= 0.985; b.vy *= 0.985;
+if (Math.hypot(b.vx, b.vy) < 0.15) { b.vx = 0; b.vy = 0; b.curve = 0; b.knuckle = 0; b.magnetTo = null; } else anyMoving = true;
+const inGoalX = b.x > (W - GOAL_W)/2 + b.r && b.x < (W + GOAL_W)/2 - b.r;
+if (b.x < b.r) { b.x = b.r; b.vx *= (b.wallBoost ? -1.15 : -0.82); sfxWall(); }
+if (b.x > W - b.r) { b.x = W - b.r; b.vx *= (b.wallBoost ? -1.15 : -0.82); sfxWall(); }
+if (b.y < GOAL_D + b.r) { if (inGoalX) { if (b.y < 8) { handleGoal(1); return; } } else { b.y = GOAL_D + b.r; b.vy *= -0.82; sfxWall(); } }
+if (b.y > H - GOAL_D - b.r) { if (inGoalX) { if (b.y > H - 8) { handleGoal(2); return; } } else { b.y = H - GOAL_D - b.r; b.vy *= -0.82; sfxWall(); } }
+for (let i = 0; i < match.discs.length; i++) {
+for (let j = i + 1; j < match.discs.length; j++) resolveCollision(match.discs.at(i), match.discs.at(j), false);
+}
+match.discs.forEach(d => resolveCollision(d, b, true));
+if (!anyMoving) finishStep();
+}
+function resolveCollision(a, b, isBall) {
+const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy), minDist = a.r + b.r;
+if (dist < minDist && dist > 0) {
+const nx = dx / dist, ny = dy / dist, overlap = minDist - dist;
+const mA = a.mass || 1.5, mB = isBall ? 0.55 : (b.mass || 1.5), totalM = mA + mB;
+a.x -= nx * overlap * (mB / totalM); a.y -= ny * overlap * (mB / totalM);
+b.x += nx * overlap * (mA / totalM); b.y += ny * overlap * (mA / totalM);
+const rvx = b.vx - a.vx, rvy = b.vy - a.vy, velAlongNormal = rvx * nx + rvy * ny;
+if (velAlongNormal > 0) return;
+const restitution = isBall ? (0.85 + (a.hero.pwr - 80)/120) : 0.78;
+let j = -(1 + restitution) * velAlongNormal / (1/mA + 1/mB);
+if (isBall) {
+const h = a.hero;
+let pwrMult = a.boostShot || 1;
+if (h.id === 'isagi' && match.passes > 0) pwrMult *= 1.38;
+if (h.id === 'kaiser') pwrMult *= 1.15;
+j *= pwrMult;
+if (h.id === 'nagi' && a.team === match.turn && match.ball.lastTouch && match.ball.lastTouch !== a && match.ball.lastTouch.team === a.team) {
+b.vx = nx * 1.2; b.vy = ny * 1.2;
+if (!a.ghostPass) { a.vx *= 0.2; a.vy *= 0.2; }
+} else {
+b.vx += (j / mB) * nx; b.vy += (j / mB) * ny;
+if (!a.ghostPass && h.id !== 'messi') { a.vx -= (j / mA) * nx; a.vy -= (j / mA) * ny; }
+}
+if (h.id === 'sae' && a.team === match.turn) {
+let mate = null, minD = 999;
+match.discs.forEach(m => { if (m.team === a.team && m !== a) { const dd = Math.hypot(m.x-(b.x+b.vx*12), m.y-(b.y+b.vy*12)); if (dd < minD) { minD = dd; mate = m; } } });
+if (mate) b.magnetTo = mate;
+}
+if (b.lastTouch && b.lastTouch.hero.id === 'sae' && a.team === b.lastTouch.team && a !== b.lastTouch) { b.vx *= 0.15; b.vy *= 0.15; b.magnetTo = null; }
+if (h.id === 'isagi' && a.inFlow && match.passes > 0) {
+const goalY = a.team === 1 ? 0 : H, gk = match.discs.find(g => g.team !== a.team && g.hero.role === 'GK');
+const targetX = (gk && gk.x > W/2) ? W/2 - 36 : W/2 + 36, ang = Math.atan2(goalY - b.y, targetX - b.x), spd = Math.hypot(b.vx, b.vy);
+b.vx = Math.cos(ang)*spd; b.vy = Math.sin(ang)*spd;
+}
+if (h.id === 'gagamaru' && a.team !== match.turn) {
+const mate = match.discs.find(m => m.team === a.team && m !== a);
+if (mate) { const ang = Math.atan2(mate.y - b.y, mate.x - b.x); b.vx = Math.cos(ang)*9; b.vy = Math.sin(ang)*9; }
+}
+if (a.curvePower) b.curve = a.curvePower;
+if (a.knucklePower) b.knuckle = a.knucklePower;
+if (a.wallBoost) b.wallBoost = true;
+if (a.team !== match.turn) addFlow(a, 15);
+if (!b.passTouched.includes(a)) b.passTouched.push(a);
+b.lastTouch = a; sfxKick();
+} else {
+a.vx -= (j / mA) * nx; a.vy -= (j / mA) * ny;
+b.vx += (j / mB) * nx; b.vy += (j / mB) * ny;
+sfxWall();
+}
+}
+}
+function finishStep() {
+match.moving = false;
+const touched = match.ball.passTouched.filter(d => d.team === match.turn);
+const enemyTouched = match.ball.passTouched.some(d => d.team !== match.turn);
+match.discs.forEach(d => {
+d.r = d.inFlow && d.hero.id === 'gagamaru' ? d.baseR * 1.3 : d.baseR;
+d.boostShot = 1; d.curvePower = 0; d.knucklePower = 0; d.speedMult = 1; d.ghostPass = false; d.wallBoost = false; d.guardTarget = null; d.tackleTrap = false;
+if (d.team === match.turn) d.disabledTurn = false;
+});
+if (touched.length >= 2 && !enemyTouched && match.passes < 3) {
+match.passes++; touched.forEach(d => addFlow(d, 15));
+showBanner('ПАС ' + match.passes + '/3!', 'ХОД СОХРАНЁН', '#22c55e');
+} else {
+match.turn = match.turn === 1 ? 2 : 1; match.passes = 0;
+match.discs.forEach(d => { if (d.team === match.turn && d.cdLeft > 0) d.cdLeft--; });
+}
+updateHUD();
+}
+function handleGoal(scorerTeam) {
+match.goalLock = true;
+if (scorerTeam === 1) match.score1++; else match.score2++;
+sfxGoal();
+if (match.ball.lastTouch && match.ball.lastTouch.team === scorerTeam) addFlow(match.ball.lastTouch, 40);
+const sub = match.passes > 0 ? 'CHEMICAL REACTION (' + match.passes + ' ПАСА)!' : 'EGOIST STRIKE!';
+showBanner('ГОООЛ! ИГРОК ' + scorerTeam, sub, scorerTeam === 1 ? '#38bdf8' : '#f43f5e');
+updateHUD();
+setTimeout(() => {
+if (match.score1 >= 3 || match.score2 >= 3) endMatch();
+else resetPositions(scorerTeam === 1 ? 2 : 1);
+}, 1700);
+}
+function endMatch() {
+const w = match.score1 > match.score2 ? 1 : 2;
+alert('МАТЧ ОКОНЧЕН!\nСчёт: П1 (' + match.score1 + ' : ' + match.score2 + ') П2\nПобедил ИГРОК ' + w + '!');
+location.reload();
+}
+function updateHUD() {
+document.getElementById('score-p1').innerText = match.score1;
+document.getElementById('score-p2').innerText = match.score2;
+document.getElementById('pass-p1').innerText = (match.turn===1?match.passes:0) + '/3';
+document.getElementById('pass-p2').innerText = (match.turn===2?match.passes:0) + '/3';
+document.getElementById('turn-p1').innerText = match.turn === 1 ? '⚡ ВАШ ХОД' : 'ОЖИДАНИЕ';
+document.getElementById('turn-p2').innerText
+= match.turn === 2 ? '⚡ ВАШ ХОД' : 'ОЖИДАНИЕ';
+renderSkillButtons();
+}
+function renderSkillButtons() {
+  const pls = new Array(1, 2);
+  pls.forEach(p => {
+    const row = document.getElementById('skills-p' + p);
+    row.innerHTML = '';
+    match.discs.forEach((d, idx) => {
+      if (d.team !== p) return;
+      const btn = document.createElement('button');
+      const isMyTurn = match.turn === p;
+      const canUse = !match.moving && !match.aiming && d.cdLeft === 0 && !d.disabledTurn && ((d.hero.type === 'atk' && isMyTurn) || (d.hero.type === 'def' && !isMyTurn));
+      btn.className = 'skill-btn' + (canUse ? (d.hero.type==='atk'?' ready':' def-ready') : '') + (d.inFlow ? ' flow' : '');
+      btn.disabled = !canUse;
+      btn.innerHTML =
+        '<div class="sb-name" style="color:' + d.hero.color + ';">' + d.hero.name + '</div>' +
+        '<div class="sb-act">' + (d.disabledTurn ? 'БЛОК!' : (d.cdLeft > 0 ? 'КД: ' + d.cdLeft : d.hero.actName)) + '</div>';
+      btn.onclick = () => triggerSkill(idx);
+      row.appendChild(btn);
+    });
+  });
+}
+
+function drawPitch() {
+
+ctx.clearRect(0, 0, W, H);
+const topY = GOAL_D, botY = H - GOAL_D;
+ctx.fillStyle = '#081224'; ctx.fillRect(0, topY, W, botY - topY);
+ctx.fillStyle = 'rgba(255,255,255,0.02)';
+for (let y = topY; y < botY; y += 50) ctx.fillRect(0, y, W, 25);
+ctx.strokeStyle = 'rgba(56,189,248,0.28)'; ctx.lineWidth = 2;
+ctx.strokeRect(4, topY, W - 8, botY - topY);
+ctx.beginPath(); ctx.moveTo(4, H/2); ctx.lineTo(W-4, H/2); ctx.stroke();
+ctx.beginPath(); ctx.arc(W/2, H/2, 48, 0, Math.PI*2); ctx.stroke();
+ctx.strokeRect(W/2 - 95, topY, 190, 68);
+ctx.strokeRect(W/2 - 95, botY - 68, 190, 68);
+const gx = (W - GOAL_W) / 2;
+ctx.fillStyle = 'rgba(244,63,94,0.15)'; ctx.fillRect(gx, 2, GOAL_W, GOAL_D);
+ctx.strokeStyle = '#f43f5e'; ctx.strokeRect(gx, 2, GOAL_W, GOAL_D);
+ctx.fillStyle = 'rgba(56,189,248,0.15)'; ctx.fillRect(gx, botY, GOAL_W, GOAL_D - 2);
+ctx.strokeStyle = '#38bdf8'; ctx.strokeRect(gx, botY, GOAL_W, GOAL_D - 2);
+if (match.aiming && match.dragDisc) {
+const d = match.dragDisc, dx = d.x - match.dragPos.x, dy = d.y - match.dragPos.y, mult = d.hero.id === 'rin' ? 2.4 : 1.3;
+ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + dx * mult, d.y + dy * mult);
+ctx.strokeStyle = d.hero.color; ctx.lineWidth = 3; ctx.setLineDash(new Array(6, 6)); ctx.stroke(); ctx.setLineDash(new Array());
+}
+match.discs.forEach(d => {
+if (d.inFlow) {
+ctx.beginPath(); ctx.arc(d.x, d.y, d.r + 6 + Math.sin(Date.now()/120)*2, 0, Math.PI*2);
+ctx.strokeStyle = d.hero.color; ctx.lineWidth = 3; ctx.stroke();
+}
+if (d.team === match.turn && !match.moving) {
+ctx.beginPath(); ctx.arc(d.x, d.y, d.r + 3, 0, Math.PI*2);
+ctx.strokeStyle = d.team === 1 ? 'rgba(56,189,248,0.6)' : 'rgba(244,63,94,0.6)'; ctx.lineWidth = 2; ctx.stroke();
+}
+ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+ctx.fillStyle = d.team === 1 ? '#0c4a6e' : '#881337'; ctx.fill();
+ctx.lineWidth = 3; ctx.strokeStyle = d.hero.color; ctx.stroke();
+ctx.fillStyle = '#fff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+ctx.fillText(d.hero.role, d.x, d.y + 4);
+ctx.font = 'bold 10px sans-serif'; ctx.fillStyle = d.inFlow ? d.hero.color : '#f8fafc';
+ctx.fillText(d.hero.name + ' ' + Math.floor(d.flow) + '%', d.x, d.y - d.r - 5);
+});
+const b = match.ball;
+ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#0f172a'; ctx.stroke();
+}
+</script>
+</body>
+</html>
